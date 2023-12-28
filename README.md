@@ -4,7 +4,7 @@
 ![GitHub](https://img.shields.io/github/license/Encryption-Api-Services/eas-api)
 
 # Environment Description
-This is a .NET 7.0 Web API. Authentication is hand written using JWT Tokens which are signed with an individual ECC 521 key pair and the storage mechanism is a MongoDB database to allow for easy schema changes during development. This project contains the front-end routes for our [SPA interface](https://github.com/Encryption-API-Services/AngularSPA). Once you are registered for the site, you gain access to the API routes for certain encryption methods. 
+This is a .NET 8.0 Web API. Authentication is hand written using JWT Tokens which are signed with an individual ECC 521 key pair and the storage mechanism is a MongoDB database to allow for easy schema changes during development. This project contains the front-end routes for our [SPA interface](https://github.com/Encryption-API-Services/AngularSPA). Once you are registered for the site, you gain access to the API routes for certain encryption methods. 
 
 # SDKs Currently In Development
 [C#](https://github.com/Encryption-API-Services/eas-dotnet)
