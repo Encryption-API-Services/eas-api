@@ -49,7 +49,7 @@ namespace Email_Service
                         {
                             string email = Environment.GetEnvironmentVariable("Email");
                             smtp.UseDefaultCredentials = false;
-                            smtp.Credentials = new NetworkCredential(email, "pwqnyquwgjsxhosv");
+                            smtp.Credentials = new NetworkCredential(email, "bzdjmoscoeyzfcsj");
                             smtp.EnableSsl = true;
                             smtp.Send(mail);
                         }
