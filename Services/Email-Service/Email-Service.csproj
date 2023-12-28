@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk.Worker">
 
 	<PropertyGroup>
-		<TargetFramework>net7.0</TargetFramework>
+		<TargetFramework>net8.0</TargetFramework>
 		<UserSecretsId>dotnet-Email_Service-E9A32EEB-691B-4A73-9777-B871B305AC7A</UserSecretsId>
 		
 		<RootNamespace>Email_Service</RootNamespace>
