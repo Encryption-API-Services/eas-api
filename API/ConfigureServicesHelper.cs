@@ -75,14 +75,10 @@ namespace API.Config
             this._services.AddScoped<IUserLoginControllerLogic, UserLoginControllerLogic>();
             this._services.AddScoped<IEncryptionControllerLogic, EncryptionControllerLogic>();
             this._services.AddScoped<ICreditControllerLogic, CreditControllerLogic>();
-            this._services.AddScoped<IPasswordControllerLogic, PasswordControllerLogic>();
             this._services.AddScoped<ITwoFAControllerLogic, TwoFAControllerLogic>();
             this._services.AddScoped<IUIDataControllerLogic, UIDataControllerLogic>();
             this._services.AddScoped<IBlogPostControllerLogic, BlogControllerLogic>();
             this._services.AddScoped<ITokenControllerLogic, TokenControllerLogic>();
-            this._services.AddScoped<IRsaControllerLogic, RsaControllerLogic>();
-            this._services.AddScoped<IED25519ControllerLogic, ED25519ControllerLogic>();
-            this._services.AddScoped<ISignatureControllerLogic, SignatureControllerLogic>();
             this._services.AddScoped<IPaymentsControllerLogic, PaymentsControllerLogic>();
             this._services.AddScoped<IUserSettingsControllerLogic, UserSettingsControllerLogic>();
 
