@@ -73,7 +73,6 @@ namespace API.Config
             // Controller Logic
             this._services.AddScoped<IUserRegisterControllerLogic, UserRegisterControllerLogic>();
             this._services.AddScoped<IUserLoginControllerLogic, UserLoginControllerLogic>();
-            this._services.AddScoped<IEncryptionControllerLogic, EncryptionControllerLogic>();
             this._services.AddScoped<ICreditControllerLogic, CreditControllerLogic>();
             this._services.AddScoped<ITwoFAControllerLogic, TwoFAControllerLogic>();
             this._services.AddScoped<IUIDataControllerLogic, UIDataControllerLogic>();
