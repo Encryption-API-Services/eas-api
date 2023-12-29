@@ -89,7 +89,7 @@ namespace API.ControllerLogic
                     {
                         ECDSAWrapper newEcdsa = new ECDSAWrapper("ES521");
                         string userId = jwtWrapper.GetUserIdFromToken(token);
-                        bool isAdmin = bool.Parse(handler.Claims.First(x => x.Type == "IsAdmin").Value);
+                        bool isAdmin = bool.Parse(handler.Claims.First(x => x.Type == Constants.TokenClaims.IsAdmin).Value);
                         string newToken = new JWT().GenerateECCToken(userId, isAdmin, newEcdsa, 1);
                         result = new OkObjectResult(new GetTokenResponse() { Token = newToken });
                     }

@@ -27,7 +27,7 @@ namespace Encryption
                 Subject = new ClaimsIdentity(new[] {
                     new Claim(Constants.TokenClaims.Id, userId),
                     new Claim(Constants.TokenClaims.PublicKey, publicKey),
-                    new Claim("IsAdmin", isAdmin.ToString())
+                    new Claim(Constants.TokenClaims.IsAdmin, isAdmin.ToString())
                 }),
                 Issuer = "https://encryptionapiservices.com",
                 Expires = DateTime.UtcNow.AddHours(1),
@@ -84,7 +84,7 @@ namespace Encryption
                 Subject = new ClaimsIdentity(new[] {
                     new Claim(Constants.TokenClaims.Id, userId),
                     new Claim(Constants.TokenClaims.PublicKey, key.PublicKey),
-                    new Claim("IsAdmin", isAdmin.ToString())
+                    new Claim(Constants.TokenClaims.IsAdmin, isAdmin.ToString())
                 }),
                 SigningCredentials = new SigningCredentials(new ECDsaSecurityKey(key.ECDKey), "ES256")
             });
