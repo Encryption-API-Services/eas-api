@@ -1,6 +1,7 @@
 ﻿using API.ControllerLogic;
 using API.Controllers;
 using CASHelpers;
+using CASHelpers.Types.HttpResponses.UserAuthentication;
 using DataLayer.Mongo;
 using DataLayer.Mongo.Repositories;
 using Encryption;

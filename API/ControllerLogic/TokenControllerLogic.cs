@@ -1,4 +1,5 @@
 ﻿using CASHelpers;
+using CASHelpers.Types.HttpResponses.UserAuthentication;
 using Common;
 using DataLayer.Cache;
 using DataLayer.Mongo.Entities;
