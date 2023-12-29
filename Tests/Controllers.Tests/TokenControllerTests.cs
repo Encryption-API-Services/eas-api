@@ -38,7 +38,7 @@ namespace Controllers.Tests
             mockHttpContextAccessor.SetupGet(x => x.HttpContext.Request).Returns(request.Object);
             AuthenticationHelper authenticationHelper = new AuthenticationHelper();
             string token = authenticationHelper.GetExpiredTestFrameworkToken().GetAwaiter().GetResult();
-            mockHttpContextAccessor.SetupGet(x => x.HttpContext.Request.Headers["Authorization"]).Returns(String.Format("Bearer {0}", token));
+            mockHttpContextAccessor.SetupGet(x => x.HttpContext.Request.Headers[Constants.HeaderNames.Authorization]).Returns(String.Format("Bearer {0}", token));
             mockHttpContextAccessor.SetupGet(x => x.HttpContext.Items[Constants.HttpItems.UserID]).Returns(new JWT().GetUserIdFromToken(token));
             mockHttpContextAccessor.SetupGet(x => x.HttpContext.Request.Headers[Constants.HeaderNames.ApiKey]).Returns(Environment.GetEnvironmentVariable("EasApiKey"));
             this._tokenController = new TokenController(mockHttpContextAccessor.Object, new TokenControllerLogic(

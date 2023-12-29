@@ -1,5 +1,6 @@
 ﻿using API.Config;
 using API.Controllers;
+using CASHelpers;
 using DataLayer.Cache;
 using DataLayer.Mongo;
 using DataLayer.Mongo.Entities;
@@ -40,7 +41,7 @@ namespace Controllers.Tests
             mockHttpContextAccessor.SetupGet(x => x.HttpContext.Request).Returns(request.Object);
             mockHttpContextAccessor.SetupGet(x => x.HttpContext.Items).Returns(items.Object);
             mockHttpContextAccessor.SetupGet(x => x.HttpContext.Request.Headers).Returns(headers.Object);
-            mockHttpContextAccessor.SetupGet(x => x.HttpContext.Items["IP"]).Returns("127.0.0.1");
+            mockHttpContextAccessor.SetupGet(x => x.HttpContext.Items[Constants.HttpItems.IP]).Returns("127.0.0.1");
 
             this._userRegisterController = new UserRegisterController(new UserRegisterControllerLogic(
                 new UserRepository(databaseSettings, client),

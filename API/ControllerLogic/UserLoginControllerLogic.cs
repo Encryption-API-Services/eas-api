@@ -46,7 +46,7 @@ namespace API.ControllersLogic
             IActionResult result = null;
             try
             {
-                string token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+                string token = context.Request.Headers[Constants.HeaderNames.Authorization].FirstOrDefault()?.Split(" ").Last();
                 // get current token
                 if (!string.IsNullOrEmpty(token))
                 {
@@ -129,11 +129,11 @@ namespace API.ControllersLogic
                         else
                         {
                             IpInfoHelper ipInfoHelper = new IpInfoHelper();
-                            IpInfoResponse ipInfo = await ipInfoHelper.GetIpInfo(httpContext.Items["IP"].ToString());
+                            IpInfoResponse ipInfo = await ipInfoHelper.GetIpInfo(httpContext.Items[Constants.HttpItems.IP].ToString());
                             SuccessfulLogin login = new SuccessfulLogin()
                             {
                                 UserId = activeUser.Id,
-                                Ip = httpContext.Items["IP"].ToString(),
+                                Ip = httpContext.Items[Constants.HttpItems.IP].ToString(),
                                 UserAgent = body.UserAgent,
                                 City = ipInfo.City,
                                 Country = ipInfo.Country,

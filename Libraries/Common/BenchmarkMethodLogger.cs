@@ -1,4 +1,5 @@
-﻿using Encryption;
+﻿using CASHelpers;
+using Encryption;
 using Microsoft.AspNetCore.Http;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
@@ -19,7 +20,7 @@ namespace Common
 
         public BenchmarkMethodLogger(HttpContext context, [CallerMemberName] string callingMethod = null)
         {
-            string token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+            string token = context.Request.Headers[Constants.HeaderNames.Authorization].FirstOrDefault()?.Split(" ").Last();
             if (!string.IsNullOrEmpty(token) && token != "null")
             {
                 this.UserID = new JWT().GetUserIdFromToken(token);

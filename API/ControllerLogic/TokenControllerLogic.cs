@@ -76,7 +76,7 @@ namespace API.ControllerLogic
             try
             {
                 // get current token
-                string token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+                string token = context.Request.Headers[Constants.HeaderNames.Authorization].FirstOrDefault()?.Split(" ").Last();
                 if (!string.IsNullOrEmpty(token))
                 {
                     var handler = new JwtSecurityTokenHandler().ReadJwtToken(token);
@@ -124,7 +124,7 @@ namespace API.ControllerLogic
             IActionResult result = new OkObjectResult(new IsTokenValidResponse() { IsTokenValid = true });
             try
             {
-                var token = httpContext.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+                var token = httpContext.Request.Headers[Constants.HeaderNames.Authorization].FirstOrDefault()?.Split(" ").Last();
                 if (string.IsNullOrEmpty(token))
                 {
                     result = new OkObjectResult(new IsTokenValidResponse() { IsTokenValid = false });

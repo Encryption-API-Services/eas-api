@@ -1,4 +1,5 @@
-﻿using DataLayer.Cache;
+﻿using CASHelpers;
+using DataLayer.Cache;
 using DataLayer.Mongo.Entities;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -25,14 +26,14 @@ namespace Validation.Middleware
             try
             {
                 string requestId = Guid.NewGuid().ToString();
-                string clientIp = context.Request.Headers["X-Forwarded-For"].FirstOrDefault();
+                string clientIp = context.Request.Headers[Constants.HeaderNames.XForwardedFor].FirstOrDefault();
                 if (string.IsNullOrEmpty(clientIp))
                 {
                     clientIp = context.Connection.RemoteIpAddress.ToString();
                 }
                 string ip = IPAddressExtension.ConvertContextToLocalHostIp(clientIp);
-                context.Items["IP"] = ip;
-                string token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+                context.Items[Constants.HttpItems.IP] = ip;
+                string token = context.Request.Headers[Constants.HeaderNames.Authorization].FirstOrDefault()?.Split(" ").Last();
                 LogRequest requestStart = new LogRequest()
                 {
                     IsStart = true,
