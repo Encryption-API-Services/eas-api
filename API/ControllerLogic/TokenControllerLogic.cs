@@ -85,7 +85,7 @@ namespace API.ControllerLogic
                     ECDSAWrapper ecdsa = new ECDSAWrapper("ES521");
                     ecdsa.ImportFromPublicBase64String(publicKey);
                     JWT jwtWrapper = new JWT();
-                    if (!await jwtWrapper.ValidateECCToken(token, ecdsa.ECDKey))
+                    if (await jwtWrapper.ValidateECCToken(token, ecdsa.ECDKey))
                     {
                         ECDSAWrapper newEcdsa = new ECDSAWrapper("ES521");
                         string userId = jwtWrapper.GetUserIdFromToken(token);
@@ -95,8 +95,8 @@ namespace API.ControllerLogic
                     }
                     else
                     {
-                        // if token is still valid just send the same token back.
-                        result = new OkObjectResult(new GetTokenResponse() { Token = token });
+                        // if token is not valid send them unauthorized response
+                        result = new UnauthorizedResult();
                     }
                 }
             }

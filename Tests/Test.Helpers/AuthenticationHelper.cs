@@ -1,4 +1,5 @@
-﻿using Encryption;
+﻿using CASHelpers;
+using Encryption;
 using Encryption.Compression;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
