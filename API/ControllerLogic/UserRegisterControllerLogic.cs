@@ -1,4 +1,5 @@
 ﻿using API.ControllersLogic;
+using CASHelpers;
 using Common;
 using DataLayer.Cache;
 using DataLayer.Mongo.Repositories;
@@ -149,7 +150,7 @@ namespace API.Config
             IActionResult result = null;
             try
             {
-                string userId = context.Items["UserID"].ToString();
+                string userId = context.Items[Constants.HttpItems.UserID].ToString();
                 User user = await this._userRespository.GetUserById(userId);
                 StripCustomer stripCustomer = new StripCustomer();
                 Task deleteCustomer = stripCustomer.DeleteStripCustomer(user.StripCustomerId);

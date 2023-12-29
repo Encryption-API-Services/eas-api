@@ -16,6 +16,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\..\cas-dotnet-helpers\CASHelpers\cas-helpers.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="performant_encryption.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

@@ -1,5 +1,6 @@
 ﻿using API.ControllerLogic;
 using API.Controllers;
+using CASHelpers;
 using DataLayer.Mongo;
 using DataLayer.Mongo.Repositories;
 using Encryption;
@@ -38,8 +39,8 @@ namespace Controllers.Tests
             AuthenticationHelper authenticationHelper = new AuthenticationHelper();
             string token = authenticationHelper.GetExpiredTestFrameworkToken().GetAwaiter().GetResult();
             mockHttpContextAccessor.SetupGet(x => x.HttpContext.Request.Headers["Authorization"]).Returns(String.Format("Bearer {0}", token));
-            mockHttpContextAccessor.SetupGet(x => x.HttpContext.Items["UserID"]).Returns(new JWT().GetUserIdFromToken(token));
-            mockHttpContextAccessor.SetupGet(x => x.HttpContext.Request.Headers["ApiKey"]).Returns(Environment.GetEnvironmentVariable("EasApiKey"));
+            mockHttpContextAccessor.SetupGet(x => x.HttpContext.Items[Constants.HttpItems.UserID]).Returns(new JWT().GetUserIdFromToken(token));
+            mockHttpContextAccessor.SetupGet(x => x.HttpContext.Request.Headers[Constants.HeaderNames.ApiKey]).Returns(Environment.GetEnvironmentVariable("EasApiKey"));
             this._tokenController = new TokenController(mockHttpContextAccessor.Object, new TokenControllerLogic(
                 new UserRepository(databaseSettings, client),
                 new EASExceptionRepository(databaseSettings, client),

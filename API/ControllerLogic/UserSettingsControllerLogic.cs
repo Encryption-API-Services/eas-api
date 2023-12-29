@@ -1,4 +1,5 @@
-﻿using Common;
+﻿using CASHelpers;
+using Common;
 using DataLayer.Cache;
 using DataLayer.Mongo.Entities;
 using DataLayer.Mongo.Repositories;
@@ -47,7 +48,7 @@ namespace API.ControllerLogic
                 }
                 else
                 {
-                    await this._userRepository.ChangeUsername(context.Items["UserID"].ToString(), changeUsername.NewUsername);
+                    await this._userRepository.ChangeUsername(context.Items[Constants.HttpItems.UserID].ToString(), changeUsername.NewUsername);
                     result = new OkObjectResult(new { message = String.Format("Successfully changed your username to {0}", changeUsername.NewUsername) });
                 }
             }
@@ -70,7 +71,7 @@ namespace API.ControllerLogic
             try
             {
                 Argon2Wrappper argon2Wrapper = new Argon2Wrappper();
-                string userId = context.Items["UserID"].ToString(); 
+                string userId = context.Items[Constants.HttpItems.UserID].ToString(); 
                 User currentUser = await this._userRepository.GetUserById(userId);
                 Argon2Wrappper argon2 = new Argon2Wrappper();
                 Tuple<bool, string> isValid = await this._userSettingsValidation.IsChangePasswordValid(changePassword, userId, currentUser.Password, argon2);

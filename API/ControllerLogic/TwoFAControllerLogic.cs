@@ -1,4 +1,5 @@
-﻿using Common;
+﻿using CASHelpers;
+using Common;
 using DataLayer.Cache;
 using DataLayer.Mongo.Entities;
 using DataLayer.Mongo.Repositories;
@@ -30,7 +31,7 @@ namespace API.ControllersLogic
             IActionResult result = null;
             try
             {
-                string userId = httpContext.Items["UserID"].ToString();
+                string userId = httpContext.Items[Constants.HttpItems.UserID].ToString();
                 Phone2FA status = await this._userRepository.GetPhone2FAStats(userId);
                 result = new OkObjectResult(new { result = status.IsEnabled });
             }
@@ -49,7 +50,7 @@ namespace API.ControllersLogic
             IActionResult result = null;
             try
             {
-                string userId = httpContext.Items["UserID"].ToString();
+                string userId = httpContext.Items[Constants.HttpItems.UserID].ToString();
                 PhoneValidator phoneValidator = new PhoneValidator();
                 if (phoneValidator.IsPhoneNumberValid(body.PhoneNumber))
                 {
@@ -77,7 +78,7 @@ namespace API.ControllersLogic
             IActionResult result = null;
             try
             {
-                string userId = httpContext.Items["UserID"].ToString();
+                string userId = httpContext.Items[Constants.HttpItems.UserID].ToString();
                 await this._userRepository.ChangePhone2FAStatusToDisabled(userId);
             }
             catch (Exception ex)
@@ -96,7 +97,7 @@ namespace API.ControllersLogic
             IActionResult result = null;
             try
             {
-                string userId = httpContext.Items["UserID"].ToString();
+                string userId = httpContext.Items[Constants.HttpItems.UserID].ToString();
                 await this._userRepository.ChangePhone2FAStatusToEnabled(userId);
             }
             catch (Exception ex)

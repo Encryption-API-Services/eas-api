@@ -41,6 +41,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Common", "Libraries\Common\
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Payments", "Libraries\Payments\Payments.csproj", "{46AECA66-72A5-4EC9-8AB7-6C06E74A3CD6}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "cas-helpers", "..\cas-dotnet-helpers\CASHelpers\cas-helpers.csproj", "{A2D09492-5F0F-4328-860F-FF974BF9CADE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -111,6 +113,10 @@ Global
 		{46AECA66-72A5-4EC9-8AB7-6C06E74A3CD6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{46AECA66-72A5-4EC9-8AB7-6C06E74A3CD6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{46AECA66-72A5-4EC9-8AB7-6C06E74A3CD6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A2D09492-5F0F-4328-860F-FF974BF9CADE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A2D09492-5F0F-4328-860F-FF974BF9CADE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A2D09492-5F0F-4328-860F-FF974BF9CADE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A2D09492-5F0F-4328-860F-FF974BF9CADE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -131,6 +137,7 @@ Global
 		{9F2FA179-8BFE-4B8D-8A5C-9A469AE572E3} = {04CE2CE7-F073-4992-96E9-8EACBE543AA6}
 		{CA248792-803F-4AD7-9237-F903A717EB6E} = {6EB8A9C6-D96D-4087-B7DE-775CBB23742D}
 		{46AECA66-72A5-4EC9-8AB7-6C06E74A3CD6} = {6EB8A9C6-D96D-4087-B7DE-775CBB23742D}
+		{A2D09492-5F0F-4328-860F-FF974BF9CADE} = {6EB8A9C6-D96D-4087-B7DE-775CBB23742D}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CCC25F9F-06E3-434D-A130-C77381DAA1F0}

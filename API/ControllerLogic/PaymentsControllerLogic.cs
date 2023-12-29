@@ -1,4 +1,5 @@
-﻿using Common;
+﻿using CASHelpers;
+using Common;
 using DataLayer.Cache;
 using DataLayer.Mongo.CustomEntities;
 using DataLayer.Mongo.Entities;
@@ -38,7 +39,7 @@ namespace API.ControllerLogic
             IActionResult result = null;
             try
             {
-                string userId = context.Items["UserID"].ToString();
+                string userId = context.Items[Constants.HttpItems.UserID].ToString();
                 User user = await this._userRepository.GetUserById(userId);
                 StripSubscription stripSubscription = new StripSubscription();
                 if (user.UserSubscriptionSettings.StripSubscriptionId != null)
@@ -156,7 +157,7 @@ namespace API.ControllerLogic
             IActionResult result = null;
             try
             {
-                string userId = context.Items["UserID"].ToString();
+                string userId = context.Items[Constants.HttpItems.UserID].ToString();
                 User user = await this._userRepository.GetUserById(userId);
                 if (user != null)
                 {
@@ -186,7 +187,7 @@ namespace API.ControllerLogic
             IActionResult result = null;
             try
             {
-                string userId = context.Items["UserID"].ToString();
+                string userId = context.Items[Constants.HttpItems.UserID].ToString();
                 User user = await this._userRepository.GetUserById(userId);
                 result = new OkObjectResult(new { BillingInformation = user.BillingInformation });
             }
@@ -225,7 +226,7 @@ namespace API.ControllerLogic
             IActionResult result = null;
             try
             {
-                string userId = context.Items["UserID"].ToString();
+                string userId = context.Items[Constants.HttpItems.UserID].ToString();
                 Task<User> user = this._userRepository.GetUserById(userId);
                 Task<List<Product>> products = this._productRepository.GetAllProducts();
                 await Task.WhenAll(user, products);
@@ -254,7 +255,7 @@ namespace API.ControllerLogic
             IActionResult result = null;
             try
             {
-                string userId = context.Items["UserID"].ToString();
+                string userId = context.Items[Constants.HttpItems.UserID].ToString();
                 Task update = this._userRepository.UpdateBillingInformation(userId, body);
                 Task<User> user = this._userRepository.GetUserById(userId);
                 await Task.WhenAll(update, user);

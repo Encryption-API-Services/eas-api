@@ -1,10 +1,12 @@
-﻿using DataLayer.Mongo;
+﻿using CASHelpers;
+using DataLayer.Mongo;
 using Encryption;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Reflection.Metadata;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -26,15 +28,15 @@ namespace Validation.Middleware
 
         public async Task InvokeAsync(HttpContext context)
         {
-            var token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(" ").Last();
+            var token = context.Request.Headers[Constants.HeaderNames.Authorization].FirstOrDefault()?.Split(" ").Last();
             string routePath = context.Request.Path;
 
             if (token != null && (this._routesToValidate.BinarySearch(routePath) > -1))
             {
                 var handler = new JwtSecurityTokenHandler().ReadJwtToken(token);
-                string publicKey = handler.Claims.First(x => x.Type == "public-key").Value;
-                string userId = handler.Claims.First(x => x.Type == "id").Value;
-                context.Items["UserID"] = userId;
+                string publicKey = handler.Claims.First(x => x.Type == Constants.TokenClaims.PublicKey).Value;
+                string userId = handler.Claims.First(x => x.Type == Constants.TokenClaims.Id).Value;
+                context.Items[Constants.HttpItems.UserID] = userId;
                 ECDSAWrapper ecdsa = new ECDSAWrapper("ES521");
                 ecdsa.ImportFromPublicBase64String(publicKey);
                 // validate signing key

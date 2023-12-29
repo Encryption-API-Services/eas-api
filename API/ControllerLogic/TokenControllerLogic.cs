@@ -1,4 +1,5 @@
-﻿using Common;
+﻿using CASHelpers;
+using Common;
 using DataLayer.Cache;
 using DataLayer.Mongo.Entities;
 using DataLayer.Mongo.Repositories;
@@ -33,7 +34,7 @@ namespace API.ControllerLogic
             IActionResult result = null;
             try
             {
-                string apiKey = httpContext.Request.Headers["ApiKey"].ToString();
+                string apiKey = httpContext.Request.Headers[Constants.HeaderNames.ApiKey].ToString();
                 if (string.IsNullOrEmpty(apiKey))
                 {
                     result = new UnauthorizedObjectResult(new { error = "You did not set an ApiKey" });
@@ -79,7 +80,7 @@ namespace API.ControllerLogic
                 if (!string.IsNullOrEmpty(token))
                 {
                     var handler = new JwtSecurityTokenHandler().ReadJwtToken(token);
-                    string publicKey = handler.Claims.First(x => x.Type == "public-key").Value;
+                    string publicKey = handler.Claims.First(x => x.Type == Constants.TokenClaims.PublicKey).Value;
                     ECDSAWrapper ecdsa = new ECDSAWrapper("ES521");
                     ecdsa.ImportFromPublicBase64String(publicKey);
                     JWT jwtWrapper = new JWT();
@@ -131,7 +132,7 @@ namespace API.ControllerLogic
                 else
                 {
                     var handler = new JwtSecurityTokenHandler().ReadJwtToken(token);
-                    string publicKey = handler.Claims.First(x => x.Type == "public-key").Value;
+                    string publicKey = handler.Claims.First(x => x.Type == Constants.TokenClaims.PublicKey).Value;
                     ECDSAWrapper ecdsa = new ECDSAWrapper("ES521");
                     ecdsa.ImportFromPublicBase64String(publicKey);
                     // validate signing key

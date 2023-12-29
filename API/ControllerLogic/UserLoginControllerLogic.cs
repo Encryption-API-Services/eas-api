@@ -1,4 +1,5 @@
-﻿using Common;
+﻿using CASHelpers;
+using Common;
 using Common.ThirdPartyAPIs;
 using DataLayer.Cache;
 using DataLayer.Mongo.Entities;
@@ -72,7 +73,7 @@ namespace API.ControllersLogic
             IActionResult result = null;
             try
             {
-                string userId = context.Items["UserID"].ToString();
+                string userId = context.Items[Constants.HttpItems.UserID].ToString();
                 IFindFluent<SuccessfulLogin, SuccessfulLogin> successfulLogins = this._successfulLoginRepository.GetAllSuccessfulLoginWithinTimeFrame(userId, DateTime.UtcNow.AddMonths(-1));
                 Task<long> total = successfulLogins.CountDocumentsAsync();
                 Task<List<SuccessfulLogin>> logins = successfulLogins.Skip(pageSkip * pageSize).Limit(pageSize).ToListAsync();

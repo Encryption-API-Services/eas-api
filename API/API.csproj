@@ -13,6 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\cas-dotnet-helpers\CASHelpers\cas-helpers.csproj" />
     <ProjectReference Include="..\Libraries\Common\Common.csproj" />
     <ProjectReference Include="..\Libraries\DataLayer\DataLayer.csproj" />
     <ProjectReference Include="..\Libraries\Encryption\Encryption.csproj" />

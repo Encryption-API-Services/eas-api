@@ -1,4 +1,5 @@
 ﻿
+using CASHelpers;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using System;
@@ -24,8 +25,8 @@ namespace Encryption
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(new[] {
-                    new Claim("id", userId),
-                    new Claim("public-key", publicKey),
+                    new Claim(Constants.TokenClaims.Id, userId),
+                    new Claim(Constants.TokenClaims.PublicKey, publicKey),
                     new Claim("IsAdmin", isAdmin.ToString())
                 }),
                 Issuer = "https://encryptionapiservices.com",
@@ -81,8 +82,8 @@ namespace Encryption
                 Expires = now.AddHours(hoursToAdd),
                 IssuedAt = now,
                 Subject = new ClaimsIdentity(new[] {
-                    new Claim("id", userId),
-                    new Claim("public-key", key.PublicKey),
+                    new Claim(Constants.TokenClaims.Id, userId),
+                    new Claim(Constants.TokenClaims.PublicKey, key.PublicKey),
                     new Claim("IsAdmin", isAdmin.ToString())
                 }),
                 SigningCredentials = new SigningCredentials(new ECDsaSecurityKey(key.ECDKey), "ES256")
@@ -94,7 +95,7 @@ namespace Encryption
         public string GetUserIdFromToken(string token)
         {
             var handler = new JwtSecurityTokenHandler().ReadJwtToken(token);
-            return handler.Claims.First(x => x.Type == "id").Value;
+            return handler.Claims.First(x => x.Type == Constants.TokenClaims.Id).Value;
         }
     }
 }

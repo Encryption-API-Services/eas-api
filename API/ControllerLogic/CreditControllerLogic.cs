@@ -1,4 +1,5 @@
-﻿using Common;
+﻿using CASHelpers;
+using Common;
 using DataLayer.Cache;
 using DataLayer.Mongo.Entities;
 using DataLayer.Mongo.Repositories;
@@ -43,7 +44,7 @@ namespace API.ControllersLogic
             IActionResult result = null;
             try
             {
-                string userId = httpContext.Items["UserID"].ToString();
+                string userId = httpContext.Items[Constants.HttpItems.UserID].ToString();
                 User dbUser = await this._userRepository.GetUserById(userId);
                 LuhnWrapper wrapper = new LuhnWrapper();
                 if (wrapper.IsCCValid(body.creditCardNumber))
@@ -86,7 +87,7 @@ namespace API.ControllersLogic
                     if (isValidCC)
                     {
                         // get user id from token
-                        string userId = this._contextAccessor.HttpContext.Items["UserID"].ToString();
+                        string userId = this._contextAccessor.HttpContext.Items[Constants.HttpItems.UserID].ToString();
                         await this._creditRepository.AddValidatedCreditInformation(new ValidatedCreditCard()
                         {
                             UserID = userId,

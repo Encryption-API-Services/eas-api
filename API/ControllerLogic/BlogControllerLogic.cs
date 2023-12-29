@@ -1,4 +1,5 @@
-﻿using Common;
+﻿using CASHelpers;
+using Common;
 using DataLayer.Cache;
 using DataLayer.Mongo.Entities;
 using DataLayer.Mongo.Repositories;
@@ -84,7 +85,7 @@ namespace API.ControllerLogic
                         CreateDate = DateTime.UtcNow,
                         ModifiedDate = DateTime.UtcNow,
                         WasNewsletterSent = false,
-                        CreatedBy = httpContext.Items["UserID"].ToString()
+                        CreatedBy = httpContext.Items[Constants.HttpItems.UserID].ToString()
                     };
                     await this._blogPostRepository.InsertBlogPost(newBlogPost);
                     result = new OkObjectResult(new { message = "You have create a new blog post" });

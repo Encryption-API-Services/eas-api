@@ -1,4 +1,5 @@
-﻿using DataLayer.Mongo.Entities;
+﻿using CASHelpers;
+using DataLayer.Mongo.Entities;
 using DataLayer.Mongo.Repositories;
 using Microsoft.AspNetCore.Http;
 using Models.TrialPeriod;
@@ -26,7 +27,7 @@ namespace Validation.Middleware
             string routePath = context.Request.Path;
             if (this._routesToValidate.BinarySearch(routePath) > -1)
             {
-                string userId = context.Items["UserID"].ToString();
+                string userId = context.Items[Constants.HttpItems.UserID].ToString();
                 Task<long> trialPeriodRequestsCount = trialPeriodRepository.GetTrialPeriodRequestsCount(userId);
                 Task<User> user = userRepository.GetUserById(userId);
                 await Task.WhenAll(trialPeriodRequestsCount, user);
