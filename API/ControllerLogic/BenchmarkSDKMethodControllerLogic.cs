@@ -5,6 +5,7 @@ using DataLayer.Cache;
 using DataLayer.Mongo.Entities;
 using DataLayer.Mongo.Repositories;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Payments;
 using System.Net.Http;
@@ -37,7 +38,7 @@ namespace API.ControllerLogic
             {
                 DataLayer.Mongo.Entities.BenchmarkSDKMethod newBenchmarkMethod = new DataLayer.Mongo.Entities.BenchmarkSDKMethod()
                 {
-                    MethodDescription = sdkMethod.MethodDescription,
+                    MethodDescription = sdkMethod?.MethodDescription,
                     MethodName = sdkMethod.MethodName,
                     MethodStart = sdkMethod.MethodStart,
                     MethodEnd = sdkMethod.MethodEnd,

@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Reflection.Metadata;
+using System.Runtime.InteropServices.Marshalling;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -30,7 +31,7 @@ namespace Validation.Middleware
         {
             var token = context.Request.Headers[Constants.HeaderNames.Authorization].FirstOrDefault()?.Split(" ").Last();
             string routePath = context.Request.Path;
-            if (token != null && (this._routesToValidate.BinarySearch(routePath) >= 0))
+            if (token != null && (this._routesToValidate.BinarySearch(routePath) >= -1))
             {
                 var handler = new JwtSecurityTokenHandler().ReadJwtToken(token);
                 string publicKey = handler.Claims.First(x => x.Type == Constants.TokenClaims.PublicKey).Value;
@@ -61,6 +62,7 @@ namespace Validation.Middleware
         {
             return new List<string>()
             {
+                "/BenchmarkSDKMethod/MethodBenchmark",
                 "/Encryption/EncryptAES",
                 "/Encryption/DecryptAES",
                 "/Encryption/EncryptSHA256",
@@ -124,7 +126,7 @@ namespace Validation.Middleware
                 "/Payments/AssignProductToUser",
                 "/Payments/DisableSubscription",
                 "/Payments/GetBillingInformation",
-                "/Payments/UpdateBillingInformation"
+                "/Payments/UpdateBillingInformation",
             }.OrderBy(x => x).ToList();
         }
     }

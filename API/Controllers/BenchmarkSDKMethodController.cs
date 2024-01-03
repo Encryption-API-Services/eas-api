@@ -2,10 +2,11 @@
 using CASHelpers;
 using CASHelpers.Types.HttpResponses.BenchmarkAPI;
 using Microsoft.AspNetCore.Mvc;
-using System.Drawing.Text;
 
 namespace API.Controllers
 {
+    [Route("[controller]")]
+    [ApiController]
     public class BenchmarkSDKMethodController : ControllerBase
     {
         private readonly IHttpContextAccessor _contextAccessor;
@@ -21,7 +22,7 @@ namespace API.Controllers
 
 
         [HttpPost]
-        [Route(Constants.ApiRoutes.MethodBenchmark)]
+        [Route("MethodBenchmark")]
         public async Task<IActionResult> CreateMethodSDKBenchmark([FromBody] BenchmarkSDKMethod sdkMethod)
         {
             return await this._benchmarkSDKMethodControllerLogic.CreateMethodSDKBenchmark(sdkMethod, this._contextAccessor.HttpContext);
