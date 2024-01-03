@@ -31,7 +31,7 @@ namespace Validation.Middleware
         {
             var token = context.Request.Headers[Constants.HeaderNames.Authorization].FirstOrDefault()?.Split(" ").Last();
             string routePath = context.Request.Path;
-            if (token != null && (this._routesToValidate.BinarySearch(routePath) >= -1))
+            if (token != null && (this._routesToValidate.BinarySearch(routePath) > -1))
             {
                 var handler = new JwtSecurityTokenHandler().ReadJwtToken(token);
                 string publicKey = handler.Claims.First(x => x.Type == Constants.TokenClaims.PublicKey).Value;
