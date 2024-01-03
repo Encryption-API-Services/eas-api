@@ -69,6 +69,7 @@ namespace API.Config
             this._services.AddScoped<ITrialPeriodRepository, TrialPeriodRepository>();
             this._services.AddScoped<IProductRepository, ProductRepository>();
             this._services.AddScoped<IPriceRepository, PriceRepository>();
+            this._services.AddScoped<IBenchmarkSDKMethodRepository, BenchmarkSDKMethodRepository>();
 
             // Controller Logic
             this._services.AddScoped<IUserRegisterControllerLogic, UserRegisterControllerLogic>();
@@ -80,6 +81,7 @@ namespace API.Config
             this._services.AddScoped<ITokenControllerLogic, TokenControllerLogic>();
             this._services.AddScoped<IPaymentsControllerLogic, PaymentsControllerLogic>();
             this._services.AddScoped<IUserSettingsControllerLogic, UserSettingsControllerLogic>();
+            this._services.AddScoped<IBenchmarkSDKMethodControllerLogic, BenchmarkSDKMethodControllerLogic>();
 
             // Validaton
             this._services.AddScoped<UserSettingsValidation>();
