@@ -4,7 +4,6 @@ using Common;
 using DataLayer.Cache;
 using DataLayer.Mongo.Entities;
 using DataLayer.Mongo.Repositories;
-using Encryption;
 using Microsoft.AspNetCore.Mvc;
 using Models.UserAuthentication;
 using System.IdentityModel.Tokens.Jwt;

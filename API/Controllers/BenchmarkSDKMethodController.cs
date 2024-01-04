@@ -1,5 +1,4 @@
 ﻿using API.ControllerLogic;
-using CASHelpers;
 using CASHelpers.Types.HttpResponses.BenchmarkAPI;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,8 +13,8 @@ namespace API.Controllers
         public BenchmarkSDKMethodController(
             IHttpContextAccessor contextAccessor,
             IBenchmarkSDKMethodControllerLogic benchmarkSDKMethodControllerLogic
-            ) 
-        { 
+            )
+        {
             this._contextAccessor = contextAccessor;
             this._benchmarkSDKMethodControllerLogic = benchmarkSDKMethodControllerLogic;
         }

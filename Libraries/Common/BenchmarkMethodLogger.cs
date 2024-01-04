@@ -1,5 +1,4 @@
 ﻿using CASHelpers;
-using Encryption;
 using Microsoft.AspNetCore.Http;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;

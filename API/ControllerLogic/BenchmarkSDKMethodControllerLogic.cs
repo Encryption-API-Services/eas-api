@@ -1,17 +1,9 @@
 ﻿using CASHelpers;
-using CASHelpers.Types.HttpResponses.BenchmarkAPI;
 using Common;
 using DataLayer.Cache;
-using DataLayer.Mongo.Entities;
 using DataLayer.Mongo.Repositories;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
-using Payments;
-using System.Net.Http;
 using System.Reflection;
-using Twilio.TwiML.Messaging;
-using Validation.CreditCard;
 
 namespace API.ControllerLogic
 {

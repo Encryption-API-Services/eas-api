@@ -1,13 +1,10 @@
 ﻿using CASHelpers;
 using DataLayer.Mongo;
-using Encryption;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
-using System.Reflection.Metadata;
-using System.Runtime.InteropServices.Marshalling;
 using System.Text;
 using System.Threading.Tasks;
 
