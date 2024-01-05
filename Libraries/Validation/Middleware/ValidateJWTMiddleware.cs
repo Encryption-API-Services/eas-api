@@ -60,6 +60,7 @@ namespace Validation.Middleware
             return new List<string>()
             {
                 "/BenchmarkSDKMethod/MethodBenchmark",
+                "/BenchmarkSDKMethod/GetUserBenchmarksByDays",
                 "/Encryption/EncryptAES",
                 "/Encryption/DecryptAES",
                 "/Encryption/EncryptSHA256",

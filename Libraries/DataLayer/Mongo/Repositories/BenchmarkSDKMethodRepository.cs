@@ -1,5 +1,7 @@
 ﻿using DataLayer.Mongo.Entities;
 using MongoDB.Driver;
+using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace DataLayer.Mongo.Repositories
@@ -17,6 +19,12 @@ namespace DataLayer.Mongo.Repositories
         public async Task InsertSDKMethodBenchmark(BenchmarkSDKMethod method)
         {
             await this._benchmarkSDKMethods.InsertOneAsync(method);
+        }
+
+        public async Task<List<BenchmarkSDKMethod>> GetUserBenchmarksDaysAgo(string userId, int daysAgo)
+        {
+            DateTime timeAgo = DateTime.UtcNow.AddDays(-daysAgo);
+            return await this._benchmarkSDKMethods.Find(x => x.CreatedBy == userId && x.MethodStart >= timeAgo && x.MethodEnd >= timeAgo).ToListAsync();
         }
     }
 }

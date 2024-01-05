@@ -20,6 +20,13 @@ namespace API.Controllers
         }
 
 
+        [HttpGet]
+        [Route("GetUserBenchmarksByDays")]
+        public async Task<IActionResult> GetUserBenchmarksByDays([FromQuery]int daysAgo)
+        {
+            return await this._benchmarkSDKMethodControllerLogic.CreateMethodSDKBenchmark(daysAgo, this._contextAccessor.HttpContext);
+        }
+
         [HttpPost]
         [Route("MethodBenchmark")]
         public async Task<IActionResult> CreateMethodSDKBenchmark([FromBody] BenchmarkSDKMethod sdkMethod)
