@@ -24,7 +24,7 @@ namespace API.Controllers
         [Route("GetUserBenchmarksByDays")]
         public async Task<IActionResult> GetUserBenchmarksByDays([FromQuery]int daysAgo)
         {
-            return await this._benchmarkSDKMethodControllerLogic.CreateMethodSDKBenchmark(daysAgo, this._contextAccessor.HttpContext);
+            return await this._benchmarkSDKMethodControllerLogic.GetUserBenchmarksByDays(daysAgo, this._contextAccessor.HttpContext);
         }
 
         [HttpPost]
