@@ -1,6 +1,6 @@
 ﻿using CASHelpers.Types.HttpResponses.BenchmarkAPI;
-using MongoDB.Bson.Serialization.Attributes;
 using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 using System;
 
 namespace DataLayer.Mongo.Entities

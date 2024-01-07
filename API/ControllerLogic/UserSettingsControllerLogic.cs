@@ -44,7 +44,7 @@ namespace API.ControllerLogic
                 Tuple<bool, string> isValid = await this._userSettingsValidation.IsChangeUsernameValid(changeUsername);
                 if (!isValid.Item1)
                 {
-                    result = new BadRequestObjectResult (new { error = isValid.Item2 });
+                    result = new BadRequestObjectResult(new { error = isValid.Item2 });
                 }
                 else
                 {
@@ -71,7 +71,7 @@ namespace API.ControllerLogic
             try
             {
                 Argon2Wrappper argon2Wrapper = new Argon2Wrappper();
-                string userId = context.Items[Constants.HttpItems.UserID].ToString(); 
+                string userId = context.Items[Constants.HttpItems.UserID].ToString();
                 User currentUser = await this._userRepository.GetUserById(userId);
                 Argon2Wrappper argon2 = new Argon2Wrappper();
                 Tuple<bool, string> isValid = await this._userSettingsValidation.IsChangePasswordValid(changePassword, userId, currentUser.Password, argon2);

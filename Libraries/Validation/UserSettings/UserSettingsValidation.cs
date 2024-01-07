@@ -4,7 +4,6 @@ using Encryption.PasswordHash;
 using Models.UserAuthentication;
 using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
 namespace Validation.UserSettings
@@ -42,7 +41,7 @@ namespace Validation.UserSettings
             {
                 if (await argon2Wrapper.VerifyPasswordAsync(password, body.NewPassword))
                 {
-                    isValid = new Tuple<bool, string>(false, "You need to enter a password that has not been used the last 5 times" );
+                    isValid = new Tuple<bool, string>(false, "You need to enter a password that has not been used the last 5 times");
                     break;
                 }
             }
@@ -69,6 +68,6 @@ namespace Validation.UserSettings
                 }
             }
             return isValid;
-        }   
+        }
     }
 }

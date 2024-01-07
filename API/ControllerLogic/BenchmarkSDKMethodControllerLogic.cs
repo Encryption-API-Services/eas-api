@@ -4,14 +4,8 @@ using Common;
 using DataLayer.Cache;
 using DataLayer.Mongo.Entities;
 using DataLayer.Mongo.Repositories;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
-using Payments;
-using System.Net.Http;
 using System.Reflection;
-using Twilio.TwiML.Messaging;
-using Validation.CreditCard;
 
 namespace API.ControllerLogic
 {
@@ -28,6 +22,39 @@ namespace API.ControllerLogic
             this._benchmarkSDKMethodRepository = benchmarkSDKMethodRepository;
             this._exceptionRepository = exceptionRepository;
             this._benchmarkMethodCache = benchmarkMethodCache;
+        }
+
+        public async Task<IActionResult> GetUserBenchmarksByDays(int daysAgo, HttpContext context)
+        {
+            BenchmarkMethodLogger logger = new BenchmarkMethodLogger(context);
+            IActionResult result = null;
+            try
+            {
+                string userId = context.Items[Constants.HttpItems.UserID].ToString();
+                List<DataLayer.Mongo.Entities.BenchmarkSDKMethod> dbEntities = await this._benchmarkSDKMethodRepository.GetUserBenchmarksDaysAgo(userId, daysAgo);
+                List<BenchmarkSDKChartMethod> benchmarks = new List<BenchmarkSDKChartMethod>();
+                for (int i = 0; i < dbEntities.Count; i++)
+                {
+                    BenchmarkSDKChartMethod newBenchmark = new BenchmarkSDKChartMethod()
+                    {
+                        AmountOfTime = (dbEntities[i].MethodEnd - dbEntities[i].MethodStart).TotalSeconds,
+                        MethodDescription = dbEntities[i].MethodDescription,
+                        MethodName = dbEntities[i].MethodName,
+                        MethodType = dbEntities[i].MethodType
+                    };
+                    benchmarks.Add(newBenchmark);
+                }
+
+                result = new OkObjectResult(new GetUserBenchmarksByDaysResponse() { Benchmarks = benchmarks });
+            }
+            catch (Exception ex)
+            {
+                await this._exceptionRepository.InsertException(ex.ToString(), MethodBase.GetCurrentMethod().Name);
+                result = new BadRequestObjectResult(new { error = "There was an error on our end." });
+            }
+            logger.EndExecution();
+            this._benchmarkMethodCache.AddLog(logger);
+            return result;
         }
 
         public async Task<IActionResult> CreateMethodSDKBenchmark(CASHelpers.Types.HttpResponses.BenchmarkAPI.BenchmarkSDKMethod sdkMethod, HttpContext context)
