@@ -1,4 +1,5 @@
 ﻿using CASHelpers;
+using CASHelpers.Types.HttpResponses.BenchmarkAPI;
 using Common;
 using DataLayer.Cache;
 using DataLayer.Mongo.Entities;
@@ -30,8 +31,21 @@ namespace API.ControllerLogic
             try
             {
                 string userId = context.Items[Constants.HttpItems.UserID].ToString();
-                List<BenchmarkSDKMethod> benchmarks = await this._benchmarkSDKMethodRepository.GetUserBenchmarksDaysAgo(userId, daysAgo);
-                result = new OkResult();
+                List<DataLayer.Mongo.Entities.BenchmarkSDKMethod> dbEntities = await this._benchmarkSDKMethodRepository.GetUserBenchmarksDaysAgo(userId, daysAgo);
+                List<BenchmarkSDKChartMethod> benchmarks = new List<BenchmarkSDKChartMethod>();
+                for (int i = 0; i < dbEntities.Count; i++)
+                {
+                    BenchmarkSDKChartMethod newBenchmark = new BenchmarkSDKChartMethod()
+                    {
+                        AmountOfTime = (dbEntities[i].MethodEnd - dbEntities[i].MethodStart).TotalSeconds,
+                        MethodDescription = dbEntities[i].MethodDescription,
+                        MethodName = dbEntities[i].MethodName,
+                        MethodType = dbEntities[i].MethodType
+                    };
+                    benchmarks.Add(newBenchmark);
+                }
+
+                result = new OkObjectResult(new GetUserBenchmarksByDaysResponse() { Benchmarks = benchmarks });
             }
             catch (Exception ex)
             {
