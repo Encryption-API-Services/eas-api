@@ -17,7 +17,6 @@ namespace API.Controllers
 
         [HttpPost]
         [Route("ValidateCard")]
-        // GET: CreditController
         public async Task<IActionResult> ValidateCreditCard([FromBody] CreditValidateRequest body)
         {
             return await this._creditControllerLogic.ValidateCreditCard(body, HttpContext);
