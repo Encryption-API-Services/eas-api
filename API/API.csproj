@@ -17,7 +17,6 @@
     <ProjectReference Include="..\..\cas-dotnet-sdk\cas-dotnet-sdk\cas-dotnet-sdk.csproj" />
     <ProjectReference Include="..\Libraries\Common\Common.csproj" />
     <ProjectReference Include="..\Libraries\DataLayer\DataLayer.csproj" />
-    <ProjectReference Include="..\Libraries\Encryption\Encryption.csproj" />
     <ProjectReference Include="..\Libraries\Models\Models.csproj" />
     <ProjectReference Include="..\Libraries\Payments\Payments.csproj" />
     <ProjectReference Include="..\Libraries\Validation\Validation.csproj" />

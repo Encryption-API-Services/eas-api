@@ -8,7 +8,6 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\..\Libraries\DataLayer\DataLayer.csproj" />
-		<ProjectReference Include="..\..\Libraries\Encryption\Encryption.csproj" />
 	</ItemGroup>
 
 </Project>
