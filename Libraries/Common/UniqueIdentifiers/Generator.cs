@@ -1,6 +1,6 @@
-﻿using Encryption;
+﻿using CasDotnetSdk.Hashers;
 using System;
-using System.Runtime.InteropServices;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace Common.UniqueIdentifiers
@@ -14,12 +14,10 @@ namespace Common.UniqueIdentifiers
 
         public async Task<string> CreateApiKey()
         {
-            string id = Guid.NewGuid().ToString();
-            RustSHAWrapper shaWrapper = new RustSHAWrapper();
-            IntPtr hashPtr = await shaWrapper.SHA512HashStringAsync(id);
-            string hash = Marshal.PtrToStringAnsi(hashPtr);
-            RustSHAWrapper.free_cstring(hashPtr);
-            return hash;
+            byte[] id = Encoding.UTF8.GetBytes(Guid.NewGuid().ToString());
+            SHAWrapper shaWrapper = new SHAWrapper();
+            byte[] hashBytes = shaWrapper.SHA512HashBytes(id);
+            return Convert.ToBase64String(hashBytes);
         }
     }
 }

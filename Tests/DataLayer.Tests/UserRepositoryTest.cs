@@ -1,11 +1,10 @@
-﻿using DataLayer.Mongo;
+﻿using CasDotnetSdk.PasswordHashers;
+using DataLayer.Mongo;
 using DataLayer.Mongo.Entities;
 using DataLayer.Mongo.Repositories;
-using Encryption.PasswordHash;
 using Models.UserAuthentication;
 using MongoDB.Driver;
 using System;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Priority;
@@ -40,10 +39,8 @@ namespace DataLayer.Tests
         [Fact, Priority(-10)]
         public async Task AddUserTest()
         {
-            Argon2Wrappper argon2 = new Argon2Wrappper();
-            IntPtr hashedPasswordPtr = await argon2.HashPasswordAsync("DoNotUseThisPassword");
-            string hashedPassword = Marshal.PtrToStringUTF8(hashedPasswordPtr);
-            Argon2Wrappper.free_cstring(hashedPasswordPtr);
+            Argon2Wrapper argon2 = new Argon2Wrapper();
+            string hashedPassword = argon2.HashPassword("DoNotUseThisPassword");
             await this._userRepository.DeleteUserByEmail(this._registerUser.email);
             await this._userRepository.AddUser(this._registerUser, hashedPassword);
             User databaseUser = await this._userRepository.GetUserByEmail(this._registerUser.email);

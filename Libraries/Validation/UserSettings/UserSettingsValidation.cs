@@ -1,6 +1,6 @@
-﻿using DataLayer.Mongo.Entities;
+﻿using CasDotnetSdk.PasswordHashers;
+using DataLayer.Mongo.Entities;
 using DataLayer.Mongo.Repositories;
-using Encryption.PasswordHash;
 using Models.UserAuthentication;
 using System;
 using System.Collections.Generic;
@@ -21,7 +21,7 @@ namespace Validation.UserSettings
             this._userRepository = userRepository;
         }
 
-        public async Task<Tuple<bool, string>> IsChangePasswordValid(ChangePassword body, string userId, string currentPassword, Argon2Wrappper argon2Wrapper)
+        public async Task<Tuple<bool, string>> IsChangePasswordValid(ChangePassword body, string userId, string currentPassword, Argon2Wrapper argon2Wrapper)
         {
             Tuple<bool, string> isValid = new Tuple<bool, string>(true, "");
             if (!this._passwordRegex.IsMatch(body.NewPassword))
@@ -32,14 +32,14 @@ namespace Validation.UserSettings
             {
                 isValid = new Tuple<bool, string>(false, "Current Password must be 8 characters long and must contain at least one uppercase letter, one lowercase letter, one number and one special character");
             }
-            else if (!await argon2Wrapper.VerifyPasswordAsync(currentPassword, body.CurrentPassword))
+            else if (!argon2Wrapper.VerifyPassword(currentPassword, body.CurrentPassword))
             {
                 isValid = new Tuple<bool, string>(false, "The Current Password you entered does not match our records");
             }
             List<string> lastFivePasswords = await this._forgotPasswordRepository.GetLastFivePassword(userId);
             foreach (string password in lastFivePasswords)
             {
-                if (await argon2Wrapper.VerifyPasswordAsync(password, body.NewPassword))
+                if (argon2Wrapper.VerifyPassword(password, body.NewPassword))
                 {
                     isValid = new Tuple<bool, string>(false, "You need to enter a password that has not been used the last 5 times");
                     break;

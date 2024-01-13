@@ -55,7 +55,6 @@ namespace API.Config
             this._services.AddScoped<IUserRepository, UserRepository>();
             this._services.AddScoped<IMethodBenchmarkRepository, MethodBenchmarkRepository>();
             this._services.AddScoped<ICreditRepository, CreditRepository>();
-            this._services.AddScoped<IHashedPasswordRepository, HashedPasswordRepository>();
             this._services.AddScoped<IFailedLoginAttemptRepository, FailedLoginAttemptRepository>();
             this._services.AddScoped<IForgotPasswordRepository, ForgotPasswordRepository>();
             this._services.AddScoped<ILogRequestRepository, LogRequestRepository>();
@@ -64,7 +63,6 @@ namespace API.Config
             this._services.AddScoped<IBlogPostRepository, BlogPostRepository>();
             this._services.AddScoped<IEASExceptionRepository, EASExceptionRepository>();
             this._services.AddScoped<ICreditCardInfoChangedRepository, CreditCardInfoChangedRepository>();
-            this._services.AddScoped<IRsaEncryptionRepository, RsaEncryptionRepository>();
             this._services.AddScoped<INewsletterRepository, NewsletterRepository>();
             this._services.AddScoped<ITrialPeriodRepository, TrialPeriodRepository>();
             this._services.AddScoped<IProductRepository, ProductRepository>();
@@ -80,6 +78,7 @@ namespace API.Config
             this._services.AddScoped<IBlogPostControllerLogic, BlogControllerLogic>();
             this._services.AddScoped<ITokenControllerLogic, TokenControllerLogic>();
             this._services.AddScoped<IPaymentsControllerLogic, PaymentsControllerLogic>();
+            this._services.AddScoped<IPasswordControllerLogic, PasswordControllerLogic>();
             this._services.AddScoped<IUserSettingsControllerLogic, UserSettingsControllerLogic>();
             this._services.AddScoped<IBenchmarkSDKMethodControllerLogic, BenchmarkSDKMethodControllerLogic>();
 

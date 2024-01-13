@@ -2,6 +2,7 @@
 using DataLayer.Mongo.Entities;
 using Models.Payments;
 using Models.UserAuthentication;
+using MongoDB.Bson;
 using MongoDB.Driver;
 using MongoDB.Driver.Linq;
 using System;
@@ -19,10 +20,11 @@ namespace DataLayer.Mongo.Repositories
             var database = client.GetDatabase(databaseSettings.DatabaseName);
             this._userCollection = database.GetCollection<User>("Users");
         }
-        public async Task AddUser(RegisterUser model, string hashedPassword)
+        public async Task<User> AddUser(RegisterUser model, string hashedPassword)
         {
-            await this._userCollection.InsertOneAsync(new User
+            User newUser = new User
             {
+                Id = ObjectId.GenerateNewId().ToString(),
                 Username = model.username,
                 Password = hashedPassword,
                 Email = model.email,
@@ -63,7 +65,9 @@ namespace DataLayer.Mongo.Repositories
                 {
                     Sent = false
                 }
-            });
+            };
+            await this._userCollection.InsertOneAsync(newUser);
+            return newUser;
         }
 
         public async Task<User> GetUserById(string id)
@@ -123,10 +127,10 @@ namespace DataLayer.Mongo.Repositories
 
         public async Task<List<User>> GetUsersWhoForgotPassword()
         {
-            return await this._userCollection.FindAsync(x => x.ForgotPassword != null &&
+            return await this._userCollection.Find(x => x.ForgotPassword != null &&
                                                             x.ForgotPassword.Token != null &&
                                                             x.ForgotPassword.PublicKey == null &&
-                                                            x.ForgotPassword.HasBeenReset == false).GetAwaiter().GetResult().ToListAsync();
+                                                            x.ForgotPassword.HasBeenReset == false).ToListAsync();
         }
 
         public async Task UpdateUsersForgotPasswordToReset(string userId, string forgotPasswordToken, string publicKey, string signedToken)
