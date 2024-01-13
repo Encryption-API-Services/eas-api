@@ -64,7 +64,6 @@ namespace API.Config
             this._services.AddScoped<IEASExceptionRepository, EASExceptionRepository>();
             this._services.AddScoped<ICreditCardInfoChangedRepository, CreditCardInfoChangedRepository>();
             this._services.AddScoped<INewsletterRepository, NewsletterRepository>();
-            this._services.AddScoped<ITrialPeriodRepository, TrialPeriodRepository>();
             this._services.AddScoped<IProductRepository, ProductRepository>();
             this._services.AddScoped<IPriceRepository, PriceRepository>();
             this._services.AddScoped<IBenchmarkSDKMethodRepository, BenchmarkSDKMethodRepository>();
