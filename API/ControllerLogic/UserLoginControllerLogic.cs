@@ -1,10 +1,10 @@
-﻿using CASHelpers;
+﻿using CasDotnetSdk.PasswordHashers;
+using CASHelpers;
 using Common;
 using Common.ThirdPartyAPIs;
 using DataLayer.Cache;
 using DataLayer.Mongo.Entities;
 using DataLayer.Mongo.Repositories;
-using Encryption.PasswordHash;
 using Microsoft.AspNetCore.Mvc;
 using Models.UserAuthentication;
 using MongoDB.Driver;
@@ -104,8 +104,8 @@ namespace API.ControllersLogic
                 }
                 else if (activeUser != null && activeUser.LockedOut.IsLockedOut == false && activeUser.IsActive == true)
                 {
-                    Argon2Wrappper argon2 = new Argon2Wrappper();
-                    if (await argon2.VerifyPasswordAsync(activeUser.Password, body.Password))
+                    Argon2Wrapper argon2 = new Argon2Wrapper();
+                    if (argon2.VerifyPassword(activeUser.Password, body.Password))
                     {
                         ECDSAWrapper ecdsa = new ECDSAWrapper("ES521");
                         string token = new JWT().GenerateECCToken(activeUser.Id, activeUser.IsAdmin, ecdsa, 1);

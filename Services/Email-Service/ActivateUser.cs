@@ -1,8 +1,8 @@
-﻿using DataLayer.Mongo;
+﻿using CasDotnetSdk.Asymmetric;
+using CasDotnetSdk.Hashers;
+using DataLayer.Mongo;
 using DataLayer.Mongo.Entities;
 using DataLayer.Mongo.Repositories;
-using Encryption;
-using Encryption.Compression;
 using Microsoft.IdentityModel.Tokens;
 using MongoDB.Driver;
 using System;
@@ -10,8 +10,9 @@ using System.Collections.Generic;
 using System.Net;
 using System.Net.Mail;
 using System.Runtime.InteropServices;
+using System.Text;
 using System.Threading.Tasks;
-using static Encryption.RustRSAWrapper;
+using static CasDotnetSdk.Asymmetric.RSAWrapper;
 
 namespace Email_Service
 {
@@ -36,15 +37,13 @@ namespace Email_Service
         private async Task GenerateTokenAndSendOut(User user)
         {
             UserRepository repo = new UserRepository(this._databaseSettings, this._mongoClient);
-            string guid = Guid.NewGuid().ToString();
-            RustSHAWrapper shaWrapper = new RustSHAWrapper();
-            IntPtr hashedGuidPtr = await shaWrapper.SHA512HashStringAsync(guid);
-            string hashedGuid = Marshal.PtrToStringAnsi(hashedGuidPtr);
-            RustRSAWrapper rsaWrapper = new RustRSAWrapper(new ZSTDWrapper());
-            RsaSignResult signtureResult = await rsaWrapper.RsaSignAsync(guid, 4096);
-            string signature = Marshal.PtrToStringAnsi(signtureResult.signature);
-            string publicKey = Marshal.PtrToStringAnsi(signtureResult.public_key);
-            string urlSignature = Base64UrlEncoder.Encode(signature);
+            byte[] guid = Encoding.UTF8.GetBytes(Guid.NewGuid().ToString());
+            SHAWrapper shaWrapper = new SHAWrapper();
+            byte[] hashedGuidBytes = shaWrapper.SHA512HashBytes(guid);
+            RSAWrapper rsaWrapper = new RSAWrapper();
+            RsaKeyPairResult keyPair = rsaWrapper.GetKeyPair(4096);
+            byte[] signtureResult =  rsaWrapper.RsaSignWithKeyBytes(keyPair.PrivateKey, hashedGuidBytes);
+            string urlSignature = Base64UrlEncoder.Encode(signtureResult);
             try
             {
                 SmtpClient SmtpServer = new SmtpClient("smtp.gmail.com");
@@ -68,10 +67,8 @@ namespace Email_Service
                         smtp.Send(mail);
                     }
                 }
-                await repo.UpdateUsersRsaKeyPairsAndToken(user, publicKey, guid, signature);
-                RustRSAWrapper.free_cstring(signtureResult.public_key);
-                RustRSAWrapper.free_cstring(signtureResult.signature);
-                RustSHAWrapper.free_cstring(hashedGuidPtr);
+
+                await repo.UpdateUsersRsaKeyPairsAndToken(user, keyPair.PublicKey, Convert.ToBase64String(hashedGuidBytes), urlSignature);
             }
             catch (Exception ex)
             {

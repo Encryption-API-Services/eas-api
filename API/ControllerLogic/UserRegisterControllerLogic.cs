@@ -1,17 +1,17 @@
 ﻿using API.ControllersLogic;
+using CasDotnetSdk.Asymmetric;
+using CasDotnetSdk.PasswordHashers;
 using CASHelpers;
 using Common;
 using DataLayer.Cache;
 using DataLayer.Mongo.Repositories;
-using Encryption;
-using Encryption.Compression;
-using Encryption.PasswordHash;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Models.UserAuthentication;
 using Payments;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Text;
 using Validation.UserRegistration;
 using User = DataLayer.Mongo.Entities.User;
 
@@ -22,17 +22,20 @@ namespace API.Config
     public class UserRegisterControllerLogic : IUserRegisterControllerLogic
     {
         private readonly IUserRepository _userRespository;
+        private readonly IForgotPasswordRepository _forgotPasswordRepository;
         private readonly ILogRequestRepository _logRequestRespository;
         private readonly IEASExceptionRepository _exceptionRepository;
         private readonly BenchmarkMethodCache _benchmarkMethodCache;
         public UserRegisterControllerLogic(
             IUserRepository userRepo,
+            IForgotPasswordRepository forgotPasswordRepository,
             ILogRequestRepository logRequestRespository,
             IEASExceptionRepository exceptionRespitory,
             BenchmarkMethodCache benchmarkMethodCache
             )
         {
             this._userRespository = userRepo;
+            this._forgotPasswordRepository = forgotPasswordRepository;
             this._logRequestRespository = logRequestRespository;
             this._exceptionRepository = exceptionRespitory;
             this._benchmarkMethodCache = benchmarkMethodCache;
@@ -52,10 +55,10 @@ namespace API.Config
                 await Task.WhenAll(emailUser, usernameUser);
                 if (validation.IsRegisterUserModelValid(body) && emailUser.Result == null && usernameUser.Result == null)
                 {
-                    Argon2Wrappper argon2 = new Argon2Wrappper();
-                    IntPtr hashedPasswordPtr = await argon2.HashPasswordAsync(body.password);
-                    string hashedPassword = Marshal.PtrToStringUTF8(hashedPasswordPtr);
-                    await this._userRespository.AddUser(body, hashedPassword);
+                    Argon2Wrapper argon2 = new Argon2Wrapper();
+                    string hashedPassword = argon2.HashPassword(body.password);
+                    User newUser = await this._userRespository.AddUser(body, hashedPassword);
+                    await this._forgotPasswordRepository.InsertForgotPasswordAttempt(newUser.Id, hashedPassword);
                     result = new OkObjectResult(new { message = "Successfully registered user" });
                 }
                 else
@@ -83,9 +86,9 @@ namespace API.Config
             try
             {
                 User userToActivate = await this._userRespository.GetUserById(body.Id);
-                string signature = Base64UrlEncoder.Decode(body.Token);
-                RustRSAWrapper rustRsaWrapper = new RustRSAWrapper(new ZSTDWrapper());
-                bool isValid = rustRsaWrapper.RsaVerify(userToActivate.EmailActivationToken.PublicKey, userToActivate.EmailActivationToken.Token, signature);
+                byte[] signature = Base64UrlEncoder.DecodeBytes(body.Token);
+                RSAWrapper rustRsaWrapper = new RSAWrapper();
+                bool isValid = rustRsaWrapper.RsaVerifyBytes(userToActivate.EmailActivationToken.PublicKey, Convert.FromBase64String(userToActivate.EmailActivationToken.Token), signature);
                 if (isValid)
                 {
                     StripCustomer stripCustomer = new StripCustomer();
@@ -115,9 +118,9 @@ namespace API.Config
             try
             {
                 User user = await this._userRespository.GetUserById(body.Id);
-                string signature = Base64UrlEncoder.Decode(body.Token);
-                RustRSAWrapper rustRsaWrapper = new RustRSAWrapper(new ZSTDWrapper());
-                bool isValid = rustRsaWrapper.RsaVerify(user.InactiveEmail.PublicKey, user.InactiveEmail.Token, signature);
+                byte[] signature = Base64UrlEncoder.DecodeBytes(body.Token);
+                RSAWrapper rustRsaWrapper = new RSAWrapper();
+                bool isValid = rustRsaWrapper.RsaVerifyBytes(user.InactiveEmail.PublicKey, Convert.FromBase64String(user.InactiveEmail.Token), signature);
                 if (isValid)
                 {
                     // Delete the strip customer and the user account associated with the user id.

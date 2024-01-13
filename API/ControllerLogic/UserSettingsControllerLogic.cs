@@ -1,9 +1,9 @@
-﻿using CASHelpers;
+﻿using CasDotnetSdk.PasswordHashers;
+using CASHelpers;
 using Common;
 using DataLayer.Cache;
 using DataLayer.Mongo.Entities;
 using DataLayer.Mongo.Repositories;
-using Encryption.PasswordHash;
 using Microsoft.AspNetCore.Mvc;
 using Models.UserAuthentication;
 using System.Reflection;
@@ -70,10 +70,10 @@ namespace API.ControllerLogic
             IActionResult result = null;
             try
             {
-                Argon2Wrappper argon2Wrapper = new Argon2Wrappper();
+                Argon2Wrapper argon2Wrapper = new Argon2Wrapper();
                 string userId = context.Items[Constants.HttpItems.UserID].ToString();
                 User currentUser = await this._userRepository.GetUserById(userId);
-                Argon2Wrappper argon2 = new Argon2Wrappper();
+                Argon2Wrapper argon2 = new Argon2Wrapper();
                 Tuple<bool, string> isValid = await this._userSettingsValidation.IsChangePasswordValid(changePassword, userId, currentUser.Password, argon2);
                 if (!isValid.Item1)
                 {
@@ -82,9 +82,7 @@ namespace API.ControllerLogic
                 else
                 {
                     await this._forgotPasswordRepository.InsertForgotPasswordAttempt(userId, currentUser.Password);
-                    IntPtr hashedNewPassword = await argon2.HashPasswordAsync(changePassword.NewPassword);
-                    string newPassword = Marshal.PtrToStringAnsi(hashedNewPassword);
-                    Argon2Wrappper.free_cstring(hashedNewPassword);
+                    string newPassword = argon2.HashPassword(changePassword.NewPassword);
                     await this._userRepository.UpdatePassword(userId, newPassword);
                     result = new OkObjectResult(new { message = "Successfully changed your password" });
                 }

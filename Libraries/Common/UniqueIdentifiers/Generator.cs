@@ -17,7 +17,7 @@ namespace Common.UniqueIdentifiers
             byte[] id = Encoding.UTF8.GetBytes(Guid.NewGuid().ToString());
             SHAWrapper shaWrapper = new SHAWrapper();
             byte[] hashBytes = shaWrapper.SHA512HashBytes(id);
-            return Encoding.UTF8.GetString(hashBytes);
+            return Convert.ToBase64String(hashBytes);
         }
     }
 }

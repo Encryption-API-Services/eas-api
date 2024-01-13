@@ -8,7 +8,7 @@ namespace DataLayer.Mongo.Repositories
 {
     public interface IUserRepository
     {
-        public Task AddUser(RegisterUser model, string hashedPassword);
+        public Task<User> AddUser(RegisterUser model, string hashedPassword);
         public Task<User> GetUserByEmail(string email);
         public Task<User> GetUserByUsername(string username);
         public Task ChangeUsername(string userId, string newUsername);
