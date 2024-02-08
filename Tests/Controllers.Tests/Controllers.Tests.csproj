@@ -26,7 +26,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="..\..\..\cas-dotnet-helpers\CASHelpers\cas-helpers.csproj" />
 	  <ProjectReference Include="..\..\API\API.csproj" />
 	  <ProjectReference Include="..\Test.Helpers\Tests.Helpers.csproj" />
 	</ItemGroup>

@@ -45,6 +45,7 @@ namespace Controllers.Tests
 
             this._userRegisterController = new UserRegisterController(new UserRegisterControllerLogic(
                 new UserRepository(databaseSettings, client),
+                new ForgotPasswordRepository(databaseSettings, client),
                 new LogRequestRepository(databaseSettings, client),
                 new EASExceptionRepository(databaseSettings, client),
                 new BenchmarkMethodCache(databaseSettings, client)

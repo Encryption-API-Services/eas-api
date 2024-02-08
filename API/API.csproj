@@ -5,6 +5,8 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
 	<GenerateCustomWebConfigFile>true</GenerateCustomWebConfigFile>
+	  <ContainerImageName>cas-api</ContainerImageName>
+	  <ContainerBaseImage>mcr.microsoft.com/dotnet/sdk:8.0</ContainerBaseImage>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,7 +15,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\cas-dotnet-helpers\CASHelpers\cas-helpers.csproj" />
     <ProjectReference Include="..\..\cas-dotnet-sdk\cas-dotnet-sdk\cas-dotnet-sdk.csproj" />
     <ProjectReference Include="..\Libraries\Common\Common.csproj" />
     <ProjectReference Include="..\Libraries\DataLayer\DataLayer.csproj" />

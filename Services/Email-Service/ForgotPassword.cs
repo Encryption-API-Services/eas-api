@@ -1,4 +1,5 @@
 ﻿using CasDotnetSdk.Asymmetric;
+using CasDotnetSdk.Asymmetric.Types;
 using CasDotnetSdk.Hashers;
 using DataLayer.Mongo;
 using DataLayer.Mongo.Entities;
@@ -40,7 +41,7 @@ namespace Email_Service
                 string guid = Guid.NewGuid().ToString();
                 byte[] guidBytes = Encoding.UTF8.GetBytes(guid);
                 SHAWrapper shaWrapper = new SHAWrapper();
-                byte[] hashedGuid =  shaWrapper.SHA512HashBytes(guidBytes);
+                byte[] hashedGuid =  shaWrapper.Hash512(guidBytes);
                 RSAWrapper rsaWrapper = new RSAWrapper();
                 RsaKeyPairResult keyPair = rsaWrapper.GetKeyPair(4096);
                 byte[] signature = rsaWrapper.RsaSignWithKeyBytes(keyPair.PrivateKey, hashedGuid);

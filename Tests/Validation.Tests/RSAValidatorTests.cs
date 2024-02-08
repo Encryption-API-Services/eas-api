@@ -1,9 +1,8 @@
 ﻿using CasDotnetSdk.Asymmetric;
-using System.Runtime.InteropServices;
+using CasDotnetSdk.Asymmetric.Types;
 using System.Threading.Tasks;
 using Validation.Keys;
 using Xunit;
-using static CasDotnetSdk.Asymmetric.RSAWrapper;
 
 namespace Validation.Tests
 {
