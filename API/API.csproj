@@ -10,12 +10,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="cas-dotnet-sdk" Version="1.1.36" />
     <PackageReference Include="Otp.NET" Version="1.2.2" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\cas-dotnet-sdk\cas-dotnet-sdk\cas-dotnet-sdk.csproj" />
     <ProjectReference Include="..\Libraries\Common\Common.csproj" />
     <ProjectReference Include="..\Libraries\DataLayer\DataLayer.csproj" />
     <ProjectReference Include="..\Libraries\Models\Models.csproj" />
