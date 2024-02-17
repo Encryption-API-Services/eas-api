@@ -1,7 +1,6 @@
 ﻿using CasDotnetSdk.Hashers;
 using System;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace Common.UniqueIdentifiers
 {
@@ -12,7 +11,7 @@ namespace Common.UniqueIdentifiers
 
         }
 
-        public async Task<string> CreateApiKey()
+        public string CreateApiKey()
         {
             byte[] id = Encoding.UTF8.GetBytes(Guid.NewGuid().ToString());
             SHAWrapper shaWrapper = new SHAWrapper();

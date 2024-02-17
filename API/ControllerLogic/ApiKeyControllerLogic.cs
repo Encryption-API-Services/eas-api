@@ -1,4 +1,6 @@
-﻿using Common;
+﻿using CASHelpers;
+using Common;
+using Common.UniqueIdentifiers;
 using DataLayer.Cache;
 using DataLayer.Mongo.Repositories;
 using Microsoft.AspNetCore.Mvc;
@@ -10,13 +12,16 @@ namespace API.ControllerLogic
     {
         private readonly IEASExceptionRepository _exceptionRepository;
         private readonly BenchmarkMethodCache _benchMarkMethodCache;
+        private readonly IUserRepository _userRepository;
         public ApiKeyControllerLogic(
             IEASExceptionRepository exceptionRepository,
-            BenchmarkMethodCache benchMarkMethodCache
+            BenchmarkMethodCache benchMarkMethodCache,
+            IUserRepository userRepository
             )
         {
             this._exceptionRepository = exceptionRepository;
             this._benchMarkMethodCache = benchMarkMethodCache;
+            this._userRepository = userRepository;
         }
 
         public async Task<IActionResult> RegenerateApiKey(HttpContext context)
@@ -25,7 +30,11 @@ namespace API.ControllerLogic
             IActionResult result = null;
             try
             {
-                
+                Generator generator = new Generator();
+                string newApiKey = generator.CreateApiKey();
+                string userId = context.Items[Constants.HttpItems.UserID].ToString();
+                await this._userRepository.UpdateApiKeyByUserId(userId, newApiKey);
+                return new OkObjectResult(new { ApiKey = newApiKey });
             }
             catch (Exception ex)
             {

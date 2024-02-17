@@ -15,7 +15,7 @@ namespace API.Controllers
             )
         {
             this._controllerLogic = controllerLogic;
-            this.httpContextAccessor = httpContextAccessor;
+            this._httpContextAccessor = httpContextAccessor;
         }
 
         [HttpPut("RegenerateApiKey")]

@@ -59,6 +59,7 @@ namespace Validation.Middleware
         {
             return new List<string>()
             {
+                "/ApiKey/RegenerateApiKey",
                 "/BenchmarkSDKMethod/MethodBenchmark",
                 "/BenchmarkSDKMethod/GetUserBenchmarksByDays",
                 "/Encryption/EncryptAES",
