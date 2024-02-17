@@ -30,6 +30,7 @@ namespace DataLayer.Mongo.Repositories
         public Task<string> GetPhoneNumberByUserId(string userId);
         public Task AddCardToUser(string userId, string cardId);
         public Task<string> GetApiKeyById(string userId);
+        public Task UpdateApiKeyByUserId(string userId, string newApiKey);
         public Task<User> GetUserByApiKey(string apiKey);
         public Task DeleteUserByEmail(string email);
         public Task DeleteUserByUserId(string userId);

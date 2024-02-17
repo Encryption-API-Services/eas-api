@@ -50,7 +50,7 @@ namespace DataLayer.Mongo.Repositories
                     IsLockedOut = false,
                     HasBeenSentOut = false
                 },
-                ApiKey = await new Generator().CreateApiKey(),
+                ApiKey = new Generator().CreateApiKey(),
                 EmailActivationToken = new EmailActivationToken()
                 {
                     WasVerified = false,
@@ -290,6 +290,13 @@ namespace DataLayer.Mongo.Repositories
         {
             var filter = Builders<User>.Filter.Eq(x => x.Id, userId);
             var update = Builders<User>.Update.Set(x => x.Username, username);
+            await this._userCollection.UpdateOneAsync(filter, update);
+        }
+
+        public async Task UpdateApiKeyByUserId(string userId, string newApiKey)
+        {
+            var filter = Builders<User>.Filter.Eq(x => x.Id, userId);
+            var update = Builders<User>.Update.Set(x => x.ApiKey, newApiKey);
             await this._userCollection.UpdateOneAsync(filter, update);
         }
     }
