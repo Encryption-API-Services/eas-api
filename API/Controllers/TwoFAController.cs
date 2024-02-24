@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Models.TwoFactorAuthentication;
+using Validation.Attributes;
 
 namespace API.Controllers
 {
@@ -17,7 +18,7 @@ namespace API.Controllers
 
         [HttpGet]
         [Route("Get2FAStatus")]
-        [AllowAnonymous]
+        [ValidateJWT]
         public async Task<IActionResult> Get2FAStatus()
         {
             return await this._twoFAControllerLogic.Get2FAStatus(HttpContext);
@@ -25,7 +26,7 @@ namespace API.Controllers
 
         [HttpPut]
         [Route("TurnOn2FA")]
-        [AllowAnonymous]
+        [ValidateJWT]
         public async Task<IActionResult> TurnOn2FA()
         {
             return await this._twoFAControllerLogic.TurnOn2FA(HttpContext);
@@ -33,7 +34,7 @@ namespace API.Controllers
 
         [HttpPut]
         [Route("TurnOff2FA")]
-        [AllowAnonymous]
+        [ValidateJWT]
         public async Task<IActionResult> TurnOff2FA()
         {
             return await this._twoFAControllerLogic.TurnOff2FA(HttpContext);
@@ -41,7 +42,7 @@ namespace API.Controllers
 
         [HttpPut]
         [Route("UpdatePhoneNumber")]
-        [AllowAnonymous]
+        [ValidateJWT]
         public async Task<IActionResult> UpdatePhoneNumber([FromBody] UpdatePhoneNumber body)
         {
             return await this._twoFAControllerLogic.PhoneNumberUpdate(body, HttpContext);

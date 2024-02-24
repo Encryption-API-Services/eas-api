@@ -1,6 +1,7 @@
 ﻿using API.ControllerLogic;
 using Microsoft.AspNetCore.Mvc;
 using Models.Blog;
+using Validation.Attributes;
 
 namespace API.Controllers
 {
@@ -15,6 +16,7 @@ namespace API.Controllers
         }
 
         [HttpPost]
+        [ValidateJWT]
         [Route("CreatePost")]
         public async Task<IActionResult> CreatePost([FromBody] CreateBlogPost body)
         {
@@ -46,6 +48,7 @@ namespace API.Controllers
 
         [HttpPut]
         [Route("UpdatePost")]
+        [ValidateJWT]
         public async Task<IActionResult> UpdatePost([FromBody] UpdateBlogPost body)
         {
             return await this._blogPostControllerLogic.UpdatePost(HttpContext, body);
@@ -53,6 +56,7 @@ namespace API.Controllers
 
         [HttpPost]
         [Route("DeletePost")]
+        [ValidateJWT]
         public async Task<IActionResult> DeletePost([FromBody] DeleteBlogPost body)
         {
             return await this._blogPostControllerLogic.DeletePost(HttpContext, body);

@@ -1,6 +1,7 @@
 ﻿using API.ControllerLogic;
 using Microsoft.AspNetCore.Mvc;
 using Models.Payments;
+using Validation.Attributes;
 
 namespace API.Controllers
 {
@@ -21,6 +22,7 @@ namespace API.Controllers
 
         [HttpPost]
         [Route("CreateProduct")]
+        [ValidateJWT]
         public async Task<IActionResult> CreateProduct([FromBody] CreateProductRequestBody body)
         {
             return await this._paymentsControllerLogic.CreateProduct(this._httpContextAccessor.HttpContext, body);
@@ -28,6 +30,7 @@ namespace API.Controllers
 
         [HttpGet]
         [Route("GetProducts")]
+        [ValidateJWT]
         public async Task<IActionResult> GetProducts()
         {
             return await this._paymentsControllerLogic.GetProducts(this._httpContextAccessor.HttpContext);
@@ -35,6 +38,7 @@ namespace API.Controllers
 
         [HttpGet]
         [Route("GetProductsWithPrice")]
+        [ValidateJWT]
         public async Task<IActionResult> GetProductsWithPrice()
         {
             return await this._paymentsControllerLogic.GetProductsWithPrice(this._httpContextAccessor.HttpContext);
@@ -42,6 +46,7 @@ namespace API.Controllers
 
         [HttpPut]
         [Route("AssignProductToUser")]
+        [ValidateJWT]
         public async Task<IActionResult> AssignProductToUser([FromBody] AssignProductToUserRequestBody body)
         {
             return await this._paymentsControllerLogic.AssignProductToUser(this._httpContextAccessor.HttpContext, body);
@@ -49,6 +54,7 @@ namespace API.Controllers
 
         [HttpPost]
         [Route("CreatePrice")]
+        [ValidateJWT]
         public async Task<IActionResult> CreatePrice([FromBody] CreatePriceRequestBody body)
         {
             return await this._paymentsControllerLogic.CreatePrice(this._httpContextAccessor.HttpContext, body);
@@ -56,6 +62,7 @@ namespace API.Controllers
 
         [HttpPut]
         [Route("DisableSubscription")]
+        [ValidateJWT]
         public async Task<IActionResult> DisableSubscription()
         {
             return await this._paymentsControllerLogic.DisableSubscription(this._httpContextAccessor.HttpContext);
@@ -63,6 +70,7 @@ namespace API.Controllers
 
         [HttpGet]
         [Route("GetBillingInformation")]
+        [ValidateJWT]
         public async Task<IActionResult> GetBillingInformation()
         {
             return await this._paymentsControllerLogic.GetBillingInformation(this._httpContextAccessor.HttpContext);
@@ -70,6 +78,7 @@ namespace API.Controllers
 
         [HttpPut]
         [Route("UpdateBillingInformation")]
+        [ValidateJWT]
         public async Task<IActionResult> UpdateBillingInformation([FromBody] UpdateBillingInformationRequestBody body)
         {
             return await this._paymentsControllerLogic.UpdateBillingInformation(this._httpContextAccessor.HttpContext, body);
