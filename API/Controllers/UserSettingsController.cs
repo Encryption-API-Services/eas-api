@@ -1,6 +1,7 @@
 ﻿using API.ControllerLogic;
 using Microsoft.AspNetCore.Mvc;
 using Models.UserAuthentication;
+using Validation.Attributes;
 
 namespace API.Controllers
 {
@@ -21,6 +22,7 @@ namespace API.Controllers
 
         [HttpPut]
         [Route("Username")]
+        [ValidateJWT]
         public async Task<IActionResult> ChangeUsername([FromBody] ChangeUserName body)
         {
             return await this._userSettingsControllerLogic.ChangeUsername(this._httpContextAccessor.HttpContext, body);
@@ -28,6 +30,7 @@ namespace API.Controllers
 
         [HttpPut]
         [Route("Password")]
+        [ValidateJWT]
         public async Task<IActionResult> ChangePassword([FromBody] ChangePassword body)
         {
             return await this._userSettingsControllerLogic.ChangePassword(this._httpContextAccessor.HttpContext, body);

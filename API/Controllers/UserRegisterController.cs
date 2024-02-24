@@ -1,6 +1,7 @@
 ﻿using API.ControllersLogic;
 using Microsoft.AspNetCore.Mvc;
 using Models.UserAuthentication;
+using Validation.Attributes;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -47,6 +48,7 @@ namespace API.Controllers
         [ApiExplorerSettings(IgnoreApi = true)]
         [Route("DeleteUser")]
         [HttpDelete]
+        [ValidateJWT]
         public async Task<IActionResult> DeleteUser()
         {
             return await this._userRegisterLogic.DeleteUser(this._httpContextAccessor.HttpContext);

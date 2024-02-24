@@ -23,4 +23,13 @@
     <ProjectReference Include="..\Libraries\Validation\Validation.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Update="C:\Users\mtmul\.nuget\packages\cas-dotnet-sdk\1.1.36\contentFiles\any\net8.0\Contents\cas_core_lib.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Update="C:\Users\mtmul\.nuget\packages\cas-dotnet-sdk\1.1.36\contentFiles\any\net8.0\Contents\libcas_core_lib.so">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>

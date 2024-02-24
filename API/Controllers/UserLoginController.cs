@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Models.UserAuthentication;
+using Validation.Attributes;
 
 namespace API.Controllers
 {
@@ -42,7 +43,7 @@ namespace API.Controllers
 
         [HttpGet]
         [Route("GetSuccessfulLogins")]
-        [AllowAnonymous]
+        [ValidateJWT]
         public async Task<IActionResult> GetSuccessfulLogins([FromQuery] int pageSkip, [FromQuery] int pageSize)
         {
             return await this._loginControllerLogic.GetSuccessfulLogins(HttpContext, pageSkip, pageSize);
@@ -50,7 +51,7 @@ namespace API.Controllers
 
         [HttpPost]
         [Route("WasLoginMe")]
-        [AllowAnonymous]
+        [ValidateJWT]
         public async Task<IActionResult> WasLoginMe([FromBody] WasLoginMe body)
         {
             return await this._loginControllerLogic.WasLoginMe(body, HttpContext);
@@ -58,6 +59,7 @@ namespace API.Controllers
 
         [HttpGet]
         [Route("GetApiKey")]
+        [ValidateJWT]
         public async Task<IActionResult> GetApiKey()
         {
             return await this._loginControllerLogic.GetApiKey(HttpContext);
