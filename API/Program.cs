@@ -28,7 +28,6 @@ app.UseForwardedHeaders(new ForwardedHeadersOptions
 });
 
 app.UseMiddleware<RequestLoggingMiddleware>();
-app.UseMiddleware<ValidateJWTMiddleware>();
 
 app.UseHttpsRedirection();
 

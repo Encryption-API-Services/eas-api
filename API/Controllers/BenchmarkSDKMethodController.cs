@@ -1,6 +1,7 @@
 ﻿using API.ControllerLogic;
 using CASHelpers.Types.HttpResponses.BenchmarkAPI;
 using Microsoft.AspNetCore.Mvc;
+using Validation.Attributes;
 
 namespace API.Controllers
 {
@@ -22,6 +23,7 @@ namespace API.Controllers
 
         [HttpGet]
         [Route("GetUserBenchmarksByDays")]
+        [ValidateJWT]
         public async Task<IActionResult> GetUserBenchmarksByDays([FromQuery]int daysAgo)
         {
             return await this._benchmarkSDKMethodControllerLogic.GetUserBenchmarksByDays(daysAgo, this._contextAccessor.HttpContext);
@@ -29,6 +31,7 @@ namespace API.Controllers
 
         [HttpPost]
         [Route("MethodBenchmark")]
+        [ValidateJWT]
         public async Task<IActionResult> CreateMethodSDKBenchmark([FromBody] BenchmarkSDKMethod sdkMethod)
         {
             return await this._benchmarkSDKMethodControllerLogic.CreateMethodSDKBenchmark(sdkMethod, this._contextAccessor.HttpContext);

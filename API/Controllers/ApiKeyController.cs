@@ -1,5 +1,6 @@
 ﻿using API.ControllerLogic;
 using Microsoft.AspNetCore.Mvc;
+using Validation.Attributes;
 
 namespace API.Controllers
 {
@@ -19,6 +20,7 @@ namespace API.Controllers
         }
 
         [HttpPut("RegenerateApiKey")]
+        [ValidateJWT]
         public async Task<IActionResult> RegenerateApiKey()
         {
             return await this._controllerLogic.RegenerateApiKey(this._httpContextAccessor.HttpContext);
