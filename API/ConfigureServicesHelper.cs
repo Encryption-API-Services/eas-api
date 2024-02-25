@@ -63,7 +63,6 @@ namespace API.Config
             this._services.AddScoped<ILogRequestRepository, LogRequestRepository>();
             this._services.AddScoped<IHotpCodesRepository, HotpCodesRepository>();
             this._services.AddScoped<ISuccessfulLoginRepository, SuccessfulLoginRepository>();
-            this._services.AddScoped<IBlogPostRepository, BlogPostRepository>();
             this._services.AddScoped<IEASExceptionRepository, EASExceptionRepository>();
             this._services.AddScoped<ICreditCardInfoChangedRepository, CreditCardInfoChangedRepository>();
             this._services.AddScoped<INewsletterRepository, NewsletterRepository>();
@@ -77,7 +76,6 @@ namespace API.Config
             this._services.AddScoped<ICreditControllerLogic, CreditControllerLogic>();
             this._services.AddScoped<ITwoFAControllerLogic, TwoFAControllerLogic>();
             this._services.AddScoped<IUIDataControllerLogic, UIDataControllerLogic>();
-            this._services.AddScoped<IBlogPostControllerLogic, BlogControllerLogic>();
             this._services.AddScoped<ITokenControllerLogic, TokenControllerLogic>();
             this._services.AddScoped<IPaymentsControllerLogic, PaymentsControllerLogic>();
             this._services.AddScoped<IPasswordControllerLogic, PasswordControllerLogic>();
