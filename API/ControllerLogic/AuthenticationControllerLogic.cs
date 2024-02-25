@@ -35,7 +35,7 @@ namespace API.ControllerLogic
             try
             {
                 string requestingUserId = httpContext.Request.HttpContext.Items[Constants.HttpItems.UserID].ToString();
-                string cacheKey = "os-information-" + requestingUserId;
+                string cacheKey = Constants.RedisKeys.OsInformation + requestingUserId;
                 await this._redisClient.GetDelete(cacheKey);
                 result = new OkResult();
             }
@@ -57,7 +57,7 @@ namespace API.ControllerLogic
             {
                 string requestingUserId = httpContext.Request.HttpContext.Items[Constants.HttpItems.UserID].ToString();
                 // check if cache is populated
-                string cacheKey = "os-information-" + requestingUserId;
+                string cacheKey = Constants.RedisKeys.OsInformation + requestingUserId;
                 string existingCacheInformation = this._redisClient.GetString(cacheKey);
                 if (existingCacheInformation != null)
                 {
