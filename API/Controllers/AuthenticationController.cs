@@ -1,4 +1,5 @@
 ﻿using API.ControllerLogic;
+using CASHelpers.Types.HttpResponses.UserAuthentication;
 using Microsoft.AspNetCore.Mvc;
 using Models.UserAuthentication.AuthenticationController;
 using Validation.Attributes;
@@ -34,6 +35,14 @@ namespace API.Controllers
         public async Task<IActionResult> RemoveOperatingSystemInformationInCache()
         {
             return await this._authenicationControllerLogic.RemoveOperatingSystemInformationInCache(this.httpContextAccessor.HttpContext);
+        }
+        
+        [HttpPost]
+        [Route("DiffieHellmanAesKey")]
+        [ValidateJWT]
+        public async Task<IActionResult> DiffieHellmanAesKeyDerviationForSDK([FromBody]DiffieHellmanAesDerivationRequest body)
+        {
+
         }
     }
 }
