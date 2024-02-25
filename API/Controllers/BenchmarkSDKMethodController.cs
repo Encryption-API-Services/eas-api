@@ -24,7 +24,7 @@ namespace API.Controllers
         [HttpGet]
         [Route("GetUserBenchmarksByDays")]
         [ValidateJWT]
-        public async Task<IActionResult> GetUserBenchmarksByDays([FromQuery]int daysAgo)
+        public async Task<IActionResult> GetUserBenchmarksByDays([FromQuery] int daysAgo)
         {
             return await this._benchmarkSDKMethodControllerLogic.GetUserBenchmarksByDays(daysAgo, this._contextAccessor.HttpContext);
         }

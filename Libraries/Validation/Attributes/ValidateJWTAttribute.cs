@@ -27,7 +27,7 @@ namespace Validation.Attributes
                     await context.HttpContext.Response.Body.WriteAsync(Encoding.UTF8.GetBytes("Your token has expired. Please autheticate with a refreshed or new token."));
                 }
             }
-            else 
+            else
             {
                 context.HttpContext.Response.StatusCode = 401;
                 await context.HttpContext.Response.Body.WriteAsync(Encoding.UTF8.GetBytes("You did not supply a token."));

@@ -7,7 +7,6 @@ using DataLayer.Mongo.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Models.UserAuthentication;
 using System.Reflection;
-using System.Runtime.InteropServices;
 using Validation.UserSettings;
 
 namespace API.ControllerLogic

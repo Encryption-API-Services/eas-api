@@ -10,8 +10,6 @@ using Microsoft.IdentityModel.Tokens;
 using Models.UserAuthentication;
 using Payments;
 using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Text;
 using Validation.UserRegistration;
 using User = DataLayer.Mongo.Entities.User;
 

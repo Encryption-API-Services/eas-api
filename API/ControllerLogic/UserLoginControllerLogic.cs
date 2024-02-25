@@ -5,12 +5,10 @@ using Common.ThirdPartyAPIs;
 using DataLayer.Cache;
 using DataLayer.Mongo.Entities;
 using DataLayer.Mongo.Repositories;
-using DataLayer.Redis;
 using Microsoft.AspNetCore.Mvc;
 using Models.UserAuthentication;
 using MongoDB.Driver;
 using OtpNet;
-using StackExchange.Redis;
 using System.Reflection;
 
 namespace API.ControllersLogic

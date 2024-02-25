@@ -3,12 +3,10 @@ using Common;
 using DataLayer.Cache;
 using DataLayer.Mongo.Repositories;
 using DataLayer.Redis;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Models.UserAuthentication.AuthenticationController;
 using System.Reflection;
 using System.Text.Json;
-using Twilio.TwiML.Messaging;
 
 namespace API.ControllerLogic
 {

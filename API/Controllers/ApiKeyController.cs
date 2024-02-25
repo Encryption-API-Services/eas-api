@@ -11,7 +11,7 @@ namespace API.Controllers
         private readonly IApiKeyControllerLogic _controllerLogic;
         private readonly IHttpContextAccessor _httpContextAccessor;
         public ApiKeyController(
-            IApiKeyControllerLogic controllerLogic, 
+            IApiKeyControllerLogic controllerLogic,
             IHttpContextAccessor httpContextAccessor
             )
         {

@@ -1,6 +1,5 @@
 ﻿using API.ControllersLogic;
 using Microsoft.AspNetCore.Mvc;
-using Models.Encryption;
 using Models.UserAuthentication;
 
 namespace API.Controllers

@@ -6,7 +6,6 @@ using DataLayer.Mongo.Repositories;
 using DataLayer.Redis;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using MongoDB.Driver;
-using StackExchange.Redis;
 using Validation.UserSettings;
 
 namespace API.Config

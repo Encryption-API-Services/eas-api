@@ -10,10 +10,8 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Mail;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
-using static CasDotnetSdk.Asymmetric.RSAWrapper;
 
 namespace Email_Service
 {

@@ -1,5 +1,4 @@
 ﻿using API.ControllersLogic;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Models.TwoFactorAuthentication;
 using Validation.Attributes;

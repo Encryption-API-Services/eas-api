@@ -2,7 +2,6 @@
 using CASHelpers.Types.HttpResponses.BenchmarkAPI;
 using Common;
 using DataLayer.Cache;
-using DataLayer.Mongo.Entities;
 using DataLayer.Mongo.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using System.Reflection;

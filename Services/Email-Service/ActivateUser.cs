@@ -10,10 +10,8 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Mail;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
-using static CasDotnetSdk.Asymmetric.RSAWrapper;
 
 namespace Email_Service
 {
@@ -43,7 +41,7 @@ namespace Email_Service
             byte[] hashedGuidBytes = shaWrapper.Hash512(guid);
             RSAWrapper rsaWrapper = new RSAWrapper();
             RsaKeyPairResult keyPair = rsaWrapper.GetKeyPair(4096);
-            byte[] signtureResult =  rsaWrapper.RsaSignWithKeyBytes(keyPair.PrivateKey, hashedGuidBytes);
+            byte[] signtureResult = rsaWrapper.RsaSignWithKeyBytes(keyPair.PrivateKey, hashedGuidBytes);
             string urlSignature = Base64UrlEncoder.Encode(signtureResult);
             try
             {
