@@ -14,7 +14,6 @@ namespace Validation.Attributes
             var token = context.HttpContext.Request.Headers[Constants.HeaderNames.Authorization].FirstOrDefault()?.Split(" ").Last();
             if (token != null)
             {
-                string routePath = context.HttpContext.Request.Path;
                 var handler = new JwtSecurityTokenHandler().ReadJwtToken(token);
                 string publicKey = handler.Claims.First(x => x.Type == Constants.TokenClaims.PublicKey).Value;
                 string userId = handler.Claims.First(x => x.Type == Constants.TokenClaims.Id).Value;

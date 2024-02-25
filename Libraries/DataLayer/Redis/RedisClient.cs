@@ -1,5 +1,5 @@
 ﻿using StackExchange.Redis;
-using System;
+using System.Threading.Tasks;
 
 namespace DataLayer.Redis
 {
@@ -20,6 +20,11 @@ namespace DataLayer.Redis
         public string GetString(string key)
         {
             return this._database.StringGet(key);
+        }
+
+        public async Task<string> GetDelete(string key)
+        {
+            return await this._database.StringGetDeleteAsync(key);
         }
     }
 }

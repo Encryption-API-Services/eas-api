@@ -82,6 +82,7 @@ namespace API.Config
             this._services.AddScoped<IUserSettingsControllerLogic, UserSettingsControllerLogic>();
             this._services.AddScoped<IBenchmarkSDKMethodControllerLogic, BenchmarkSDKMethodControllerLogic>();
             this._services.AddScoped<IApiKeyControllerLogic, ApiKeyControllerLogic>();
+            this._services.AddScoped<IAuthenticationControllerLogic, AuthenticationControllerLogic>();
 
             // Validaton
             this._services.AddScoped<UserSettingsValidation>();
