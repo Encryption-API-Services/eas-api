@@ -3,8 +3,10 @@ using API.ControllersLogic;
 using DataLayer.Cache;
 using DataLayer.Mongo;
 using DataLayer.Mongo.Repositories;
+using DataLayer.Redis;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using MongoDB.Driver;
+using StackExchange.Redis;
 using Validation.UserSettings;
 
 namespace API.Config
@@ -44,6 +46,7 @@ namespace API.Config
         }
         private void SetupSingleton()
         {
+            this._services.AddSingleton<IRedisClient, RedisClient>();
             this._services.AddSingleton<IDatabaseSettings, DatabaseSettings>();
             this._services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             this._services.AddSingleton<LogRequestCache>();
