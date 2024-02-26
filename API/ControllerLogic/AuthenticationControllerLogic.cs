@@ -41,10 +41,10 @@ namespace API.ControllerLogic
                 string userId = httpContext.Request.HttpContext.Items[Constants.HttpItems.UserID].ToString();
                 string redisKey = Constants.RedisKeys.DiffieHellmanAesKey + userId + "-" + body.MacAddress;
                 X25519Wrapper x25519 = new X25519Wrapper();
-                AESWrapper aes = new AESWrapper();
                 X25519SecretPublicKey secretPublicKey = x25519.GenerateSecretAndPublicKey();
-                byte[] sharedSecret = x25519.GenerateSharedSecret(secretPublicKey.SecretKey, body.RequestersPublicKey);
-                Aes256KeyAndNonceX25519DiffieHellman aesKey = aes.Aes256KeyNonceX25519DiffieHellman(sharedSecret);
+                X25519SharedSecret sharedSecret = x25519.GenerateSharedSecret(secretPublicKey.SecretKey, body.RequestersPublicKey);
+                AESWrapper aes = new AESWrapper();
+                Aes256KeyAndNonceX25519DiffieHellman aesKey = aes.Aes256KeyNonceX25519DiffieHellman(sharedSecret.SharedSecret);
                 string serializedAesKey = JsonSerializer.Serialize(aesKey);
                 this._redisClient.SetString(redisKey, serializedAesKey);
                 result = new OkObjectResult(new DiffieHellmanAesDerivationResponse() { ResponsersPublicKey = secretPublicKey.PublicKey });

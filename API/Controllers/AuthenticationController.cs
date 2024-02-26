@@ -42,7 +42,7 @@ namespace API.Controllers
         [ValidateJWT]
         public async Task<IActionResult> DiffieHellmanAesKeyDerviationForSDK([FromBody]DiffieHellmanAesDerivationRequest body)
         {
-
+            return await this._authenicationControllerLogic.DiffieHellmanAesKeyDerviationForSDK(this.httpContextAccessor.HttpContext, body);
         }
     }
 }

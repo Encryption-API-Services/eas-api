@@ -1,10 +1,18 @@
-﻿using CASHelpers;
+﻿using CasDotnetSdk.Symmetric;
+using CasDotnetSdk.Symmetric.Types;
+using CASHelpers;
 using CASHelpers.Types.HttpResponses.BenchmarkAPI;
 using Common;
 using DataLayer.Cache;
 using DataLayer.Mongo.Repositories;
+using DataLayer.Redis;
 using Microsoft.AspNetCore.Mvc;
+using Models.BenchmarkSDKSend;
+using MongoDB.Bson.IO;
 using System.Reflection;
+using System.Security.Cryptography.Xml;
+using System.Text;
+using System.Text.Json;
 
 namespace API.ControllerLogic
 {
@@ -12,14 +20,17 @@ namespace API.ControllerLogic
     {
         private readonly IBenchmarkSDKMethodRepository _benchmarkSDKMethodRepository;
         private readonly IEASExceptionRepository _exceptionRepository;
+        private readonly IRedisClient _redisClient;
         private readonly BenchmarkMethodCache _benchmarkMethodCache;
         public BenchmarkSDKMethodControllerLogic(
             IBenchmarkSDKMethodRepository benchmarkSDKMethodRepository,
             IEASExceptionRepository exceptionRepository,
+            IRedisClient redisClient,
             BenchmarkMethodCache benchmarkMethodCache)
         {
             this._benchmarkSDKMethodRepository = benchmarkSDKMethodRepository;
             this._exceptionRepository = exceptionRepository;
+            this._redisClient = redisClient;
             this._benchmarkMethodCache = benchmarkMethodCache;
         }
 
@@ -56,20 +67,27 @@ namespace API.ControllerLogic
             return result;
         }
 
-        public async Task<IActionResult> CreateMethodSDKBenchmark(CASHelpers.Types.HttpResponses.BenchmarkAPI.BenchmarkSDKMethod sdkMethod, HttpContext context)
+        public async Task<IActionResult> CreateMethodSDKBenchmark(BenchmarkMacAddressSDKMethod sdkMethod, HttpContext context)
         {
             BenchmarkMethodLogger logger = new BenchmarkMethodLogger(context);
             IActionResult result = null;
             try
             {
+                string userId = context.Items[Constants.HttpItems.UserID].ToString();
+                string redisKey = Constants.RedisKeys.DiffieHellmanAesKey + userId + "-" + sdkMethod.MacAddress;
+                string redisContent = this._redisClient.GetString(redisKey);
+                Aes256KeyAndNonceX25519DiffieHellman aesKey = JsonSerializer.Deserialize<Aes256KeyAndNonceX25519DiffieHellman>(redisContent);
+                AESWrapper aes = new AESWrapper();
+                string decrypted = Encoding.UTF8.GetString(aes.Aes256DecryptBytes(aesKey.AesNonce, aesKey.AesKey, sdkMethod.EncryptedBenchMarkSend));
+                BenchmarkSDKMethod unencryptedSdkMethod = JsonSerializer.Deserialize<BenchmarkSDKMethod>(decrypted);
                 DataLayer.Mongo.Entities.BenchmarkSDKMethod newBenchmarkMethod = new DataLayer.Mongo.Entities.BenchmarkSDKMethod()
                 {
-                    MethodDescription = sdkMethod?.MethodDescription,
-                    MethodName = sdkMethod.MethodName,
-                    MethodStart = sdkMethod.MethodStart,
-                    MethodEnd = sdkMethod.MethodEnd,
-                    MethodType = sdkMethod.MethodType,
-                    CreatedBy = context.Items[Constants.HttpItems.UserID].ToString()
+                    MethodDescription = unencryptedSdkMethod?.MethodDescription,
+                    MethodName = unencryptedSdkMethod.MethodName,
+                    MethodStart = unencryptedSdkMethod.MethodStart,
+                    MethodEnd = unencryptedSdkMethod.MethodEnd,
+                    MethodType = unencryptedSdkMethod.MethodType,
+                    CreatedBy = userId
                 };
                 await this._benchmarkSDKMethodRepository.InsertSDKMethodBenchmark(newBenchmarkMethod);
                 result = new OkResult();
