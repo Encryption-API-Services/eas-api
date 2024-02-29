@@ -1,6 +1,7 @@
 ﻿using API.ControllerLogic;
 using CASHelpers.Types.HttpResponses.BenchmarkAPI;
 using Microsoft.AspNetCore.Mvc;
+using Models.BenchmarkSDKSend;
 using Validation.Attributes;
 
 namespace API.Controllers
@@ -32,9 +33,9 @@ namespace API.Controllers
         [HttpPost]
         [Route("MethodBenchmark")]
         [ValidateJWT]
-        public async Task<IActionResult> CreateMethodSDKBenchmark([FromBody] BenchmarkSDKMethod sdkMethod)
+        public async Task<IActionResult> CreateMethodSDKBenchmark([FromBody] BenchmarkMacAddressSDKMethod benchmark)
         {
-            return await this._benchmarkSDKMethodControllerLogic.CreateMethodSDKBenchmark(sdkMethod, this._contextAccessor.HttpContext);
+            return await this._benchmarkSDKMethodControllerLogic.CreateMethodSDKBenchmark(benchmark, this._contextAccessor.HttpContext);
         }
     }
 }
