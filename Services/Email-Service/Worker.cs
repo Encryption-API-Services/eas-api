@@ -39,14 +39,12 @@ namespace Email_Service
                 ForgotPassword forgotPassword = new ForgotPassword(this._databaseSettings, this._mongoClient);
                 LockedOutUsers lockedOutUsers = new LockedOutUsers(this._databaseSettings, this._mongoClient);
                 CCInfoChanged creditCardInfoChanged = new CCInfoChanged(this._databaseSettings, this._mongoClient);
-                BlogPostNewsletter blogPostNewsletter = new BlogPostNewsletter(this._databaseSettings, this._mongoClient);
                 InactiveUser inactiveUser = new InactiveUser(this._databaseSettings, this._mongoClient);
                 await Task.WhenAll(
                     activeUsers.GetUsersToActivateSendOutTokens(),
                     forgotPassword.GetUsersWhoNeedToResetPassword(),
                     lockedOutUsers.GetUsersThatLockedOut(),
                     creditCardInfoChanged.GetUsersWhoChangedEmailInfo(),
-                    blogPostNewsletter.SendNewslettersForBlogPosts(),
                     inactiveUser.GetInactiveUsers()
                 );
                 await Task.Delay(10000, stoppingToken);

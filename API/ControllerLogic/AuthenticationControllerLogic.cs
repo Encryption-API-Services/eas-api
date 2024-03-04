@@ -10,7 +10,6 @@ using DataLayer.Mongo.Repositories;
 using DataLayer.Redis;
 using Microsoft.AspNetCore.Mvc;
 using Models.UserAuthentication.AuthenticationController;
-using Org.BouncyCastle.Crypto.Paddings;
 using System.Reflection;
 using System.Text.Json;
 
