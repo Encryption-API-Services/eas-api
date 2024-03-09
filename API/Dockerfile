@@ -3,10 +3,6 @@
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 USER app
 WORKDIR /app
-ENV Connection=mongodb://172.17.0.1:27017
-ENV DatabaseName=UsersDatabase
-ENV UserCollectionName=Users
-ENV RedisIp=172.17.0.1
 EXPOSE 8080
 EXPOSE 8081
 
