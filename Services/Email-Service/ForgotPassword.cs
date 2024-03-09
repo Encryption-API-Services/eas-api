@@ -25,11 +25,7 @@ namespace Email_Service
         }
         public async Task GetUsersWhoNeedToResetPassword()
         {
-            List<User> users = await this._userRepository.GetUsersWhoForgotPassword();
-            if (users.Count > 0)
-            {
-                await this.SendOutForgotEmails(users);
-            }
+            
         }
 
         private async Task SendOutForgotEmails(List<User> users)

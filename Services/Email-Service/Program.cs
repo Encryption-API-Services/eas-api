@@ -29,10 +29,11 @@ namespace Email_Service
                     {
                         return client;
                     });
-                    services.AddScoped<IDatabaseSettings, DatabaseSettings>();
-                    services.AddSingleton<IUserRepository, UserRepository>();
+                    services.AddSingleton<IDatabaseSettings, DatabaseSettings>();
                     services.AddSingleton<RabbitMQConnection>();
                     services.AddSingleton<ActivateUserQueueSubscribe>();
+                    services.AddSingleton<ForgotPasswordQueueSubscribe>();
+                    services.AddScoped<IUserRepository, UserRepository>();
                     services.AddHostedService<Worker>();
                 });
     }

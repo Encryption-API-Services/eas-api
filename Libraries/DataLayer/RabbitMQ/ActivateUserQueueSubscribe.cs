@@ -16,12 +16,11 @@ namespace DataLayer.RabbitMQ
 {
     public class ActivateUserQueueSubscribe
     {
-        private IModel Channel { get; set; }
-        private EventingBasicConsumer Consumer { get; set; }
+        private readonly IModel Channel;
+        private readonly EventingBasicConsumer Consumer;
         private readonly IUserRepository _userRepository;
         public ActivateUserQueueSubscribe(RabbitMQConnection rabbitMqConnection, IUserRepository userRepository)
         {
-            this._userRepository = userRepository;
             this.Channel = rabbitMqConnection.Connection.CreateModel();
             this.Channel.QueueDeclare(
                 queue: RabbitMqConstants.Queues.ActivateUser,
@@ -32,6 +31,7 @@ namespace DataLayer.RabbitMQ
             this.Consumer = new EventingBasicConsumer(this.Channel);
             this.Consumer.Received += ActivateUserQueueMessageReceived;
             this.Channel.BasicConsume(queue: RabbitMqConstants.Queues.ActivateUser, autoAck: false, consumer: this.Consumer);
+            this._userRepository = userRepository;
         }
 
         private async void ActivateUserQueueMessageReceived(object? sender, BasicDeliverEventArgs e)

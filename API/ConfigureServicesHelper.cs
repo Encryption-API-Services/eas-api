@@ -90,6 +90,7 @@ namespace API.Config
 
             //Rabbit MQ Queues
             this._services.AddScoped<ActivateUserQueuePublish>();
+            this._services.AddScoped<ForgotPasswordQueuePublish>();
         }
 
         private void SetupKestralAndIISOptions()
