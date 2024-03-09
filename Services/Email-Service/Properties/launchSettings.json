@@ -1,10 +1,13 @@
-﻿{
+{
   "profiles": {
     "Email_Service": {
       "commandName": "Project",
       "environmentVariables": {
         "DOTNET_ENVIRONMENT": "Development"
       }
+    },
+    "Container (Dockerfile)": {
+      "commandName": "Docker"
     }
   }
 }
