@@ -3,6 +3,7 @@ using API.ControllersLogic;
 using DataLayer.Cache;
 using DataLayer.Mongo;
 using DataLayer.Mongo.Repositories;
+using DataLayer.RabbitMQ;
 using DataLayer.Redis;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using MongoDB.Driver;
@@ -50,6 +51,7 @@ namespace API.Config
             this._services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             this._services.AddSingleton<LogRequestCache>();
             this._services.AddSingleton<BenchmarkMethodCache>();
+            this._services.AddSingleton<RabbitMQConnection>();
         }
         private void SetupScoped()
         {
@@ -63,7 +65,6 @@ namespace API.Config
             this._services.AddScoped<IHotpCodesRepository, HotpCodesRepository>();
             this._services.AddScoped<ISuccessfulLoginRepository, SuccessfulLoginRepository>();
             this._services.AddScoped<IEASExceptionRepository, EASExceptionRepository>();
-            this._services.AddScoped<ICreditCardInfoChangedRepository, CreditCardInfoChangedRepository>();
             this._services.AddScoped<INewsletterRepository, NewsletterRepository>();
             this._services.AddScoped<IProductRepository, ProductRepository>();
             this._services.AddScoped<IPriceRepository, PriceRepository>();
@@ -85,6 +86,12 @@ namespace API.Config
 
             // Validaton
             this._services.AddScoped<UserSettingsValidation>();
+
+            //Rabbit MQ Queues
+            this._services.AddScoped<ActivateUserQueuePublish>();
+            this._services.AddScoped<ForgotPasswordQueuePublish>();
+            this._services.AddScoped<LockedOutUserQueuePublish>();
+            this._services.AddScoped<CreditCardInformationChangedQueuePublish>();
         }
 
         private void SetupKestralAndIISOptions()

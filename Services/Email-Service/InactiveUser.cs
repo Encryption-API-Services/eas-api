@@ -21,7 +21,7 @@ namespace Email_Service
         private readonly IUserRepository _userRepository;
         private readonly ISuccessfulLoginRepository _successfulLoginRepository;
 
-        public InactiveUser(IDatabaseSettings databaseSettings, MongoClient mongoClient)
+        public InactiveUser(IDatabaseSettings databaseSettings, IMongoClient mongoClient)
         {
             this._databaseSettings = databaseSettings;
             this._userRepository = new UserRepository(this._databaseSettings, mongoClient);

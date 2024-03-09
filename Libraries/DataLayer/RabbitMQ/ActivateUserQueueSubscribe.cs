@@ -1,41 +1,42 @@
 ﻿using CasDotnetSdk.Asymmetric;
 using CasDotnetSdk.Asymmetric.Types;
 using CasDotnetSdk.Hashers;
-using DataLayer.Mongo;
-using DataLayer.Mongo.Entities;
 using DataLayer.Mongo.Repositories;
+using DataLayer.RabbitMQ.QueueMessages;
 using Microsoft.IdentityModel.Tokens;
-using MongoDB.Driver;
+using RabbitMQ.Client;
+using RabbitMQ.Client.Events;
 using System;
-using System.Collections.Generic;
 using System.Net;
 using System.Net.Mail;
 using System.Text;
-using System.Threading.Tasks;
+using System.Text.Json;
 
-namespace Email_Service
+namespace DataLayer.RabbitMQ
 {
-    public class ActivateUser
+    public class ActivateUserQueueSubscribe
     {
-        private readonly IDatabaseSettings _databaseSettings;
-        private readonly MongoClient _mongoClient;
-        public ActivateUser(IDatabaseSettings databaseSettings, MongoClient mongoClient)
+        private readonly IModel Channel;
+        private readonly EventingBasicConsumer Consumer;
+        private readonly IUserRepository _userRepository;
+        public ActivateUserQueueSubscribe(RabbitMQConnection rabbitMqConnection, IUserRepository userRepository)
         {
-            this._databaseSettings = databaseSettings;
-            this._mongoClient = mongoClient;
+            this.Channel = rabbitMqConnection.Connection.CreateModel();
+            this.Channel.QueueDeclare(
+                queue: RabbitMqConstants.Queues.ActivateUser,
+                durable: false,
+                exclusive: false,
+                autoDelete: false,
+                arguments: null);
+            this.Consumer = new EventingBasicConsumer(this.Channel);
+            this.Consumer.Received += ActivateUserQueueMessageReceived;
+            this.Channel.BasicConsume(queue: RabbitMqConstants.Queues.ActivateUser, autoAck: false, consumer: this.Consumer);
+            this._userRepository = userRepository;
         }
-        public async Task GetUsersToActivateSendOutTokens()
+
+        private async void ActivateUserQueueMessageReceived(object? sender, BasicDeliverEventArgs e)
         {
-            UserRepository repo = new UserRepository(this._databaseSettings, this._mongoClient);
-            List<User> usersToSendTokens = await repo.GetUsersMadeWithinLastThirtyMinutes();
-            foreach (User user in usersToSendTokens)
-            {
-                await this.GenerateTokenAndSendOut(user);
-            }
-        }
-        private async Task GenerateTokenAndSendOut(User user)
-        {
-            UserRepository repo = new UserRepository(this._databaseSettings, this._mongoClient);
+            ActivateUserQueueMessage message = JsonSerializer.Deserialize<ActivateUserQueueMessage>(e.Body.ToArray());
             byte[] guid = Encoding.UTF8.GetBytes(Guid.NewGuid().ToString());
             SHAWrapper shaWrapper = new SHAWrapper();
             byte[] hashedGuidBytes = shaWrapper.Hash512(guid);
@@ -47,14 +48,12 @@ namespace Email_Service
             {
                 SmtpClient SmtpServer = new SmtpClient("smtp.gmail.com");
                 SmtpServer.Port = 587;
-
-
                 using (MailMessage mail = new MailMessage())
                 {
                     mail.From = new MailAddress("support@encryptionapiservices.com");
-                    mail.To.Add(user.Email);
+                    mail.To.Add(message.UserEmail);
                     mail.Subject = "Account Activation - Encryption API Services ";
-                    mail.Body = "We are excited to have you here </br>" + String.Format("<a href='" + Environment.GetEnvironmentVariable("Domain") + "/#/activate?id={0}&token={1}'>Click here to activate</a>", user.Id, urlSignature);
+                    mail.Body = "We are excited to have you here </br>" + String.Format("<a href='" + Environment.GetEnvironmentVariable("Domain") + "/#/activate?id={0}&token={1}'>Click here to activate</a>", message.UserId, urlSignature);
                     mail.IsBodyHtml = true;
 
                     using (SmtpClient smtp = new SmtpClient("smtp.gmail.com", 587))
@@ -67,7 +66,8 @@ namespace Email_Service
                     }
                 }
 
-                await repo.UpdateUsersRsaKeyPairsAndToken(user, keyPair.PublicKey, Convert.ToBase64String(hashedGuidBytes), urlSignature);
+                await this._userRepository.UpdateUsersRsaKeyPairsAndToken(message.UserId, keyPair.PublicKey, Convert.ToBase64String(hashedGuidBytes), urlSignature);
+                this.Channel.BasicAck(deliveryTag: e.DeliveryTag, multiple: false);
             }
             catch (Exception ex)
             {

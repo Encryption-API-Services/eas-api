@@ -3,11 +3,15 @@ using Common;
 using DataLayer.Cache;
 using DataLayer.Mongo.Entities;
 using DataLayer.Mongo.Repositories;
+using DataLayer.RabbitMQ;
+using DataLayer.RabbitMQ.QueueMessages;
 using Microsoft.AspNetCore.Mvc;
 using Models.Credit;
 using Payments;
 using Stripe;
 using System.Reflection;
+using System.Text;
+using System.Text.Json;
 using Validation.CreditCard;
 
 namespace API.ControllersLogic
@@ -18,23 +22,23 @@ namespace API.ControllersLogic
         private readonly IHttpContextAccessor _contextAccessor;
         private readonly IUserRepository _userRepository;
         private readonly IEASExceptionRepository _exceptionRepository;
-        private readonly ICreditCardInfoChangedRepository _creditCardInfoChangedRepository;
         private readonly BenchmarkMethodCache _benchmarkMethodCache;
+        private readonly CreditCardInformationChangedQueuePublish _ccInfoChangedQueue;
         public CreditControllerLogic(
             ICreditRepository creditRepository,
             IHttpContextAccessor contextAccessor,
             IUserRepository userRepository,
             IEASExceptionRepository exceptionRepository,
-            ICreditCardInfoChangedRepository creditCardInfoChangedRepository,
-            BenchmarkMethodCache benchmarkMethodCache
+            BenchmarkMethodCache benchmarkMethodCache,
+            CreditCardInformationChangedQueuePublish ccInfoChangedQueue
             )
         {
             this._creditRepository = creditRepository;
             this._contextAccessor = contextAccessor;
             this._userRepository = userRepository;
             this._exceptionRepository = exceptionRepository;
-            this._creditCardInfoChangedRepository = creditCardInfoChangedRepository;
             this._benchmarkMethodCache = benchmarkMethodCache;
+            this._ccInfoChangedQueue = ccInfoChangedQueue;
         }
 
         #region AddCreditCard
@@ -54,7 +58,8 @@ namespace API.ControllersLogic
                     if (!string.IsNullOrEmpty(dbUser.StripCardId) && !string.IsNullOrEmpty(dbUser.StripCustomerId))
                     {
                         await stripTokenCards.DeleteCustomerCard(dbUser.StripCustomerId, dbUser.StripCardId);
-                        await this.InsertUserChangedCreditCardInformation(dbUser);
+                        CreditCardInformationChangedQueueMessage newMessage = new CreditCardInformationChangedQueueMessage() { UserEmail = dbUser.Email };
+                        this._ccInfoChangedQueue.BasicPublish(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(newMessage)));
                     }
                     string tokenId = await stripTokenCards.CreateTokenCard(body.creditCardNumber, body.expirationMonth, body.expirationYear, body.SecurityCode);
                     Card newCard = await stripTokenCards.AddTokenCardToCustomer(dbUser.StripCustomerId, tokenId);
@@ -110,19 +115,6 @@ namespace API.ControllersLogic
             logger.EndExecution();
             this._benchmarkMethodCache.AddLog(logger);
             return result;
-        }
-        #endregion
-
-        #region Helpers
-        public async Task InsertUserChangedCreditCardInformation(User dbUser)
-        {
-            CreditCardInfoChanged infoChanged = new CreditCardInfoChanged()
-            {
-                Email = dbUser.Email,
-                WasSent = false,
-                CreateDate = DateTime.UtcNow
-            };
-            await this._creditCardInfoChangedRepository.InsertCreditCardInformationChanged(infoChanged);
         }
         #endregion
     }

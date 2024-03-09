@@ -1,5 +1,10 @@
+using DataLayer.Mongo;
+using DataLayer.Mongo.Repositories;
+using DataLayer.RabbitMQ;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using MongoDB.Driver;
+using System;
 
 namespace Email_Service
 {
@@ -14,10 +19,24 @@ namespace Email_Service
             Host.CreateDefaultBuilder(args)
                 .UseWindowsService(options =>
                 {
-                    options.ServiceName = "EAS-Email-Service";
+                    options.ServiceName = "CAS-Email-Service";
                 })
                 .ConfigureServices((hostContext, services) =>
                 {
+                    MongoClientSettings settings = MongoClientSettings.FromUrl(new MongoUrl(Environment.GetEnvironmentVariable("Connection")));
+                    MongoClient client = new MongoClient(settings);
+                    services.AddSingleton<IMongoClient, MongoClient>(s =>
+                    {
+                        return client;
+                    });
+                    services.AddSingleton<IDatabaseSettings, DatabaseSettings>();
+                    services.AddSingleton<RabbitMQConnection>();
+                    services.AddScoped<ActivateUserQueueSubscribe>();
+                    services.AddScoped<ForgotPasswordQueueSubscribe>();
+                    services.AddScoped<LockedOutUserQueueSubscribe>();
+                    services.AddScoped<CreditCardInformationChangedQueueSubscribe>();
+                    services.AddScoped<IUserRepository, UserRepository>();
+                    services.AddScoped<InactiveUser>();
                     services.AddHostedService<Worker>();
                 });
     }

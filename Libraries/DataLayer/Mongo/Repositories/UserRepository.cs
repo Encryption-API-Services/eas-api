@@ -48,13 +48,11 @@ namespace DataLayer.Mongo.Repositories
                 LockedOut = new LockedOut()
                 {
                     IsLockedOut = false,
-                    HasBeenSentOut = false
                 },
                 ApiKey = new Generator().CreateApiKey(),
                 EmailActivationToken = new EmailActivationToken()
                 {
-                    WasVerified = false,
-                    WasSent = false
+                    WasVerified = false
                 },
                 UserSubscriptionSettings = new UserSubscriptionSettings()
                 {
@@ -78,24 +76,16 @@ namespace DataLayer.Mongo.Repositories
         {
             return await this._userCollection.Find(x => x.Email == email).FirstOrDefaultAsync();
         }
-        public async Task<List<User>> GetUsersMadeWithinLastThirtyMinutes()
-        {
-            DateTime now = DateTime.UtcNow;
-            return await this._userCollection.FindAsync(x => x.IsActive == false &&
-                                                        x.CreationTime < now && x.CreationTime > now.AddMinutes(-30)
-                                                        && x.EmailActivationToken.WasVerified == false && x.EmailActivationToken.WasSent == false).Result.ToListAsync();
-        }
-        public async Task UpdateUsersRsaKeyPairsAndToken(User user, string pubXml, string token, string signedToken)
+        public async Task UpdateUsersRsaKeyPairsAndToken(string userId, string pubXml, string token, string signedToken)
         {
             EmailActivationToken emailToken = new EmailActivationToken()
             {
                 PublicKey = pubXml,
                 SignedToken = signedToken,
                 Token = token,
-                WasVerified = false,
-                WasSent = true
+                WasVerified = false
             };
-            var filter = Builders<User>.Filter.Eq(x => x.Id, user.Id);
+            var filter = Builders<User>.Filter.Eq(x => x.Id, userId);
             var update = Builders<User>.Update.Set(x => x.EmailActivationToken, emailToken);
             await this._userCollection.UpdateOneAsync(filter, update);
         }
@@ -118,20 +108,6 @@ namespace DataLayer.Mongo.Repositories
                                               .Set(x => x.ForgotPassword, null);
             await this._userCollection.UpdateOneAsync(filter, update);
         }
-        public async Task UpdateForgotPassword(string userId, ForgotPassword forgotPassword)
-        {
-            var filter = Builders<User>.Filter.Eq(x => x.Id, userId);
-            var update = Builders<User>.Update.Set(x => x.ForgotPassword, forgotPassword);
-            await this._userCollection.UpdateOneAsync(filter, update);
-        }
-
-        public async Task<List<User>> GetUsersWhoForgotPassword()
-        {
-            return await this._userCollection.Find(x => x.ForgotPassword != null &&
-                                                            x.ForgotPassword.Token != null &&
-                                                            x.ForgotPassword.PublicKey == null &&
-                                                            x.ForgotPassword.HasBeenReset == false).ToListAsync();
-        }
 
         public async Task UpdateUsersForgotPasswordToReset(string userId, string forgotPasswordToken, string publicKey, string signedToken)
         {
@@ -153,21 +129,10 @@ namespace DataLayer.Mongo.Repositories
             var update = Builders<User>.Update.Set(x => x.LockedOut.IsLockedOut, true);
             await this._userCollection.UpdateOneAsync(filter, update);
         }
-        public async Task<List<User>> GetLockedOutUsers()
-        {
-            return await this._userCollection.Find(x => x.LockedOut.IsLockedOut == true && x.LockedOut.HasBeenSentOut == false).ToListAsync();
-        }
-        public async Task UpdateUserLockedOutToSentOut(string userId)
-        {
-            var filter = Builders<User>.Filter.Eq(x => x.Id, userId);
-            var update = Builders<User>.Update.Set(x => x.LockedOut.HasBeenSentOut, true);
-            await this._userCollection.UpdateOneAsync(filter, update);
-        }
         public async Task UnlockUser(string userId)
         {
             var filter = Builders<User>.Filter.Eq(x => x.Id, userId);
-            var update = Builders<User>.Update.Set(x => x.LockedOut.IsLockedOut, false)
-                                              .Set(x => x.LockedOut.HasBeenSentOut, false);
+            var update = Builders<User>.Update.Set(x => x.LockedOut.IsLockedOut, false);
             await this._userCollection.UpdateOneAsync(filter, update);
         }
 

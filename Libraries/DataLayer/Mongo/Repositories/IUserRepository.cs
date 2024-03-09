@@ -12,16 +12,11 @@ namespace DataLayer.Mongo.Repositories
         public Task<User> GetUserByEmail(string email);
         public Task<User> GetUserByUsername(string username);
         public Task ChangeUsername(string userId, string newUsername);
-        public Task<List<User>> GetUsersMadeWithinLastThirtyMinutes();
         public Task<User> GetUserById(string id);
         public Task ChangeUserActiveById(User user, bool isActive, string stripCustomerId);
         public Task UpdatePassword(string userId, string password);
         public Task LockoutUser(string userId);
-        public Task UpdateForgotPassword(string userId, ForgotPassword forgotPassword);
-        public Task<List<User>> GetLockedOutUsers();
-        public Task<List<User>> GetUsersWhoForgotPassword();
         public Task UpdateUsersForgotPasswordToReset(string userId, string forgotPasswordToken, string publicKey, string signedToken);
-        public Task UpdateUserLockedOutToSentOut(string userId);
         public Task UnlockUser(string userId);
         public Task<Phone2FA> GetPhone2FAStats(string userId);
         public Task ChangePhone2FAStatusToEnabled(string userId);
@@ -40,5 +35,6 @@ namespace DataLayer.Mongo.Repositories
         public Task UpdateStripeSubscriptionAndProductId(string userId, string subscriptionId, string productId);
         public Task UpdateStripeSubscriptionToNull(string userId);
         public Task UpdateBillingInformation(string userId, UpdateBillingInformationRequestBody billingInformation);
+        public Task UpdateUsersRsaKeyPairsAndToken(string userId, string pubXml, string token, string signedToken);
     }
 }

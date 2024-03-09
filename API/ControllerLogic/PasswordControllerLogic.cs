@@ -4,10 +4,15 @@ using Common;
 using DataLayer.Cache;
 using DataLayer.Mongo.Entities;
 using DataLayer.Mongo.Repositories;
+using DataLayer.RabbitMQ;
+using DataLayer.RabbitMQ.QueueMessages;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Models.UserAuthentication;
 using System.Reflection;
+using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Validation.UserRegistration;
 using User = DataLayer.Mongo.Entities.User;
 
@@ -19,17 +24,20 @@ namespace API.ControllersLogic
         private readonly IForgotPasswordRepository _forgotPasswordRepository;
         private readonly IEASExceptionRepository _exceptionRepository;
         private readonly BenchmarkMethodCache _benchMarkMethodCache;
+        private readonly ForgotPasswordQueuePublish _forgotPasswordQueue;
         public PasswordControllerLogic(
             IUserRepository userRepository,
             IForgotPasswordRepository forgotPasswordRepository,
             IEASExceptionRepository exceptionRepository,
-            BenchmarkMethodCache benchMarkMethodCache
+            BenchmarkMethodCache benchMarkMethodCache,
+            ForgotPasswordQueuePublish forgotPasswordQueue
             )
         {
             this._userRepository = userRepository;
             this._forgotPasswordRepository = forgotPasswordRepository;
             this._exceptionRepository = exceptionRepository;
             this._benchMarkMethodCache = benchMarkMethodCache;
+            this._forgotPasswordQueue = forgotPasswordQueue;
         }
 
         #region ForgotPassword
@@ -43,12 +51,12 @@ namespace API.ControllersLogic
                 if (validator.IsEmailValid(body.Email))
                 {
                     User databaseUser = await this._userRepository.GetUserByEmail(body.Email);
-                    ForgotPassword forgotPassword = new ForgotPassword()
+                    ForgotPasswordQueueMessage newMessage = new ForgotPasswordQueueMessage()
                     {
-                        Token = Guid.NewGuid().ToString(),
-                        HasBeenReset = false
+                        UserEmail = databaseUser.Email,
+                        UserId = databaseUser.Id
                     };
-                    await this._userRepository.UpdateForgotPassword(databaseUser.Id, forgotPassword);
+                    this._forgotPasswordQueue.BasicPublish(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(newMessage)));
                     result = new OkObjectResult(new { message = "You should be expecting an email to reset your password soon." });
                 }
             }

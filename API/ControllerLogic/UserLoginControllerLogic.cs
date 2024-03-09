@@ -5,11 +5,15 @@ using Common.ThirdPartyAPIs;
 using DataLayer.Cache;
 using DataLayer.Mongo.Entities;
 using DataLayer.Mongo.Repositories;
+using DataLayer.RabbitMQ;
+using DataLayer.RabbitMQ.QueueMessages;
 using Microsoft.AspNetCore.Mvc;
 using Models.UserAuthentication;
 using MongoDB.Driver;
 using OtpNet;
 using System.Reflection;
+using System.Text;
+using System.Text.Json;
 
 namespace API.ControllersLogic
 {
@@ -21,6 +25,7 @@ namespace API.ControllersLogic
         private readonly ISuccessfulLoginRepository _successfulLoginRepository;
         private readonly IEASExceptionRepository _exceptionRepository;
         private readonly BenchmarkMethodCache _benchMarkMethodCache;
+        private readonly LockedOutUserQueuePublish _lockedOutUserQueue;
 
         public UserLoginControllerLogic(
             IUserRepository userRepository,
@@ -28,7 +33,8 @@ namespace API.ControllersLogic
             IHotpCodesRepository hotpCodesRepository,
             ISuccessfulLoginRepository successfulLoginRepository,
             IEASExceptionRepository exceptionRepository,
-            BenchmarkMethodCache benchmarkMethodCache
+            BenchmarkMethodCache benchmarkMethodCache,
+            LockedOutUserQueuePublish lockedOutUserQueue
             )
         {
             this._userRepository = userRepository;
@@ -37,6 +43,7 @@ namespace API.ControllersLogic
             this._successfulLoginRepository = successfulLoginRepository;
             this._exceptionRepository = exceptionRepository;
             this._benchMarkMethodCache = benchmarkMethodCache;
+            this._lockedOutUserQueue = lockedOutUserQueue;
         }
 
         #region GetApiKey
@@ -162,8 +169,18 @@ namespace API.ControllersLogic
                         if (lastTwelveHourAttempts.Count >= 5)
                         {
                             await this._userRepository.LockoutUser(activeUser.Id);
+                            LockedOutUserQueueMessage newMessage = new LockedOutUserQueueMessage()
+                            {
+                                UserEmail = activeUser.Email,
+                                UserId = activeUser.Id
+                            };
+                            this._lockedOutUserQueue.BasicPublish(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(newMessage)));
+                            result = new BadRequestObjectResult(new { error = "You entered an invalid password, your account has been locked due to many attempts." });
                         }
-                        result = new BadRequestObjectResult(new { error = "You entered an invalid password." });
+                        else
+                        {
+                            result = new BadRequestObjectResult(new { error = "You entered an invalid password" });
+                        }
                     }
                 }
                 else
@@ -193,6 +210,7 @@ namespace API.ControllersLogic
                 {
                     await this._userRepository.UnlockUser(body.Id);
                 }
+                result = new OkResult();
             }
             catch (Exception ex)
             {
