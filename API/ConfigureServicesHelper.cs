@@ -65,7 +65,6 @@ namespace API.Config
             this._services.AddScoped<IHotpCodesRepository, HotpCodesRepository>();
             this._services.AddScoped<ISuccessfulLoginRepository, SuccessfulLoginRepository>();
             this._services.AddScoped<IEASExceptionRepository, EASExceptionRepository>();
-            this._services.AddScoped<ICreditCardInfoChangedRepository, CreditCardInfoChangedRepository>();
             this._services.AddScoped<INewsletterRepository, NewsletterRepository>();
             this._services.AddScoped<IProductRepository, ProductRepository>();
             this._services.AddScoped<IPriceRepository, PriceRepository>();
@@ -92,6 +91,7 @@ namespace API.Config
             this._services.AddScoped<ActivateUserQueuePublish>();
             this._services.AddScoped<ForgotPasswordQueuePublish>();
             this._services.AddScoped<LockedOutUserQueuePublish>();
+            this._services.AddScoped<CreditCardInformationChangedQueuePublish>();
         }
 
         private void SetupKestralAndIISOptions()

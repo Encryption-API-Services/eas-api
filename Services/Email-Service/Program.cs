@@ -34,6 +34,7 @@ namespace Email_Service
                     services.AddSingleton<ActivateUserQueueSubscribe>();
                     services.AddSingleton<ForgotPasswordQueueSubscribe>();
                     services.AddSingleton<LockedOutUserQueueSubscribe>();
+                    services.AddSingleton<CreditCardInformationChangedQueueSubscribe>();
                     services.AddScoped<IUserRepository, UserRepository>();
                     services.AddHostedService<Worker>();
                 });
