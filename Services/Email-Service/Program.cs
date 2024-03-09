@@ -31,11 +31,12 @@ namespace Email_Service
                     });
                     services.AddSingleton<IDatabaseSettings, DatabaseSettings>();
                     services.AddSingleton<RabbitMQConnection>();
-                    services.AddSingleton<ActivateUserQueueSubscribe>();
-                    services.AddSingleton<ForgotPasswordQueueSubscribe>();
-                    services.AddSingleton<LockedOutUserQueueSubscribe>();
-                    services.AddSingleton<CreditCardInformationChangedQueueSubscribe>();
+                    services.AddScoped<ActivateUserQueueSubscribe>();
+                    services.AddScoped<ForgotPasswordQueueSubscribe>();
+                    services.AddScoped<LockedOutUserQueueSubscribe>();
+                    services.AddScoped<CreditCardInformationChangedQueueSubscribe>();
                     services.AddScoped<IUserRepository, UserRepository>();
+                    services.AddScoped<InactiveUser>();
                     services.AddHostedService<Worker>();
                 });
     }

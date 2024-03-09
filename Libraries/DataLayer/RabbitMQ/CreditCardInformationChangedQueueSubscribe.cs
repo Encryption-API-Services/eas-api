@@ -47,6 +47,7 @@ namespace DataLayer.RabbitMQ
                     smtp.Send(mail);
                 }
             }
+            this.Channel.BasicAck(deliveryTag: e.DeliveryTag, multiple: false);
         }
     }
 }
