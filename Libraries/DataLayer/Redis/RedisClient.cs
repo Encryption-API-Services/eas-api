@@ -1,4 +1,5 @@
 ﻿using StackExchange.Redis;
+using System;
 using System.Threading.Tasks;
 
 namespace DataLayer.Redis
@@ -8,7 +9,7 @@ namespace DataLayer.Redis
         private readonly IDatabase _database;
         public RedisClient()
         {
-            ConnectionMultiplexer redis = ConnectionMultiplexer.Connect("localhost");
+            ConnectionMultiplexer redis = ConnectionMultiplexer.Connect(Environment.GetEnvironmentVariable("RedisIp"));
             this._database = redis.GetDatabase();
         }
 
