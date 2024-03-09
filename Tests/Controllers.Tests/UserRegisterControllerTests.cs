@@ -5,6 +5,7 @@ using DataLayer.Cache;
 using DataLayer.Mongo;
 using DataLayer.Mongo.Entities;
 using DataLayer.Mongo.Repositories;
+using DataLayer.RabbitMQ;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -48,7 +49,8 @@ namespace Controllers.Tests
                 new ForgotPasswordRepository(databaseSettings, client),
                 new LogRequestRepository(databaseSettings, client),
                 new EASExceptionRepository(databaseSettings, client),
-                new BenchmarkMethodCache(databaseSettings, client)
+                new BenchmarkMethodCache(databaseSettings, client),
+                new ActivateUserQueuePublish(new RabbitMQConnection())
                 ), mockHttpContextAccessor.Object);
 
             this._userRepositry = new UserRepository(databaseSettings, client);
