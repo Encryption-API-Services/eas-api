@@ -7,10 +7,13 @@
 	<GenerateCustomWebConfigFile>true</GenerateCustomWebConfigFile>
 	  <ContainerImageName>cas-api</ContainerImageName>
 	  <ContainerBaseImage>mcr.microsoft.com/dotnet/sdk:8.0</ContainerBaseImage>
+	  <UserSecretsId>2a848111-1601-4e75-8d19-39287c96bada</UserSecretsId>
+	  <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="cas-dotnet-sdk" Version="1.1.39" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.6" />
     <PackageReference Include="Otp.NET" Version="1.2.2" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
   </ItemGroup>
