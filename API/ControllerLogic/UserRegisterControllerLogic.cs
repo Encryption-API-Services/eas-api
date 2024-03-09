@@ -65,7 +65,8 @@ namespace API.Config
                     User newUser = await this._userRespository.AddUser(body, hashedPassword);
                     ActivateUserQueueMessage newMessage = new ActivateUserQueueMessage()
                     {
-                        Testing = "123456"
+                        UserId = newUser.Id,
+                        UserEmail = newUser.Email
                     };
                     this._activateUserQueue.BasicPublish(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(newMessage)));
                     await this._forgotPasswordRepository.InsertForgotPasswordAttempt(newUser.Id, hashedPassword);

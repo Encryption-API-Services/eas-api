@@ -2,6 +2,9 @@
 {
     public class RabbitMqConstants
     {
-        public const string ActiveUserQueue = "ActiveUser";
+        public class Queues
+        {
+            public const string ActivateUser = "ActivateUser";
+        }
     }
 }

@@ -1,6 +1,10 @@
+using DataLayer.Mongo;
+using DataLayer.Mongo.Repositories;
 using DataLayer.RabbitMQ;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using MongoDB.Driver;
+using System;
 
 namespace Email_Service
 {
@@ -19,6 +23,14 @@ namespace Email_Service
                 })
                 .ConfigureServices((hostContext, services) =>
                 {
+                    MongoClientSettings settings = MongoClientSettings.FromUrl(new MongoUrl(Environment.GetEnvironmentVariable("Connection")));
+                    MongoClient client = new MongoClient(settings);
+                    services.AddSingleton<IMongoClient, MongoClient>(s =>
+                    {
+                        return client;
+                    });
+                    services.AddScoped<IDatabaseSettings, DatabaseSettings>();
+                    services.AddSingleton<IUserRepository, UserRepository>();
                     services.AddSingleton<RabbitMQConnection>();
                     services.AddSingleton<ActivateUserQueueSubscribe>();
                     services.AddHostedService<Worker>();

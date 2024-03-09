@@ -77,7 +77,7 @@ namespace DataLayer.Mongo.Repositories
         {
             return await this._userCollection.Find(x => x.Email == email).FirstOrDefaultAsync();
         }
-        public async Task UpdateUsersRsaKeyPairsAndToken(User user, string pubXml, string token, string signedToken)
+        public async Task UpdateUsersRsaKeyPairsAndToken(string userId, string pubXml, string token, string signedToken)
         {
             EmailActivationToken emailToken = new EmailActivationToken()
             {
@@ -86,7 +86,7 @@ namespace DataLayer.Mongo.Repositories
                 Token = token,
                 WasVerified = false
             };
-            var filter = Builders<User>.Filter.Eq(x => x.Id, user.Id);
+            var filter = Builders<User>.Filter.Eq(x => x.Id, userId);
             var update = Builders<User>.Update.Set(x => x.EmailActivationToken, emailToken);
             await this._userCollection.UpdateOneAsync(filter, update);
         }
