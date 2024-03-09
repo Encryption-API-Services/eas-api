@@ -21,14 +21,14 @@ namespace API.ControllersLogic
         private readonly ICreditRepository _creditRepository;
         private readonly IHttpContextAccessor _contextAccessor;
         private readonly IUserRepository _userRepository;
-        private readonly IEASExceptionRepository _exceptionRepository;
+        private readonly ICASExceptionRepository _exceptionRepository;
         private readonly BenchmarkMethodCache _benchmarkMethodCache;
         private readonly CreditCardInformationChangedQueuePublish _ccInfoChangedQueue;
         public CreditControllerLogic(
             ICreditRepository creditRepository,
             IHttpContextAccessor contextAccessor,
             IUserRepository userRepository,
-            IEASExceptionRepository exceptionRepository,
+            ICASExceptionRepository exceptionRepository,
             BenchmarkMethodCache benchmarkMethodCache,
             CreditCardInformationChangedQueuePublish ccInfoChangedQueue
             )

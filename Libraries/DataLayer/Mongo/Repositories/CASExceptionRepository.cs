@@ -5,18 +5,18 @@ using System.Threading.Tasks;
 
 namespace DataLayer.Mongo.Repositories
 {
-    public class EASExceptionRepository : IEASExceptionRepository
+    public class CASExceptionRepository : ICASExceptionRepository
     {
-        private readonly IMongoCollection<EASException> _exceptions;
+        private readonly IMongoCollection<CASException> _exceptions;
 
-        public EASExceptionRepository(IDatabaseSettings databaseSettings, IMongoClient client)
+        public CASExceptionRepository(IDatabaseSettings databaseSettings, IMongoClient client)
         {
             var database = client.GetDatabase(databaseSettings.DatabaseName);
-            this._exceptions = database.GetCollection<EASException>("Exceptions");
+            this._exceptions = database.GetCollection<CASException>("Exceptions");
         }
         public async Task InsertException(string exceptionMessage, string methodBase)
         {
-            await this._exceptions.InsertOneAsync(new EASException()
+            await this._exceptions.InsertOneAsync(new CASException()
             {
                 ExceptionBody = exceptionMessage,
                 CreateDate = DateTime.UtcNow,

@@ -10,12 +10,12 @@ namespace API.ControllerLogic
     public class UIDataControllerLogic : IUIDataControllerLogic
     {
         private IMethodBenchmarkRepository _methodBenchmarkRepository;
-        private readonly IEASExceptionRepository _exceptionRepository;
+        private readonly ICASExceptionRepository _exceptionRepository;
         private readonly BenchmarkMethodCache _benchMarkMethodCache;
 
         public UIDataControllerLogic(
             IMethodBenchmarkRepository methodBenchmarkRepo,
-            IEASExceptionRepository exceptionRepository,
+            ICASExceptionRepository exceptionRepository,
             BenchmarkMethodCache benchmarkMethodCache)
         {
             this._methodBenchmarkRepository = methodBenchmarkRepo;

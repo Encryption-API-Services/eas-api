@@ -10,11 +10,11 @@ namespace API.ControllerLogic
 {
     public class ApiKeyControllerLogic : IApiKeyControllerLogic
     {
-        private readonly IEASExceptionRepository _exceptionRepository;
+        private readonly ICASExceptionRepository _exceptionRepository;
         private readonly BenchmarkMethodCache _benchMarkMethodCache;
         private readonly IUserRepository _userRepository;
         public ApiKeyControllerLogic(
-            IEASExceptionRepository exceptionRepository,
+            ICASExceptionRepository exceptionRepository,
             BenchmarkMethodCache benchMarkMethodCache,
             IUserRepository userRepository
             )

@@ -4,7 +4,7 @@ using System;
 
 namespace DataLayer.Mongo.Entities
 {
-    public class EASException
+    public class CASException
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]

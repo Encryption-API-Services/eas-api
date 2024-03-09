@@ -26,14 +26,14 @@ namespace API.Config
         private readonly IUserRepository _userRespository;
         private readonly IForgotPasswordRepository _forgotPasswordRepository;
         private readonly ILogRequestRepository _logRequestRespository;
-        private readonly IEASExceptionRepository _exceptionRepository;
+        private readonly ICASExceptionRepository _exceptionRepository;
         private readonly BenchmarkMethodCache _benchmarkMethodCache;
         private readonly ActivateUserQueuePublish _activateUserQueue;
         public UserRegisterControllerLogic(
             IUserRepository userRepo,
             IForgotPasswordRepository forgotPasswordRepository,
             ILogRequestRepository logRequestRespository,
-            IEASExceptionRepository exceptionRespitory,
+            ICASExceptionRepository exceptionRespitory,
             BenchmarkMethodCache benchmarkMethodCache,
             ActivateUserQueuePublish activateUserQueue
             )

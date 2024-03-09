@@ -48,7 +48,7 @@ namespace Controllers.Tests
                 new UserRepository(databaseSettings, client),
                 new ForgotPasswordRepository(databaseSettings, client),
                 new LogRequestRepository(databaseSettings, client),
-                new EASExceptionRepository(databaseSettings, client),
+                new CASExceptionRepository(databaseSettings, client),
                 new BenchmarkMethodCache(databaseSettings, client),
                 new ActivateUserQueuePublish(new RabbitMQConnection())
                 ), mockHttpContextAccessor.Object);

@@ -18,11 +18,11 @@ namespace API.ControllerLogic
     public class AuthenticationControllerLogic : IAuthenticationControllerLogic
     {
         private readonly IRedisClient _redisClient;
-        private readonly IEASExceptionRepository _exceptionRepository;
+        private readonly ICASExceptionRepository _exceptionRepository;
         private readonly BenchmarkMethodCache _benchMarkMethodCache;
         public AuthenticationControllerLogic(
             IRedisClient redisClient,
-            IEASExceptionRepository exceptionRepository,
+            ICASExceptionRepository exceptionRepository,
             BenchmarkMethodCache benchMarkMethodCache
             )
         {

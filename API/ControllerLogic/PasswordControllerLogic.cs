@@ -22,13 +22,13 @@ namespace API.ControllersLogic
     {
         private readonly IUserRepository _userRepository;
         private readonly IForgotPasswordRepository _forgotPasswordRepository;
-        private readonly IEASExceptionRepository _exceptionRepository;
+        private readonly ICASExceptionRepository _exceptionRepository;
         private readonly BenchmarkMethodCache _benchMarkMethodCache;
         private readonly ForgotPasswordQueuePublish _forgotPasswordQueue;
         public PasswordControllerLogic(
             IUserRepository userRepository,
             IForgotPasswordRepository forgotPasswordRepository,
-            IEASExceptionRepository exceptionRepository,
+            ICASExceptionRepository exceptionRepository,
             BenchmarkMethodCache benchMarkMethodCache,
             ForgotPasswordQueuePublish forgotPasswordQueue
             )

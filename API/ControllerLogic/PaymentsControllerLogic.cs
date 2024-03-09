@@ -13,13 +13,13 @@ namespace API.ControllerLogic
 {
     public class PaymentsControllerLogic : IPaymentsControllerLogic
     {
-        private readonly IEASExceptionRepository _exceptionRepository;
+        private readonly ICASExceptionRepository _exceptionRepository;
         private readonly BenchmarkMethodCache _benchMarkMethodCache;
         private readonly IProductRepository _productRepository;
         private readonly IPriceRepository _priceRepository;
         private readonly IUserRepository _userRepository;
         public PaymentsControllerLogic(
-            IEASExceptionRepository exceptionRepository,
+            ICASExceptionRepository exceptionRepository,
             BenchmarkMethodCache benchmarkMethodCache,
             IProductRepository productRepository,
             IPriceRepository priceRepository,

@@ -42,7 +42,7 @@ namespace Controllers.Tests
             mockHttpContextAccessor.SetupGet(x => x.HttpContext.Request.Headers[Constants.HeaderNames.ApiKey]).Returns(Environment.GetEnvironmentVariable("EasApiKey"));
             this._tokenController = new TokenController(mockHttpContextAccessor.Object, new TokenControllerLogic(
                 new UserRepository(databaseSettings, client),
-                new EASExceptionRepository(databaseSettings, client),
+                new CASExceptionRepository(databaseSettings, client),
                 new DataLayer.Cache.BenchmarkMethodCache(databaseSettings, client)));
         }
 

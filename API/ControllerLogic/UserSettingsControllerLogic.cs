@@ -14,13 +14,13 @@ namespace API.ControllerLogic
     public class UserSettingsControllerLogic : IUserSettingsControllerLogic
     {
         private readonly IUserRepository _userRepository;
-        private readonly IEASExceptionRepository _exceptionRepository;
+        private readonly ICASExceptionRepository _exceptionRepository;
         private readonly IForgotPasswordRepository _forgotPasswordRepository;
         private readonly BenchmarkMethodCache _benchMarkMethodCache;
         private readonly UserSettingsValidation _userSettingsValidation;
         public UserSettingsControllerLogic(
             IUserRepository userRepository,
-            IEASExceptionRepository exceptionRepository,
+            ICASExceptionRepository exceptionRepository,
             IForgotPasswordRepository forgotPasswordRepository,
             BenchmarkMethodCache benchmarkMethodCache,
             UserSettingsValidation userSettingsValidation

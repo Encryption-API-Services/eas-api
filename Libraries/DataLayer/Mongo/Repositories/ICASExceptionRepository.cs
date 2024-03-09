@@ -2,7 +2,7 @@
 
 namespace DataLayer.Mongo.Repositories
 {
-    public interface IEASExceptionRepository
+    public interface ICASExceptionRepository
     {
         Task InsertException(string exceptionMessage, string methodBase);
     }

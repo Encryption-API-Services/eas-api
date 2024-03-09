@@ -64,7 +64,7 @@ namespace API.Config
             this._services.AddScoped<ILogRequestRepository, LogRequestRepository>();
             this._services.AddScoped<IHotpCodesRepository, HotpCodesRepository>();
             this._services.AddScoped<ISuccessfulLoginRepository, SuccessfulLoginRepository>();
-            this._services.AddScoped<IEASExceptionRepository, EASExceptionRepository>();
+            this._services.AddScoped<ICASExceptionRepository, CASExceptionRepository>();
             this._services.AddScoped<INewsletterRepository, NewsletterRepository>();
             this._services.AddScoped<IProductRepository, ProductRepository>();
             this._services.AddScoped<IPriceRepository, PriceRepository>();

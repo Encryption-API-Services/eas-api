@@ -17,12 +17,12 @@ namespace API.ControllerLogic
     public class BenchmarkSDKMethodControllerLogic : IBenchmarkSDKMethodControllerLogic
     {
         private readonly IBenchmarkSDKMethodRepository _benchmarkSDKMethodRepository;
-        private readonly IEASExceptionRepository _exceptionRepository;
+        private readonly ICASExceptionRepository _exceptionRepository;
         private readonly IRedisClient _redisClient;
         private readonly BenchmarkMethodCache _benchmarkMethodCache;
         public BenchmarkSDKMethodControllerLogic(
             IBenchmarkSDKMethodRepository benchmarkSDKMethodRepository,
-            IEASExceptionRepository exceptionRepository,
+            ICASExceptionRepository exceptionRepository,
             IRedisClient redisClient,
             BenchmarkMethodCache benchmarkMethodCache)
         {

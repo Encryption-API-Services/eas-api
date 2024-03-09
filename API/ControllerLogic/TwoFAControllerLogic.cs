@@ -13,11 +13,11 @@ namespace API.ControllersLogic
     public class TwoFAControllerLogic : ITwoFAControllerLogic
     {
         private readonly IUserRepository _userRepository;
-        private readonly IEASExceptionRepository _exceptionRepository;
+        private readonly ICASExceptionRepository _exceptionRepository;
         private readonly BenchmarkMethodCache _benchMarkMethodCache;
         public TwoFAControllerLogic(
             IUserRepository userRepository,
-            IEASExceptionRepository exceptionRepository,
+            ICASExceptionRepository exceptionRepository,
             BenchmarkMethodCache benchmarkMethodCache)
         {
             this._userRepository = userRepository;

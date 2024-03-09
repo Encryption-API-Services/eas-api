@@ -23,7 +23,7 @@ namespace API.ControllersLogic
         private readonly IFailedLoginAttemptRepository _failedLoginAttemptRepository;
         private readonly IHotpCodesRepository _hotpCodesRepository;
         private readonly ISuccessfulLoginRepository _successfulLoginRepository;
-        private readonly IEASExceptionRepository _exceptionRepository;
+        private readonly ICASExceptionRepository _exceptionRepository;
         private readonly BenchmarkMethodCache _benchMarkMethodCache;
         private readonly LockedOutUserQueuePublish _lockedOutUserQueue;
 
@@ -32,7 +32,7 @@ namespace API.ControllersLogic
             IFailedLoginAttemptRepository failedLoginAttemptRepository,
             IHotpCodesRepository hotpCodesRepository,
             ISuccessfulLoginRepository successfulLoginRepository,
-            IEASExceptionRepository exceptionRepository,
+            ICASExceptionRepository exceptionRepository,
             BenchmarkMethodCache benchmarkMethodCache,
             LockedOutUserQueuePublish lockedOutUserQueue
             )

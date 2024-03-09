@@ -14,11 +14,11 @@ namespace API.ControllerLogic
     public class TokenControllerLogic : ITokenControllerLogic
     {
         private readonly IUserRepository _userRepository;
-        private readonly IEASExceptionRepository _exceptionRepository;
+        private readonly ICASExceptionRepository _exceptionRepository;
         private readonly BenchmarkMethodCache _benchMarkMethodCache;
         public TokenControllerLogic(
             IUserRepository userRepository,
-            IEASExceptionRepository exceptionRepository,
+            ICASExceptionRepository exceptionRepository,
             BenchmarkMethodCache benchMarkMethodCache
             )
         {
