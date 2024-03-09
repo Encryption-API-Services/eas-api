@@ -36,11 +36,11 @@ namespace API.Controllers
         {
             return await this._authenicationControllerLogic.RemoveOperatingSystemInformationInCache(this.httpContextAccessor.HttpContext);
         }
-        
+
         [HttpPost]
         [Route("DiffieHellmanAesKey")]
         [ValidateJWT]
-        public async Task<IActionResult> DiffieHellmanAesKeyDerviationForSDK([FromBody]DiffieHellmanAesDerivationRequest body)
+        public async Task<IActionResult> DiffieHellmanAesKeyDerviationForSDK([FromBody] DiffieHellmanAesDerivationRequest body)
         {
             return await this._authenicationControllerLogic.DiffieHellmanAesKeyDerviationForSDK(this.httpContextAccessor.HttpContext, body);
         }

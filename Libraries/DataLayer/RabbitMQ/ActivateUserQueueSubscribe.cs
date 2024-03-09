@@ -1,16 +1,16 @@
-﻿using CasDotnetSdk.Asymmetric.Types;
-using CasDotnetSdk.Asymmetric;
+﻿using CasDotnetSdk.Asymmetric;
+using CasDotnetSdk.Asymmetric.Types;
 using CasDotnetSdk.Hashers;
+using DataLayer.Mongo.Repositories;
 using DataLayer.RabbitMQ.QueueMessages;
+using Microsoft.IdentityModel.Tokens;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System;
+using System.Net;
+using System.Net.Mail;
 using System.Text;
 using System.Text.Json;
-using Microsoft.IdentityModel.Tokens;
-using System.Net.Mail;
-using System.Net;
-using DataLayer.Mongo.Repositories;
 
 namespace DataLayer.RabbitMQ
 {

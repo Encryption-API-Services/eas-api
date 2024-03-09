@@ -1,12 +1,10 @@
-﻿using RabbitMQ.Client;
-
-namespace DataLayer.RabbitMQ
+﻿namespace DataLayer.RabbitMQ
 {
     public class ActivateUserQueuePublish : RabbitMqPublish
-    { 
+    {
         public ActivateUserQueuePublish(RabbitMQConnection rabbitMqConnection) : base(rabbitMqConnection, RabbitMqConstants.Queues.ActivateUser)
         {
-            
+
         }
     }
 }

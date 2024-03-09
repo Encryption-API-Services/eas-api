@@ -18,7 +18,7 @@ namespace Email_Service
         private readonly MongoClient _mongoClient;
 
         public Worker(
-            ILogger<Worker> logger, 
+            ILogger<Worker> logger,
             IConfiguration configuration,
             ActivateUserQueueSubscribe activeUserSubscribe
             )

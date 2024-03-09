@@ -1,5 +1,4 @@
 ﻿using API.ControllerLogic;
-using CASHelpers.Types.HttpResponses.BenchmarkAPI;
 using Microsoft.AspNetCore.Mvc;
 using Models.BenchmarkSDKSend;
 using Validation.Attributes;
