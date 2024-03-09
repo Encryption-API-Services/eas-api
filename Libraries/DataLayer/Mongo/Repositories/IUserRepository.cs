@@ -12,7 +12,6 @@ namespace DataLayer.Mongo.Repositories
         public Task<User> GetUserByEmail(string email);
         public Task<User> GetUserByUsername(string username);
         public Task ChangeUsername(string userId, string newUsername);
-        public Task<List<User>> GetUsersMadeWithinLastThirtyMinutes();
         public Task<User> GetUserById(string id);
         public Task ChangeUserActiveById(User user, bool isActive, string stripCustomerId);
         public Task UpdatePassword(string userId, string password);

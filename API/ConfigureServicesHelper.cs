@@ -3,6 +3,7 @@ using API.ControllersLogic;
 using DataLayer.Cache;
 using DataLayer.Mongo;
 using DataLayer.Mongo.Repositories;
+using DataLayer.RabbitMQ;
 using DataLayer.Redis;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using MongoDB.Driver;
@@ -50,6 +51,7 @@ namespace API.Config
             this._services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             this._services.AddSingleton<LogRequestCache>();
             this._services.AddSingleton<BenchmarkMethodCache>();
+            this._services.AddSingleton<RabbitMQConnection>();
         }
         private void SetupScoped()
         {
@@ -85,6 +87,9 @@ namespace API.Config
 
             // Validaton
             this._services.AddScoped<UserSettingsValidation>();
+
+            //Rabbit MQ Queues
+            this._services.AddScoped<ActivateUserQueuePublish>();
         }
 
         private void SetupKestralAndIISOptions()

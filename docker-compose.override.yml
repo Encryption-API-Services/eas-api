@@ -12,6 +12,7 @@ services:
       - RedisIp=redis
       - StripApiKey=sk_test_51Lzw2cIa3dIey21q6edyXY5j7Qvpxt3xNBfBJIa3w1aeu3uY8l7cCQJMAKsP5prOEyFFCfyuNpkhVeeZ50rMQX2b00xsVceisN
       - IpInfoToken=eb8b03f172a3e3
+      - RabbitMqUrl=amqp://guest:guest@rabbit-mq:5672
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
@@ -23,3 +24,4 @@ services:
       - Domain=http://localhost:4200
       - Email=mikemulchrone987@gmail.com
       - EmailPass=hieo aglo kkte fwjj
+      - RabbitMqUrl=amqp://guest:guest@rabbit-mq:5672

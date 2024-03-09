@@ -5,11 +5,15 @@ using CASHelpers;
 using Common;
 using DataLayer.Cache;
 using DataLayer.Mongo.Repositories;
+using DataLayer.RabbitMQ;
+using DataLayer.RabbitMQ.QueueMessages;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Models.UserAuthentication;
 using Payments;
 using System.Reflection;
+using System.Text;
+using System.Text.Json;
 using Validation.UserRegistration;
 using User = DataLayer.Mongo.Entities.User;
 
@@ -24,12 +28,14 @@ namespace API.Config
         private readonly ILogRequestRepository _logRequestRespository;
         private readonly IEASExceptionRepository _exceptionRepository;
         private readonly BenchmarkMethodCache _benchmarkMethodCache;
+        private readonly ActivateUserQueuePublish _activateUserQueue;
         public UserRegisterControllerLogic(
             IUserRepository userRepo,
             IForgotPasswordRepository forgotPasswordRepository,
             ILogRequestRepository logRequestRespository,
             IEASExceptionRepository exceptionRespitory,
-            BenchmarkMethodCache benchmarkMethodCache
+            BenchmarkMethodCache benchmarkMethodCache,
+            ActivateUserQueuePublish activateUserQueue
             )
         {
             this._userRespository = userRepo;
@@ -37,6 +43,7 @@ namespace API.Config
             this._logRequestRespository = logRequestRespository;
             this._exceptionRepository = exceptionRespitory;
             this._benchmarkMethodCache = benchmarkMethodCache;
+            this._activateUserQueue = activateUserQueue;
         }
 
         #region RegisterUser
@@ -56,6 +63,11 @@ namespace API.Config
                     Argon2Wrapper argon2 = new Argon2Wrapper();
                     string hashedPassword = argon2.HashPassword(body.password);
                     User newUser = await this._userRespository.AddUser(body, hashedPassword);
+                    ActivateUserQueueMessage newMessage = new ActivateUserQueueMessage()
+                    {
+                        Testing = "123456"
+                    };
+                    this._activateUserQueue.BasicPublish(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(newMessage)));
                     await this._forgotPasswordRepository.InsertForgotPasswordAttempt(newUser.Id, hashedPassword);
                     result = new OkObjectResult(new { message = "Successfully registered user" });
                 }

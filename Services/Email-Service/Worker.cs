@@ -1,4 +1,5 @@
 using DataLayer.Mongo;
+using DataLayer.RabbitMQ;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -16,7 +17,11 @@ namespace Email_Service
         private readonly IDatabaseSettings _databaseSettings;
         private readonly MongoClient _mongoClient;
 
-        public Worker(ILogger<Worker> logger, IConfiguration configuration)
+        public Worker(
+            ILogger<Worker> logger, 
+            IConfiguration configuration,
+            ActivateUserQueueSubscribe activeUserSubscribe
+            )
         {
             _logger = logger;
             _configuration = configuration;
@@ -34,20 +39,17 @@ namespace Email_Service
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                this._logger.LogInformation("EAS-Email-Service running at: {time}", DateTimeOffset.Now);
-                ActivateUser activeUsers = new ActivateUser(this._databaseSettings, this._mongoClient);
-                ForgotPassword forgotPassword = new ForgotPassword(this._databaseSettings, this._mongoClient);
-                LockedOutUsers lockedOutUsers = new LockedOutUsers(this._databaseSettings, this._mongoClient);
-                CCInfoChanged creditCardInfoChanged = new CCInfoChanged(this._databaseSettings, this._mongoClient);
-                InactiveUser inactiveUser = new InactiveUser(this._databaseSettings, this._mongoClient);
-                await Task.WhenAll(
-                    activeUsers.GetUsersToActivateSendOutTokens(),
-                    forgotPassword.GetUsersWhoNeedToResetPassword(),
-                    lockedOutUsers.GetUsersThatLockedOut(),
-                    creditCardInfoChanged.GetUsersWhoChangedEmailInfo(),
-                    inactiveUser.GetInactiveUsers()
-                );
-                await Task.Delay(10000, stoppingToken);
+                //ForgotPassword forgotPassword = new ForgotPassword(this._databaseSettings, this._mongoClient);
+                //LockedOutUsers lockedOutUsers = new LockedOutUsers(this._databaseSettings, this._mongoClient);
+                //CCInfoChanged creditCardInfoChanged = new CCInfoChanged(this._databaseSettings, this._mongoClient);
+                //InactiveUser inactiveUser = new InactiveUser(this._databaseSettings, this._mongoClient);
+                //await Task.WhenAll(
+                //    forgotPassword.GetUsersWhoNeedToResetPassword(),
+                //    lockedOutUsers.GetUsersThatLockedOut(),
+                //    creditCardInfoChanged.GetUsersWhoChangedEmailInfo(),
+                //    inactiveUser.GetInactiveUsers()
+                //);
+                await Task.Delay(500, stoppingToken);
             }
         }
     }

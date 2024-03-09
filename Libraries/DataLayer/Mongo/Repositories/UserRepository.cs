@@ -53,8 +53,7 @@ namespace DataLayer.Mongo.Repositories
                 ApiKey = new Generator().CreateApiKey(),
                 EmailActivationToken = new EmailActivationToken()
                 {
-                    WasVerified = false,
-                    WasSent = false
+                    WasVerified = false
                 },
                 UserSubscriptionSettings = new UserSubscriptionSettings()
                 {
@@ -78,13 +77,6 @@ namespace DataLayer.Mongo.Repositories
         {
             return await this._userCollection.Find(x => x.Email == email).FirstOrDefaultAsync();
         }
-        public async Task<List<User>> GetUsersMadeWithinLastThirtyMinutes()
-        {
-            DateTime now = DateTime.UtcNow;
-            return await this._userCollection.FindAsync(x => x.IsActive == false &&
-                                                        x.CreationTime < now && x.CreationTime > now.AddMinutes(-30)
-                                                        && x.EmailActivationToken.WasVerified == false && x.EmailActivationToken.WasSent == false).Result.ToListAsync();
-        }
         public async Task UpdateUsersRsaKeyPairsAndToken(User user, string pubXml, string token, string signedToken)
         {
             EmailActivationToken emailToken = new EmailActivationToken()
@@ -92,8 +84,7 @@ namespace DataLayer.Mongo.Repositories
                 PublicKey = pubXml,
                 SignedToken = signedToken,
                 Token = token,
-                WasVerified = false,
-                WasSent = true
+                WasVerified = false
             };
             var filter = Builders<User>.Filter.Eq(x => x.Id, user.Id);
             var update = Builders<User>.Update.Set(x => x.EmailActivationToken, emailToken);

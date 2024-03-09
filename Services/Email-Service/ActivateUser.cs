@@ -26,12 +26,12 @@ namespace Email_Service
         }
         public async Task GetUsersToActivateSendOutTokens()
         {
-            UserRepository repo = new UserRepository(this._databaseSettings, this._mongoClient);
-            List<User> usersToSendTokens = await repo.GetUsersMadeWithinLastThirtyMinutes();
-            foreach (User user in usersToSendTokens)
-            {
-                await this.GenerateTokenAndSendOut(user);
-            }
+            //UserRepository repo = new UserRepository(this._databaseSettings, this._mongoClient);
+            //List<User> usersToSendTokens = await repo.GetUsersMadeWithinLastThirtyMinutes();
+            //foreach (User user in usersToSendTokens)
+            //{
+            //    await this.GenerateTokenAndSendOut(user);
+            //}
         }
         private async Task GenerateTokenAndSendOut(User user)
         {

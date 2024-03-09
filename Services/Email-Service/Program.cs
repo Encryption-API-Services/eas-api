@@ -1,3 +1,4 @@
+using DataLayer.RabbitMQ;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -14,10 +15,12 @@ namespace Email_Service
             Host.CreateDefaultBuilder(args)
                 .UseWindowsService(options =>
                 {
-                    options.ServiceName = "EAS-Email-Service";
+                    options.ServiceName = "CAS-Email-Service";
                 })
                 .ConfigureServices((hostContext, services) =>
                 {
+                    services.AddSingleton<RabbitMQConnection>();
+                    services.AddSingleton<ActivateUserQueueSubscribe>();
                     services.AddHostedService<Worker>();
                 });
     }
