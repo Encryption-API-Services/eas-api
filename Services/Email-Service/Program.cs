@@ -33,6 +33,7 @@ namespace Email_Service
                     services.AddSingleton<RabbitMQConnection>();
                     services.AddSingleton<ActivateUserQueueSubscribe>();
                     services.AddSingleton<ForgotPasswordQueueSubscribe>();
+                    services.AddSingleton<LockedOutUserQueueSubscribe>();
                     services.AddScoped<IUserRepository, UserRepository>();
                     services.AddHostedService<Worker>();
                 });

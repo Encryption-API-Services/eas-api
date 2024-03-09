@@ -16,9 +16,7 @@ namespace DataLayer.Mongo.Repositories
         public Task ChangeUserActiveById(User user, bool isActive, string stripCustomerId);
         public Task UpdatePassword(string userId, string password);
         public Task LockoutUser(string userId);
-        public Task<List<User>> GetLockedOutUsers();
         public Task UpdateUsersForgotPasswordToReset(string userId, string forgotPasswordToken, string publicKey, string signedToken);
-        public Task UpdateUserLockedOutToSentOut(string userId);
         public Task UnlockUser(string userId);
         public Task<Phone2FA> GetPhone2FAStats(string userId);
         public Task ChangePhone2FAStatusToEnabled(string userId);

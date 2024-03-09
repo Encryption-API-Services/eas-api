@@ -48,7 +48,6 @@ namespace DataLayer.Mongo.Repositories
                 LockedOut = new LockedOut()
                 {
                     IsLockedOut = false,
-                    HasBeenSentOut = false
                 },
                 ApiKey = new Generator().CreateApiKey(),
                 EmailActivationToken = new EmailActivationToken()
@@ -130,21 +129,10 @@ namespace DataLayer.Mongo.Repositories
             var update = Builders<User>.Update.Set(x => x.LockedOut.IsLockedOut, true);
             await this._userCollection.UpdateOneAsync(filter, update);
         }
-        public async Task<List<User>> GetLockedOutUsers()
-        {
-            return await this._userCollection.Find(x => x.LockedOut.IsLockedOut == true && x.LockedOut.HasBeenSentOut == false).ToListAsync();
-        }
-        public async Task UpdateUserLockedOutToSentOut(string userId)
-        {
-            var filter = Builders<User>.Filter.Eq(x => x.Id, userId);
-            var update = Builders<User>.Update.Set(x => x.LockedOut.HasBeenSentOut, true);
-            await this._userCollection.UpdateOneAsync(filter, update);
-        }
         public async Task UnlockUser(string userId)
         {
             var filter = Builders<User>.Filter.Eq(x => x.Id, userId);
-            var update = Builders<User>.Update.Set(x => x.LockedOut.IsLockedOut, false)
-                                              .Set(x => x.LockedOut.HasBeenSentOut, false);
+            var update = Builders<User>.Update.Set(x => x.LockedOut.IsLockedOut, false);
             await this._userCollection.UpdateOneAsync(filter, update);
         }
 

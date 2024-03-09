@@ -65,6 +65,7 @@ namespace DataLayer.RabbitMQ
                     }
                 }
                 await this._userRepository.UpdateUsersForgotPasswordToReset(message.UserId, Convert.ToBase64String(hashedGuid), keyPair.PublicKey, urlSignature);
+                this.Channel.BasicAck(deliveryTag: e.DeliveryTag, multiple: false);
             }
             catch (Exception ex)
             {

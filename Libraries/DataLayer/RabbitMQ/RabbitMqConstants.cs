@@ -6,6 +6,7 @@
         {
             public const string ActivateUser = "ActivateUser";
             public const string ForgotPassword = "ForgotPassword";
+            public const string LockedOutUsers = "LockedOutUsers";
         }
     }
 }
