@@ -99,7 +99,11 @@ namespace API.ControllersLogic
             try
             {
                 User activeUser = await this._userRepository.GetUserByEmail(body.Email);
-                if (activeUser != null && activeUser.IsActive == false)
+                if (activeUser == null)
+                {
+                    result = new BadRequestObjectResult(new { error = "This user account does not exist in our system." });
+                }
+                else if (activeUser != null && activeUser.IsActive == false)
                 {
                     result = new BadRequestObjectResult(new { error = "Check your email for an account activation email." });
                 }

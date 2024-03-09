@@ -43,7 +43,7 @@ namespace Email_Service
                 {
                     string email = Environment.GetEnvironmentVariable("Email");
                     smtp.UseDefaultCredentials = false;
-                    smtp.Credentials = new NetworkCredential(email, "bzdjmoscoeyzfcsj");
+                    smtp.Credentials = new NetworkCredential(email, Environment.GetEnvironmentVariable("EmailPass"));
                     smtp.EnableSsl = true;
                     smtp.Send(mail);
                 }
