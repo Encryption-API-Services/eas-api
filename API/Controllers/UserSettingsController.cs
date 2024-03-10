@@ -36,13 +36,5 @@ namespace API.Controllers
         {
             return await this._userSettingsControllerLogic.ChangePassword(this._httpContextAccessor.HttpContext, body);
         }
-
-        [HttpPut]
-        [Route("Change2FAStatus")]
-        [ValidateJWT]
-        public async Task<IActionResult> Change2FAStatus([FromBody] Change2FAStatusRequest body)
-        {
-            return await this._userSettingsControllerLogic.Change2FAStatus(this._httpContextAccessor.HttpContext, body);
-        }
     }
 }

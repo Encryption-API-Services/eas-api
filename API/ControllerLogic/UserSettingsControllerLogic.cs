@@ -98,25 +98,5 @@ namespace API.ControllerLogic
         }
 
         #endregion
-
-        #region Change2FAStatus
-        public async Task<IActionResult> Change2FAStatus(HttpContext context, Change2FAStatusRequest changePassword)
-        {
-            BenchmarkMethodLogger logger = new BenchmarkMethodLogger(context);
-            IActionResult result = null;
-            try
-            {
-                
-            }
-            catch (Exception ex)
-            {
-                await this._exceptionRepository.InsertException(ex.ToString(), MethodBase.GetCurrentMethod().Name);
-                result = new BadRequestObjectResult(new { error = "There was an error on our end" });
-            }
-            logger.EndExecution();
-            this._benchMarkMethodCache.AddLog(logger);
-            return result;
-        }
-        #endregion
     }
 }
