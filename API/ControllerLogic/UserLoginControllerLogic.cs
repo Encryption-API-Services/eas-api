@@ -1,4 +1,5 @@
-﻿using CasDotnetSdk.PasswordHashers;
+﻿using CasDotnetSdk.Asymmetric;
+using CasDotnetSdk.PasswordHashers;
 using CASHelpers;
 using Common;
 using Common.ThirdPartyAPIs;
@@ -8,6 +9,7 @@ using DataLayer.Mongo.Repositories;
 using DataLayer.RabbitMQ;
 using DataLayer.RabbitMQ.QueueMessages;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
 using Models.UserAuthentication;
 using MongoDB.Driver;
 using OtpNet;
@@ -206,11 +208,26 @@ namespace API.ControllersLogic
             IActionResult result = null;
             try
             {
-                if (!string.IsNullOrEmpty(body.Id))
+                if (!string.IsNullOrEmpty(body.Id) && !string.IsNullOrEmpty(body.Token))
                 {
-                    await this._userRepository.UnlockUser(body.Id);
+                    User databaseUser = await this._userRepository.GetUserById(body.Id);
+                    RSAWrapper rsaWrapper = new RSAWrapper();
+                    byte[] signedToken = Base64UrlEncoder.DecodeBytes(body.Token);
+                    bool isValid = rsaWrapper.RsaVerifyBytes(databaseUser.LockedOut.PublicKey, Convert.FromBase64String(databaseUser.LockedOut.Token), signedToken);
+                    if (isValid)
+                    {
+                        await this._userRepository.UnlockUser(body.Id);
+                        result = new OkResult();
+                    }
+                    else
+                    {
+                        result = new BadRequestResult();
+                    }
                 }
-                result = new OkResult();
+                else
+                {
+                    result = new BadRequestResult();
+                }
             }
             catch (Exception ex)
             {
