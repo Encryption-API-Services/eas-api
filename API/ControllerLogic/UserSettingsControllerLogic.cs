@@ -6,6 +6,7 @@ using DataLayer.Mongo.Entities;
 using DataLayer.Mongo.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Models.UserAuthentication;
+using Models.UserSettings;
 using System.Reflection;
 using Validation.UserSettings;
 
@@ -90,6 +91,27 @@ namespace API.ControllerLogic
             {
                 await this._exceptionRepository.InsertException(ex.ToString(), MethodBase.GetCurrentMethod().Name);
                 result = new BadRequestObjectResult(new { error = "There was an error on our end changing your password" });
+            }
+            logger.EndExecution();
+            this._benchMarkMethodCache.AddLog(logger);
+            return result;
+        }
+
+        #endregion
+
+        #region Change2FAStatus
+        public async Task<IActionResult> Change2FAStatus(HttpContext context, Change2FAStatusRequest changePassword)
+        {
+            BenchmarkMethodLogger logger = new BenchmarkMethodLogger(context);
+            IActionResult result = null;
+            try
+            {
+                
+            }
+            catch (Exception ex)
+            {
+                await this._exceptionRepository.InsertException(ex.ToString(), MethodBase.GetCurrentMethod().Name);
+                result = new BadRequestObjectResult(new { error = "There was an error on our end" });
             }
             logger.EndExecution();
             this._benchMarkMethodCache.AddLog(logger);

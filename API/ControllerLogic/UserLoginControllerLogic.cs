@@ -56,15 +56,10 @@ namespace API.ControllersLogic
             IActionResult result = null;
             try
             {
-                string token = context.Request.Headers[Constants.HeaderNames.Authorization].FirstOrDefault()?.Split(" ").Last();
-                // get current token
-                if (!string.IsNullOrEmpty(token))
-                {
-                    JWT jwtWrapper = new JWT();
-                    string userId = jwtWrapper.GetUserIdFromToken(token);
-                    string apiKey = await this._userRepository.GetApiKeyById(userId);
-                    result = new OkObjectResult(new { apiKey = apiKey });
-                }
+
+                string userId = context.Items[Constants.HttpItems.UserID].ToString();
+                string apiKey = await this._userRepository.GetApiKeyById(userId);
+                result = new OkObjectResult(new { apiKey = apiKey });
             }
             catch (Exception ex)
             {
