@@ -12,11 +12,12 @@ namespace Validation.Attributes
         public async void OnAuthorization(AuthorizationFilterContext context)
         {
             var token = context.HttpContext.Request.Headers[Constants.HeaderNames.Authorization].FirstOrDefault()?.Split(" ").Last();
-            if (token != null)
+            JwtSecurityTokenHandler handler = new JwtSecurityTokenHandler();
+            if (token != null && handler.CanReadToken(token))
             {
-                var handler = new JwtSecurityTokenHandler().ReadJwtToken(token);
-                string publicKey = handler.Claims.First(x => x.Type == Constants.TokenClaims.PublicKey).Value;
-                string userId = handler.Claims.First(x => x.Type == Constants.TokenClaims.Id).Value;
+                var readToken = handler.ReadJwtToken(token);
+                string publicKey = readToken.Claims.First(x => x.Type == Constants.TokenClaims.PublicKey).Value;
+                string userId = readToken.Claims.First(x => x.Type == Constants.TokenClaims.Id).Value;
                 context.HttpContext.Items[Constants.HttpItems.UserID] = userId;
                 ECDSAWrapper ecdsa = new ECDSAWrapper("ES521");
                 ecdsa.ImportFromPublicBase64String(publicKey);
@@ -30,7 +31,7 @@ namespace Validation.Attributes
             else
             {
                 context.HttpContext.Response.StatusCode = 401;
-                await context.HttpContext.Response.Body.WriteAsync(Encoding.UTF8.GetBytes("You did not supply a token."));
+                await context.HttpContext.Response.Body.WriteAsync(Encoding.UTF8.GetBytes("You did not supply a token or it is malformed."));
             }
         }
     }
