@@ -8,6 +8,7 @@
             public const string ForgotPassword = "ForgotPassword";
             public const string LockedOutUsers = "LockedOutUsers";
             public const string CCInformationChanged = "CCInformationChanged";
+            public const string Email2FAHotpCode = "Email2FAHotpCode";
         }
     }
 }

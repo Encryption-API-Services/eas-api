@@ -15,23 +15,23 @@ namespace DataLayer.Mongo.Repositories
             var database = client.GetDatabase(databaseSettings.DatabaseName);
             this._hotpCodes = database.GetCollection<HotpCode>("HotpCodes");
         }
-        public async Task<List<HotpCode>> GetAllHotpCodesNotSent()
-        {
-            return await this._hotpCodes.AsQueryable().Where(x => x.HasBeenSent == false && x.HasBeenVerified == false).ToListAsync();
-        }
-
         public async Task<long> GetHighestCounter()
         {
-            HotpCode hotpCode = await this._hotpCodes.AsQueryable().OrderByDescending(x => x.Counter).FirstAsync();
-            return hotpCode.Counter;
+            HotpCode hotpCode = await this._hotpCodes.AsQueryable().OrderByDescending(x => x.Counter).FirstOrDefaultAsync();
+            if (hotpCode != null)
+            {
+                return hotpCode.Counter;
+            }
+            else
+            {
+                return 0;
+            }
         }
 
-        public async Task<HotpCode> GetHotpCodeByIdAndCode(string id, string code)
+        public async Task<HotpCode> GetHotpCodeByIdAndCode(string id)
         {
             return await this._hotpCodes.Find(x => x.UserId == id &&
-                                              x.Hotp == code &&
-                                              x.HasBeenSent == true &&
-                                              x.HasBeenVerified == false).FirstOrDefaultAsync();
+                                              x.HasBeenVerified == false).SortByDescending(x => x.CreatedDate).FirstOrDefaultAsync();
         }
 
         public async Task InsertHotpCode(HotpCode code)
@@ -43,13 +43,6 @@ namespace DataLayer.Mongo.Repositories
         {
             var filter = Builders<HotpCode>.Filter.Eq(x => x.Id, id);
             var update = Builders<HotpCode>.Update.Set(x => x.HasBeenVerified, true);
-            await this._hotpCodes.UpdateOneAsync(filter, update);
-        }
-
-        public async Task UpdateHotpCodeToSent(string id)
-        {
-            var filter = Builders<HotpCode>.Filter.Eq(x => x.Id, id);
-            var update = Builders<HotpCode>.Update.Set(x => x.HasBeenSent, true);
             await this._hotpCodes.UpdateOneAsync(filter, update);
         }
     }
