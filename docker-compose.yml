@@ -18,6 +18,8 @@ services:
     image: mongodb/mongodb-community-server:latest
     ports:
     - "27017:27017"
+    volumes:
+    - "C:/data/db:/data/db"
   redis:
     image: redis/redis-stack-server:latest
     ports:
