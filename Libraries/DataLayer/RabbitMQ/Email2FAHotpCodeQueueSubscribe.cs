@@ -40,7 +40,7 @@ namespace DataLayer.RabbitMQ
                     mail.From = new MailAddress("support@encryptionapiservices.com");
                     mail.To.Add(message.UserEmail);
                     mail.Subject = "Email 2FA - Encryption API Services";
-                    mail.Body = String.Format("Your login code is <b>{0}</b>: </br>" , message.HotpCode);
+                    mail.Body = String.Format("Your login code is: <b>{0}</b>" , message.HotpCode);
                     mail.IsBodyHtml = true;
 
                     using (SmtpClient smtp = new SmtpClient("smtp.gmail.com", 587))

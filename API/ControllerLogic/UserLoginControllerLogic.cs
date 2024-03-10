@@ -142,7 +142,7 @@ namespace API.ControllersLogic
                                 UserEmail = activeUser.Email,
                             };
                             this._email2FAHotpCodeQueuePublish.BasicPublish(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(newMessage)));
-                            result = new OkObjectResult(new { message = "You need to verify the code sent to your email.", TwoFactorAuth = true });
+                            result = new OkObjectResult(new { message = "You need to verify the code sent to your email.", TwoFactorAuth = true, UserId = activeUser.Id });
                         }
                         else
                         {
@@ -245,7 +245,9 @@ namespace API.ControllersLogic
             this._benchMarkMethodCache.AddLog(logger);
             return result;
         }
+        #endregion
 
+        #region ValidateHotpCode 
         public async Task<IActionResult> ValidateHotpCode([FromBody] ValidateHotpCode body, HttpContext context)
         {
             BenchmarkMethodLogger logger = new BenchmarkMethodLogger(context);
