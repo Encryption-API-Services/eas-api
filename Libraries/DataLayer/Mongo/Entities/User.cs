@@ -63,6 +63,8 @@ namespace DataLayer.Mongo.Entities
     public class LockedOut
     {
         public bool IsLockedOut { get; set; }
+        public string Token { get; set; }
+        public string PublicKey { get; set; }
     }
 
     public class UserSubscriptionSettings

@@ -36,5 +36,6 @@ namespace DataLayer.Mongo.Repositories
         public Task UpdateStripeSubscriptionToNull(string userId);
         public Task UpdateBillingInformation(string userId, UpdateBillingInformationRequestBody billingInformation);
         public Task UpdateUsersRsaKeyPairsAndToken(string userId, string pubXml, string token, string signedToken);
+        public Task UpdateLockedOutUsersToken(string userId, string lockedOutToken, string publicKey);
     }
 }

@@ -132,7 +132,9 @@ namespace DataLayer.Mongo.Repositories
         public async Task UnlockUser(string userId)
         {
             var filter = Builders<User>.Filter.Eq(x => x.Id, userId);
-            var update = Builders<User>.Update.Set(x => x.LockedOut.IsLockedOut, false);
+            var update = Builders<User>.Update.Set(x => x.LockedOut.IsLockedOut, false)
+                                              .Set(x => x.LockedOut.Token, null)
+                                              .Set(x => x.LockedOut.PublicKey, null);
             await this._userCollection.UpdateOneAsync(filter, update);
         }
 
@@ -262,6 +264,14 @@ namespace DataLayer.Mongo.Repositories
         {
             var filter = Builders<User>.Filter.Eq(x => x.Id, userId);
             var update = Builders<User>.Update.Set(x => x.ApiKey, newApiKey);
+            await this._userCollection.UpdateOneAsync(filter, update);
+        }
+
+        public async Task UpdateLockedOutUsersToken(string userId, string lockedOutToken, string publicKey)
+        {
+            var filter = Builders<User>.Filter.Eq(x => x.Id, userId);
+            var update = Builders<User>.Update.Set(x => x.LockedOut.Token, lockedOutToken)
+                                              .Set(x => x.LockedOut.PublicKey, publicKey);
             await this._userCollection.UpdateOneAsync(filter, update);
         }
     }
