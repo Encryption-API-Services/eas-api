@@ -1,5 +1,6 @@
 ﻿using CasDotnetSdk.Asymmetric;
 using CasDotnetSdk.PasswordHashers;
+using CasDotnetSdk.Signatures;
 using Common;
 using DataLayer.Cache;
 using DataLayer.Mongo.Entities;
@@ -79,9 +80,9 @@ namespace API.ControllersLogic
             try
             {
                 User databaseUser = await this._userRepository.GetUserById(body.Id);
-                RSAWrapper rsaWrapper = new RSAWrapper();
                 byte[] signedToken = Base64UrlEncoder.DecodeBytes(body.Token);
-                bool isValid = rsaWrapper.RsaVerifyBytes(databaseUser.ForgotPassword.PublicKey, Convert.FromBase64String(databaseUser.ForgotPassword.Token), signedToken);
+                ED25519Wrapper ed25519 = new ED25519Wrapper();
+                bool isValid = ed25519.VerifyWithPublicKeyBytes(Convert.FromBase64String(databaseUser.ForgotPassword.PublicKey), signedToken, Convert.FromBase64String(databaseUser.ForgotPassword.Token));
                 if (isValid)
                 {
                     List<string> lastFivePasswords = await this._forgotPasswordRepository.GetLastFivePassword(body.Id);

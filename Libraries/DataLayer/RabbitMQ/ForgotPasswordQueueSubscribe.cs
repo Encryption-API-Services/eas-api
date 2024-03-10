@@ -2,15 +2,12 @@
 using RabbitMQ.Client;
 using DataLayer.RabbitMQ.QueueMessages;
 using System.Text.Json;
-using CasDotnetSdk.Asymmetric.Types;
-using CasDotnetSdk.Asymmetric;
-using CasDotnetSdk.Hashers;
-using Microsoft.IdentityModel.Tokens;
 using System.Net.Mail;
 using System.Net;
-using System.Text;
 using System;
 using DataLayer.Mongo.Repositories;
+using Common.UniqueIdentifiers;
+using static Common.UniqueIdentifiers.Generator;
 
 namespace DataLayer.RabbitMQ
 {
@@ -37,14 +34,7 @@ namespace DataLayer.RabbitMQ
         private async void ForgotPasswordQueueMessageReceived(object? sender, BasicDeliverEventArgs e)
         {
             ForgotPasswordQueueMessage message = JsonSerializer.Deserialize<ForgotPasswordQueueMessage>(e.Body.ToArray());
-            string guid = Guid.NewGuid().ToString();
-            byte[] guidBytes = Encoding.UTF8.GetBytes(guid);
-            SHAWrapper shaWrapper = new SHAWrapper();
-            byte[] hashedGuid = shaWrapper.Hash512(guidBytes);
-            RSAWrapper rsaWrapper = new RSAWrapper();
-            RsaKeyPairResult keyPair = rsaWrapper.GetKeyPair(4096);
-            byte[] signature = rsaWrapper.RsaSignWithKeyBytes(keyPair.PrivateKey, hashedGuid);
-            string urlSignature = Base64UrlEncoder.Encode(signature);
+            EmailToken emailToken = new Generator().GenerateEmailToken(); 
             try
             {
                 using (MailMessage mail = new MailMessage())
@@ -52,7 +42,7 @@ namespace DataLayer.RabbitMQ
                     mail.From = new MailAddress("support@encryptionapiservices.com");
                     mail.To.Add(message.UserEmail);
                     mail.Subject = "Forgot Password - Encryption API Services";
-                    mail.Body = "If you did not ask to reset this password please delete this email.</br>" + String.Format("<a href='" + Environment.GetEnvironmentVariable("Domain") + "/#/forgot-password/reset?id={0}&token={1}'>Click here to reset your password.</a>", message.UserId, urlSignature);
+                    mail.Body = "If you did not ask to reset this password please delete this email.</br>" + String.Format("<a href='" + Environment.GetEnvironmentVariable("Domain") + "/#/forgot-password/reset?id={0}&token={1}'>Click here to reset your password.</a>", message.UserId, emailToken.UrlSignature);
                     mail.IsBodyHtml = true;
 
                     using (SmtpClient smtp = new SmtpClient("smtp.gmail.com", 587))
@@ -64,7 +54,7 @@ namespace DataLayer.RabbitMQ
                         smtp.Send(mail);
                     }
                 }
-                await this._userRepository.UpdateUsersForgotPasswordToReset(message.UserId, Convert.ToBase64String(hashedGuid), keyPair.PublicKey, urlSignature);
+                await this._userRepository.UpdateUsersForgotPasswordToReset(message.UserId, emailToken.Base64HashedToken, emailToken.Base64PublicKey, emailToken.UrlSignature);
                 this.Channel.BasicAck(deliveryTag: e.DeliveryTag, multiple: false);
             }
             catch (Exception ex)
