@@ -1,6 +1,7 @@
 ﻿using API.ControllersLogic;
 using CasDotnetSdk.Asymmetric;
 using CasDotnetSdk.PasswordHashers;
+using CasDotnetSdk.Signatures;
 using CASHelpers;
 using Common;
 using DataLayer.Cache;
@@ -98,8 +99,8 @@ namespace API.Config
             {
                 User userToActivate = await this._userRespository.GetUserById(body.Id);
                 byte[] signature = Base64UrlEncoder.DecodeBytes(body.Token);
-                RSAWrapper rustRsaWrapper = new RSAWrapper();
-                bool isValid = rustRsaWrapper.RsaVerifyBytes(userToActivate.EmailActivationToken.PublicKey, Convert.FromBase64String(userToActivate.EmailActivationToken.Token), signature);
+                ED25519Wrapper ed25519 = new ED25519Wrapper();
+                bool isValid = ed25519.VerifyWithPublicKeyBytes(Convert.FromBase64String(userToActivate.EmailActivationToken.PublicKey), signature, Convert.FromBase64String(userToActivate.EmailActivationToken.Token));
                 if (isValid)
                 {
                     StripCustomer stripCustomer = new StripCustomer();

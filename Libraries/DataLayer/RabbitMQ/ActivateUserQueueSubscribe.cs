@@ -1,6 +1,7 @@
 ﻿using CasDotnetSdk.Asymmetric;
 using CasDotnetSdk.Asymmetric.Types;
 using CasDotnetSdk.Hashers;
+using Common.UniqueIdentifiers;
 using DataLayer.Mongo.Repositories;
 using DataLayer.RabbitMQ.QueueMessages;
 using Microsoft.IdentityModel.Tokens;
@@ -11,6 +12,7 @@ using System.Net;
 using System.Net.Mail;
 using System.Text;
 using System.Text.Json;
+using static Common.UniqueIdentifiers.Generator;
 
 namespace DataLayer.RabbitMQ
 {
@@ -37,13 +39,7 @@ namespace DataLayer.RabbitMQ
         private async void ActivateUserQueueMessageReceived(object? sender, BasicDeliverEventArgs e)
         {
             ActivateUserQueueMessage message = JsonSerializer.Deserialize<ActivateUserQueueMessage>(e.Body.ToArray());
-            byte[] guid = Encoding.UTF8.GetBytes(Guid.NewGuid().ToString());
-            SHAWrapper shaWrapper = new SHAWrapper();
-            byte[] hashedGuidBytes = shaWrapper.Hash512(guid);
-            RSAWrapper rsaWrapper = new RSAWrapper();
-            RsaKeyPairResult keyPair = rsaWrapper.GetKeyPair(4096);
-            byte[] signtureResult = rsaWrapper.RsaSignWithKeyBytes(keyPair.PrivateKey, hashedGuidBytes);
-            string urlSignature = Base64UrlEncoder.Encode(signtureResult);
+            EmailToken emailToken = new Generator().GenerateEmailToken();
             try
             {
                 SmtpClient SmtpServer = new SmtpClient("smtp.gmail.com");
@@ -53,7 +49,7 @@ namespace DataLayer.RabbitMQ
                     mail.From = new MailAddress("support@encryptionapiservices.com");
                     mail.To.Add(message.UserEmail);
                     mail.Subject = "Account Activation - Encryption API Services ";
-                    mail.Body = "We are excited to have you here </br>" + String.Format("<a href='" + Environment.GetEnvironmentVariable("Domain") + "/#/activate?id={0}&token={1}'>Click here to activate</a>", message.UserId, urlSignature);
+                    mail.Body = "We are excited to have you here </br>" + String.Format("<a href='" + Environment.GetEnvironmentVariable("Domain") + "/#/activate?id={0}&token={1}'>Click here to activate</a>", message.UserId, emailToken.UrlSignature);
                     mail.IsBodyHtml = true;
 
                     using (SmtpClient smtp = new SmtpClient("smtp.gmail.com", 587))
@@ -66,7 +62,7 @@ namespace DataLayer.RabbitMQ
                     }
                 }
 
-                await this._userRepository.UpdateUsersRsaKeyPairsAndToken(message.UserId, keyPair.PublicKey, Convert.ToBase64String(hashedGuidBytes), urlSignature);
+                await this._userRepository.UpdateUsersRsaKeyPairsAndToken(message.UserId, emailToken.Base64PublicKey, emailToken.Base64HashedToken, emailToken.UrlSignature);
                 this.Channel.BasicAck(deliveryTag: e.DeliveryTag, multiple: false);
             }
             catch (Exception ex)
