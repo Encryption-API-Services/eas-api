@@ -1,5 +1,6 @@
 ﻿using CasDotnetSdk.Asymmetric;
 using CasDotnetSdk.PasswordHashers;
+using CasDotnetSdk.Signatures;
 using CASHelpers;
 using Common;
 using Common.ThirdPartyAPIs;
@@ -211,9 +212,9 @@ namespace API.ControllersLogic
                 if (!string.IsNullOrEmpty(body.Id) && !string.IsNullOrEmpty(body.Token))
                 {
                     User databaseUser = await this._userRepository.GetUserById(body.Id);
-                    RSAWrapper rsaWrapper = new RSAWrapper();
                     byte[] signedToken = Base64UrlEncoder.DecodeBytes(body.Token);
-                    bool isValid = rsaWrapper.RsaVerifyBytes(databaseUser.LockedOut.PublicKey, Convert.FromBase64String(databaseUser.LockedOut.Token), signedToken);
+                    ED25519Wrapper ed25519 = new ED25519Wrapper();
+                    bool isValid = ed25519.VerifyWithPublicKeyBytes(Convert.FromBase64String(databaseUser.LockedOut.PublicKey), signedToken, Convert.FromBase64String(databaseUser.LockedOut.Token));
                     if (isValid)
                     {
                         await this._userRepository.UnlockUser(body.Id);
