@@ -10,7 +10,8 @@ namespace Email_Service
         ForgotPasswordQueueSubscribe forgotPasswordSubscribe,
         LockedOutUserQueueSubscribe lockedOutUserSubscribe,
         CreditCardInformationChangedQueueSubscribe ccInfoChangedSubscribe,
-        InactiveUser inactiveUsers
+        InactiveUser inactiveUsers,
+        Email2FAHotpCodeQueueSubscribe email2faHotpCodeSubscribe
             ) : BackgroundService
     {
         private readonly InactiveUser _inactiveUsers = inactiveUsers;
