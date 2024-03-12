@@ -23,5 +23,5 @@ services:
       - UserCollectionName=Users
       - Domain=http://localhost:4200
       - Email=mikemulchrone987@gmail.com
-      - EmailPass=hieo aglo kkte fwjj
+      - EmailPass=djrn oyhy zicj nhcy
       - RabbitMqUrl=amqp://guest:guest@rabbit-mq:5672

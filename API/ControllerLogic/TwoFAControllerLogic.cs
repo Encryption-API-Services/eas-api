@@ -80,6 +80,7 @@ namespace API.ControllersLogic
             {
                 string userId = httpContext.Items[Constants.HttpItems.UserID].ToString();
                 await this._userRepository.ChangePhone2FAStatusToDisabled(userId);
+                result = new OkResult();
             }
             catch (Exception ex)
             {
@@ -99,6 +100,7 @@ namespace API.ControllersLogic
             {
                 string userId = httpContext.Items[Constants.HttpItems.UserID].ToString();
                 await this._userRepository.ChangePhone2FAStatusToEnabled(userId);
+                result = new OkResult();
             }
             catch (Exception ex)
             {

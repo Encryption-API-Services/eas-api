@@ -30,6 +30,7 @@ namespace API.ControllersLogic
         private readonly ICASExceptionRepository _exceptionRepository;
         private readonly BenchmarkMethodCache _benchMarkMethodCache;
         private readonly LockedOutUserQueuePublish _lockedOutUserQueue;
+        private readonly Email2FAHotpCodeQueuePublish _email2FAHotpCodeQueuePublish;
 
         public UserLoginControllerLogic(
             IUserRepository userRepository,
@@ -38,7 +39,8 @@ namespace API.ControllersLogic
             ISuccessfulLoginRepository successfulLoginRepository,
             ICASExceptionRepository exceptionRepository,
             BenchmarkMethodCache benchmarkMethodCache,
-            LockedOutUserQueuePublish lockedOutUserQueue
+            LockedOutUserQueuePublish lockedOutUserQueue,
+            Email2FAHotpCodeQueuePublish email2FAHotpCodeQueuePublish
             )
         {
             this._userRepository = userRepository;
@@ -48,6 +50,7 @@ namespace API.ControllersLogic
             this._exceptionRepository = exceptionRepository;
             this._benchMarkMethodCache = benchmarkMethodCache;
             this._lockedOutUserQueue = lockedOutUserQueue;
+            this._email2FAHotpCodeQueuePublish = email2FAHotpCodeQueuePublish;
         }
 
         #region GetApiKey
@@ -57,15 +60,10 @@ namespace API.ControllersLogic
             IActionResult result = null;
             try
             {
-                string token = context.Request.Headers[Constants.HeaderNames.Authorization].FirstOrDefault()?.Split(" ").Last();
-                // get current token
-                if (!string.IsNullOrEmpty(token))
-                {
-                    JWT jwtWrapper = new JWT();
-                    string userId = jwtWrapper.GetUserIdFromToken(token);
-                    string apiKey = await this._userRepository.GetApiKeyById(userId);
-                    result = new OkObjectResult(new { apiKey = apiKey });
-                }
+
+                string userId = context.Items[Constants.HttpItems.UserID].ToString();
+                string apiKey = await this._userRepository.GetApiKeyById(userId);
+                result = new OkObjectResult(new { apiKey = apiKey });
             }
             catch (Exception ex)
             {
@@ -123,23 +121,29 @@ namespace API.ControllersLogic
                     Argon2Wrapper argon2 = new Argon2Wrapper();
                     if (argon2.VerifyPassword(activeUser.Password, body.Password))
                     {
-                        ECDSAWrapper ecdsa = new ECDSAWrapper("ES521");
-                        string token = new JWT().GenerateECCToken(activeUser.Id, activeUser.IsAdmin, ecdsa, 1);
                         if (activeUser.Phone2FA != null && activeUser.Phone2FA.IsEnabled)
                         {
                             byte[] secretKey = KeyGeneration.GenerateRandomKey(OtpHashMode.Sha512);
                             long counter = await this._hotpCodesRepository.GetHighestCounter() + 1;
                             Hotp hotpGenerator = new Hotp(secretKey, OtpHashMode.Sha512, 8);
+                            string hotp = hotpGenerator.ComputeHOTP(counter);
                             HotpCode code = new HotpCode()
                             {
                                 UserId = activeUser.Id,
                                 Counter = counter,
-                                Hotp = hotpGenerator.ComputeHOTP(counter),
-                                HasBeenSent = false,
-                                HasBeenVerified = false
+                                Hotp = hotp,
+                                HasBeenVerified = false,
+                                SecretKey = secretKey,
+                                CreatedDate = DateTime.UtcNow,
                             };
                             await this._hotpCodesRepository.InsertHotpCode(code);
-                            result = new OkObjectResult(new { message = "You need to verify the code sent to your phone.", TwoFactorAuth = true });
+                            Email2FAHotpCodeQueueMessage newMessage = new Email2FAHotpCodeQueueMessage()
+                            {
+                                HotpCode = hotp,
+                                UserEmail = activeUser.Email,
+                            };
+                            this._email2FAHotpCodeQueuePublish.BasicPublish(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(newMessage)));
+                            result = new OkObjectResult(new { message = "You need to verify the code sent to your email.", TwoFactorAuth = true, UserId = activeUser.Id });
                         }
                         else
                         {
@@ -156,6 +160,8 @@ namespace API.ControllersLogic
                                 CreateTime = DateTime.UtcNow
                             };
                             await this._successfulLoginRepository.InsertSuccessfulLogin(login);
+                            ECDSAWrapper ecdsa = new ECDSAWrapper("ES521");
+                            string token = new JWT().GenerateECCToken(activeUser.Id, activeUser.IsAdmin, ecdsa, 1);
                             result = new OkObjectResult(new { message = "You have successfully signed in.", token = token, TwoFactorAuth = false });
                         }
                     }
@@ -240,7 +246,9 @@ namespace API.ControllersLogic
             this._benchMarkMethodCache.AddLog(logger);
             return result;
         }
+        #endregion
 
+        #region ValidateHotpCode 
         public async Task<IActionResult> ValidateHotpCode([FromBody] ValidateHotpCode body, HttpContext context)
         {
             BenchmarkMethodLogger logger = new BenchmarkMethodLogger(context);
@@ -257,19 +265,6 @@ namespace API.ControllersLogic
                     {
                         await this._hotpCodesRepository.UpdateHotpToVerified(databaseCode.Id);
                         User activeUser = await this._userRepository.GetUserById(body.UserId);
-                        IpInfoHelper ipInfoHelper = new IpInfoHelper();
-                        IpInfoResponse ipInfo = await ipInfoHelper.GetIpInfo(context.Items[Constants.HttpItems.IP].ToString());
-                        SuccessfulLogin login = new SuccessfulLogin()
-                        {
-                            UserId = activeUser.Id,
-                            Ip = context.Items[Constants.HttpItems.IP].ToString(),
-                            UserAgent = body.UserAgent,
-                            City = ipInfo.City,
-                            Country = ipInfo.Country,
-                            TimeZone = ipInfo.TimeZone,
-                            CreateTime = DateTime.UtcNow
-                        };
-                        await this._successfulLoginRepository.InsertSuccessfulLogin(login);
                         ECDSAWrapper ecdsa = new ECDSAWrapper("ES521");
                         string token = new JWT().GenerateECCToken(activeUser.Id, activeUser.IsAdmin, ecdsa, 1);
                         result = new OkObjectResult(new { message = "You have successfully verified your authentication code.", token = token });

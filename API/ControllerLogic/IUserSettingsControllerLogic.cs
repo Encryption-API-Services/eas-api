@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Models.UserAuthentication;
+using Models.UserSettings;
 
 namespace API.ControllerLogic
 {

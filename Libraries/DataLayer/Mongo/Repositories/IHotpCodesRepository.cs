@@ -1,5 +1,4 @@
 ﻿using DataLayer.Mongo.Entities;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace DataLayer.Mongo.Repositories
@@ -8,9 +7,7 @@ namespace DataLayer.Mongo.Repositories
     {
         public Task<long> GetHighestCounter();
         public Task InsertHotpCode(HotpCode code);
-        public Task<List<HotpCode>> GetAllHotpCodesNotSent();
-        public Task UpdateHotpCodeToSent(string id);
-        public Task<HotpCode> GetHotpCodeByIdAndCode(string id, string code);
+        public Task<HotpCode> GetHotpCodeByIdAndCode(string id);
         public Task UpdateHotpToVerified(string id);
     }
 }

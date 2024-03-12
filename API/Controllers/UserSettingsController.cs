@@ -1,6 +1,7 @@
 ﻿using API.ControllerLogic;
 using Microsoft.AspNetCore.Mvc;
 using Models.UserAuthentication;
+using Models.UserSettings;
 using Validation.Attributes;
 
 namespace API.Controllers

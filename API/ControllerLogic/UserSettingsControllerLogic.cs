@@ -6,6 +6,7 @@ using DataLayer.Mongo.Entities;
 using DataLayer.Mongo.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Models.UserAuthentication;
+using Models.UserSettings;
 using System.Reflection;
 using Validation.UserSettings;
 
@@ -95,6 +96,7 @@ namespace API.ControllerLogic
             this._benchMarkMethodCache.AddLog(logger);
             return result;
         }
+
         #endregion
     }
 }
