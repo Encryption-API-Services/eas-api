@@ -9,6 +9,7 @@ using DataLayer.Mongo.Entities;
 using DataLayer.Mongo.Repositories;
 using DataLayer.RabbitMQ;
 using DataLayer.RabbitMQ.QueueMessages;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Models.UserAuthentication;
@@ -247,11 +248,36 @@ namespace API.ControllersLogic
             try
             {
                 // get hotp code by userId and HotpCode
-                HotpCode databaseCode = await this._hotpCodesRepository.GetHotpCodeByIdAndCode(body.UserId, body.HotpCode);
-                if (databaseCode != null && databaseCode.Hotp.Equals(body.HotpCode) && databaseCode.UserId.Equals(body.UserId))
+                HotpCode databaseCode = await this._hotpCodesRepository.GetHotpCodeByIdAndCode(body.UserId);
+                if (databaseCode != null)
                 {
-                    await this._hotpCodesRepository.UpdateHotpToVerified(databaseCode.Id);
-                    result = new OkObjectResult(new { message = "You have successfully verified your authentication code." });
+                    Hotp hotp = new Hotp(databaseCode.SecretKey, OtpHashMode.Sha512, 8);
+                    bool isValid = hotp.VerifyHotp(body.HotpCode, databaseCode.Counter);
+                    if (isValid)
+                    {
+                        await this._hotpCodesRepository.UpdateHotpToVerified(databaseCode.Id);
+                        User activeUser = await this._userRepository.GetUserById(body.UserId);
+                        IpInfoHelper ipInfoHelper = new IpInfoHelper();
+                        IpInfoResponse ipInfo = await ipInfoHelper.GetIpInfo(context.Items[Constants.HttpItems.IP].ToString());
+                        SuccessfulLogin login = new SuccessfulLogin()
+                        {
+                            UserId = activeUser.Id,
+                            Ip = context.Items[Constants.HttpItems.IP].ToString(),
+                            UserAgent = body.UserAgent,
+                            City = ipInfo.City,
+                            Country = ipInfo.Country,
+                            TimeZone = ipInfo.TimeZone,
+                            CreateTime = DateTime.UtcNow
+                        };
+                        await this._successfulLoginRepository.InsertSuccessfulLogin(login);
+                        ECDSAWrapper ecdsa = new ECDSAWrapper("ES521");
+                        string token = new JWT().GenerateECCToken(activeUser.Id, activeUser.IsAdmin, ecdsa, 1);
+                        result = new OkObjectResult(new { message = "You have successfully verified your authentication code.", token = token });
+                    }
+                    else
+                    {
+                        result = new BadRequestObjectResult(new { error = "The authentication code that you entered was invalid" });
+                    }
                 }
                 else
                 {
