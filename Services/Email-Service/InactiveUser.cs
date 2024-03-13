@@ -34,11 +34,16 @@ namespace Email_Service
             List<User> activeUsers = await this._userRepository.GetActiveUsers();
             foreach (User user in activeUsers)
             {
-                // Check if the user has any logins within the last 90 days
-                long successfulLogins = await this._successfulLoginRepository.GetLoginsCountAfterDate(DateTime.UtcNow.AddDays(-90), user.Id);
-                if (successfulLogins == 0 && user.InactiveEmail.Sent == false)
+                DateTime now = DateTime.UtcNow;
+                // give the user 90 days from the time of their profile creation before we start sending them emails about an inactive profile.
+                if (user.CreationTime.AddDays(90) <= now)
                 {
-                    await this.SendUserEmail(user);
+                    // Check if the user has any logins within the last 90 days
+                    long successfulLogins = await this._successfulLoginRepository.GetLoginsCountAfterDate(now.AddDays(-90), user.Id);
+                    if (successfulLogins == 0 && user.InactiveEmail.Sent == false)
+                    {
+                        await this.SendUserEmail(user);
+                    }
                 }
             }
         }
