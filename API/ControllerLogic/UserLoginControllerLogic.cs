@@ -62,8 +62,8 @@ namespace API.ControllersLogic
             {
 
                 string userId = context.Items[Constants.HttpItems.UserID].ToString();
-                string apiKey = await this._userRepository.GetApiKeyById(userId);
-                result = new OkObjectResult(new { apiKey = apiKey });
+                Tuple<string, string> apiKey = await this._userRepository.GetApiKeysById(userId);
+                result = new OkObjectResult(new { apiKey = apiKey.Item1, developmentKey = apiKey.Item2 });
             }
             catch (Exception ex)
             {

@@ -1,6 +1,7 @@
 ﻿using DataLayer.Mongo.Entities;
 using Models.Payments;
 using Models.UserAuthentication;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -24,7 +25,7 @@ namespace DataLayer.Mongo.Repositories
         public Task ChangePhoneNumberByUserID(string userId, string phoneNumber);
         public Task<string> GetPhoneNumberByUserId(string userId);
         public Task AddCardToUser(string userId, string cardId);
-        public Task<string> GetApiKeyById(string userId);
+        public Task<Tuple<string, string>> GetApiKeysById(string userId);
         public Task UpdateApiKeyByUserId(string userId, string newApiKey);
         public Task<User> GetUserByApiKey(string apiKey);
         public Task DeleteUserByEmail(string email);

@@ -184,9 +184,9 @@ namespace DataLayer.Mongo.Repositories
             await this._userCollection.UpdateOneAsync(filter, update);
         }
 
-        public async Task<string> GetApiKeyById(string userId)
+        public async Task<Tuple<string, string>> GetApiKeysById(string userId)
         {
-            return await this._userCollection.AsQueryable().Where(x => x.Id == userId).Select(x => x.ApiKey).FirstOrDefaultAsync();
+            return await this._userCollection.AsQueryable().Where(x => x.Id == userId).Select(x => new Tuple<string, string>(x.ApiKey, x.DevelopmentApiKey)).FirstOrDefaultAsync();
         }
 
         public async Task<User> GetUserByApiKey(string apiKey)
