@@ -101,6 +101,7 @@ namespace API.ControllerLogic
                     OSInfoRedisEntry cacheInformation = JsonSerializer.Deserialize<OSInfoRedisEntry>(existingCacheInformation, options);
 
                     // TODO: perform other checks besides IP address and Operating System
+                    // also perform check based upon the API key.
                     if (cacheInformation.IP != httpContext.Request.HttpContext.Items[Constants.HttpItems.IP].ToString())
                     {
                         result = new BadRequestObjectResult(new { error = "There is already a UserID using this API Key is associated IP address" });
@@ -119,7 +120,8 @@ namespace API.ControllerLogic
                     OSInfoRedisEntry newEntry = new OSInfoRedisEntry()
                     {
                         IP = httpContext.Request.HttpContext.Items[Constants.HttpItems.IP].ToString(),
-                        OperatingSystem = body.OperatingSystem
+                        OperatingSystem = body.OperatingSystem,
+                        ApiKey = body.ApiKey
                     };
                     string newEntrySeralized = JsonSerializer.Serialize(newEntry);
                     this._redisClient.SetString(cacheKey, newEntrySeralized);

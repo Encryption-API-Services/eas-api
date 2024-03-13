@@ -4,5 +4,6 @@
     {
         public string IP { get; set; }
         public string OperatingSystem { get; set; }
+        public string ApiKey { get; set; }
     }
 }
