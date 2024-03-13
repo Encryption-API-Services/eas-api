@@ -52,23 +52,13 @@ namespace Email_Service
             RsaKeyPairResult keyPair = rsaWrapper.GetKeyPair(4096);
             byte[] signature = rsaWrapper.RsaSignWithKeyBytes(keyPair.PrivateKey, hashedGuid);
             string urlSignature = Base64UrlEncoder.Encode(signature);
-            using (MailMessage mail = new MailMessage())
-            {
-                mail.From = new MailAddress("support@encryptionapiservices.com");
-                mail.To.Add(user.Email);
-                mail.Subject = "Inactive User - Encryption API Services";
-                mail.Body = "We noticed you haven't logged in for 3 months. If you want to delete your user account you can do so by clicking </br>" + String.Format("<a href='" + Environment.GetEnvironmentVariable("Domain") + "/#/inactive-user?id={0}&token={1}'>here</a>.", user.Id, urlSignature);
-                mail.IsBodyHtml = true;
-
-                using (SmtpClient smtp = new SmtpClient("smtp.gmail.com", 587))
-                {
-                    string email = Environment.GetEnvironmentVariable("Email");
-                    smtp.UseDefaultCredentials = false;
-                    smtp.Credentials = new NetworkCredential(email, Environment.GetEnvironmentVariable("EmailPass"));
-                    smtp.EnableSsl = true;
-                    smtp.Send(mail);
-                }
-            }
+            using MailMessage mail = new MailMessage();
+            mail.From = new MailAddress("support@encryptionapiservices.com");
+            mail.To.Add(user.Email);
+            mail.Subject = "Inactive User - Encryption API Services";
+            mail.Body = "We noticed you haven't logged in for 3 months. If you want to delete your user account you can do so by clicking </br>" + String.Format("<a href='" + Environment.GetEnvironmentVariable("Domain") + "/#/inactive-user?id={0}&token={1}'>here</a>.", user.Id, urlSignature);
+            mail.IsBodyHtml = true;
+            SmtpClientSender.SendMailMessage(mail);
             await this._userRepository.UpdateInactiveEmailSent(user.Id, Convert.ToBase64String(hashedGuid), keyPair.PublicKey);
         }
     }
