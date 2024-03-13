@@ -22,6 +22,7 @@ namespace DataLayer.Mongo.Repositories
         }
         public async Task<User> AddUser(RegisterUser model, string hashedPassword)
         {
+            Generator generator = new Generator();
             User newUser = new User
             {
                 Id = ObjectId.GenerateNewId().ToString(),
@@ -49,7 +50,8 @@ namespace DataLayer.Mongo.Repositories
                 {
                     IsLockedOut = false,
                 },
-                ApiKey = new Generator().CreateApiKey(),
+                ApiKey = generator.CreateApiKey(),
+                DevelopmentApiKey = generator.CreateApiKey(), 
                 EmailActivationToken = new EmailActivationToken()
                 {
                     WasVerified = false
