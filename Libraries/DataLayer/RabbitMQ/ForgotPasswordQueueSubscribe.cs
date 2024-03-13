@@ -8,6 +8,7 @@ using System;
 using DataLayer.Mongo.Repositories;
 using Common.UniqueIdentifiers;
 using static Common.UniqueIdentifiers.Generator;
+using Common.Email;
 
 namespace DataLayer.RabbitMQ
 {
@@ -34,26 +35,16 @@ namespace DataLayer.RabbitMQ
         private async void ForgotPasswordQueueMessageReceived(object? sender, BasicDeliverEventArgs e)
         {
             ForgotPasswordQueueMessage message = JsonSerializer.Deserialize<ForgotPasswordQueueMessage>(e.Body.ToArray());
-            EmailToken emailToken = new Generator().GenerateEmailToken(); 
+            EmailToken emailToken = new Generator().GenerateEmailToken();
             try
             {
-                using (MailMessage mail = new MailMessage())
-                {
-                    mail.From = new MailAddress("support@encryptionapiservices.com");
-                    mail.To.Add(message.UserEmail);
-                    mail.Subject = "Forgot Password - Encryption API Services";
-                    mail.Body = "If you did not ask to reset this password please delete this email.</br>" + String.Format("<a href='" + Environment.GetEnvironmentVariable("Domain") + "/#/forgot-password/reset?id={0}&token={1}'>Click here to reset your password.</a>", message.UserId, emailToken.UrlSignature);
-                    mail.IsBodyHtml = true;
-
-                    using (SmtpClient smtp = new SmtpClient("smtp.gmail.com", 587))
-                    {
-                        string email = Environment.GetEnvironmentVariable("Email");
-                        smtp.UseDefaultCredentials = false;
-                        smtp.Credentials = new NetworkCredential(email, Environment.GetEnvironmentVariable("EmailPass"));
-                        smtp.EnableSsl = true;
-                        smtp.Send(mail);
-                    }
-                }
+                using MailMessage mail = new MailMessage();
+                mail.From = new MailAddress("support@encryptionapiservices.com");
+                mail.To.Add(message.UserEmail);
+                mail.Subject = "Forgot Password - Encryption API Services";
+                mail.Body = "If you did not ask to reset this password please delete this email.</br>" + String.Format("<a href='" + Environment.GetEnvironmentVariable("Domain") + "/#/forgot-password/reset?id={0}&token={1}'>Click here to reset your password.</a>", message.UserId, emailToken.UrlSignature);
+                mail.IsBodyHtml = true;
+                SmtpClientSender.SendMailMessage(mail);
                 await this._userRepository.UpdateUsersForgotPasswordToReset(message.UserId, emailToken.Base64HashedToken, emailToken.Base64PublicKey, emailToken.UrlSignature);
                 this.Channel.BasicAck(deliveryTag: e.DeliveryTag, multiple: false);
             }

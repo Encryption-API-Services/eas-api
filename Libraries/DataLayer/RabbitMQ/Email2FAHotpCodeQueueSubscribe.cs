@@ -8,6 +8,7 @@ using Twilio.TwiML.Messaging;
 using DataLayer.RabbitMQ.QueueMessages;
 using System.Text.Json;
 using System.ComponentModel.DataAnnotations;
+using Common.Email;
 
 namespace DataLayer.RabbitMQ
 {
@@ -35,23 +36,13 @@ namespace DataLayer.RabbitMQ
             try
             {
                 Email2FAHotpCodeQueueMessage message = JsonSerializer.Deserialize<Email2FAHotpCodeQueueMessage>(e.Body.ToArray());
-                using (MailMessage mail = new MailMessage())
-                {
-                    mail.From = new MailAddress("support@encryptionapiservices.com");
-                    mail.To.Add(message.UserEmail);
-                    mail.Subject = "Email 2FA - Encryption API Services";
-                    mail.Body = String.Format("Your login code is: <b>{0}</b>" , message.HotpCode);
-                    mail.IsBodyHtml = true;
-
-                    using (SmtpClient smtp = new SmtpClient("smtp.gmail.com", 587))
-                    {
-                        string email = Environment.GetEnvironmentVariable("Email");
-                        smtp.UseDefaultCredentials = false;
-                        smtp.Credentials = new NetworkCredential(email, Environment.GetEnvironmentVariable("EmailPass"));
-                        smtp.EnableSsl = true;
-                        smtp.Send(mail);
-                    }
-                }
+                using MailMessage mail = new MailMessage();
+                mail.From = new MailAddress("support@encryptionapiservices.com");
+                mail.To.Add(message.UserEmail);
+                mail.Subject = "Email 2FA - Encryption API Services";
+                mail.Body = String.Format("Your login code is: <b>{0}</b>", message.HotpCode);
+                mail.IsBodyHtml = true;
+                SmtpClientSender.SendMailMessage(mail);
                 this.Channel.BasicAck(deliveryTag: e.DeliveryTag, multiple: false);
             }
             catch (Exception ex)

@@ -13,6 +13,7 @@ using System.Text;
 using DataLayer.Mongo.Repositories;
 using static Common.UniqueIdentifiers.Generator;
 using Common.UniqueIdentifiers;
+using Common.Email;
 
 namespace DataLayer.RabbitMQ
 {
@@ -48,23 +49,13 @@ namespace DataLayer.RabbitMQ
 
                 SmtpClient SmtpServer = new SmtpClient("smtp.gmail.com");
                 SmtpServer.Port = 587;
-                using (MailMessage mail = new MailMessage())
-                {
-                    mail.From = new MailAddress("support@encryptionapiservices.com");
-                    mail.To.Add(message.UserEmail);
-                    mail.Subject = "Locked Out User Account - Encryption API Services";
-                    mail.Body = "Your account has been locked out due to many failed login attempts.</br>" + String.Format("To unlock your account click <a href='" + Environment.GetEnvironmentVariable("Domain") + "/#/unlock-account?id={0}&token={1}'>here</a>.", message.UserId, emailToken.UrlSignature);
-                    mail.IsBodyHtml = true;
-
-                    using (SmtpClient smtp = new SmtpClient("smtp.gmail.com", 587))
-                    {
-                        string email = Environment.GetEnvironmentVariable("Email");
-                        smtp.UseDefaultCredentials = false;
-                        smtp.Credentials = new NetworkCredential(email, Environment.GetEnvironmentVariable("EmailPass"));
-                        smtp.EnableSsl = true;
-                        smtp.Send(mail);
-                    }
-                }
+                using MailMessage mail = new MailMessage();
+                mail.From = new MailAddress("support@encryptionapiservices.com");
+                mail.To.Add(message.UserEmail);
+                mail.Subject = "Locked Out User Account - Encryption API Services";
+                mail.Body = "Your account has been locked out due to many failed login attempts.</br>" + String.Format("To unlock your account click <a href='" + Environment.GetEnvironmentVariable("Domain") + "/#/unlock-account?id={0}&token={1}'>here</a>.", message.UserId, emailToken.UrlSignature);
+                mail.IsBodyHtml = true;
+                SmtpClientSender.SendMailMessage(mail);
                 await this.userRepo.UpdateLockedOutUsersToken(message.UserId, emailToken.Base64HashedToken, emailToken.Base64PublicKey);
                 this.Channel.BasicAck(deliveryTag: e.DeliveryTag, multiple: false);
             }
