@@ -2,7 +2,7 @@
 using System.Net;
 using System.Net.Mail;
 
-namespace Email_Service
+namespace Common.Email
 {
     public static class SmtpClientSender
     {

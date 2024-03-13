@@ -1,6 +1,7 @@
 ﻿using CasDotnetSdk.Asymmetric;
 using CasDotnetSdk.Asymmetric.Types;
 using CasDotnetSdk.Hashers;
+using Common.Email;
 using DataLayer.Mongo;
 using DataLayer.Mongo.Entities;
 using DataLayer.Mongo.Repositories;
