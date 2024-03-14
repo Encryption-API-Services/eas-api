@@ -10,17 +10,14 @@ namespace Email_Service
         ForgotPasswordQueueSubscribe forgotPasswordSubscribe,
         LockedOutUserQueueSubscribe lockedOutUserSubscribe,
         CreditCardInformationChangedQueueSubscribe ccInfoChangedSubscribe,
-        InactiveUser inactiveUsers,
         Email2FAHotpCodeQueueSubscribe email2faHotpCodeSubscribe
             ) : BackgroundService
     {
-        private readonly InactiveUser _inactiveUsers = inactiveUsers;
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                await Task.WhenAll(this._inactiveUsers.GetInactiveUsers());
                 await Task.Delay(500, stoppingToken);
             }
         }
