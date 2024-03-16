@@ -21,9 +21,9 @@ namespace API.Controllers
         [HttpGet]
         [Route("GetUsers")]
         [ValidateJWT]
-        public async Task<IActionResult> GetUsers()
+        public async Task<IActionResult> GetUsers([FromQuery]int pageSkip, [FromQuery]int pageSize)
         {
-            return await this._userAdminControllerLogic.GetUsers(this._contextAccessor.HttpContext);
+            return await this._userAdminControllerLogic.GetUsers(this._contextAccessor.HttpContext, pageSkip, pageSize);
         }
     }
 }
