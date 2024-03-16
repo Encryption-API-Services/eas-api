@@ -4,6 +4,7 @@ using Common;
 using DataLayer.Cache;
 using DataLayer.Mongo.Entities;
 using DataLayer.Mongo.Repositories;
+using DataLayer.Redis;
 using Microsoft.AspNetCore.Mvc;
 using Models.UserAuthentication;
 using System.IdentityModel.Tokens.Jwt;
@@ -16,15 +17,18 @@ namespace API.ControllerLogic
         private readonly IUserRepository _userRepository;
         private readonly ICASExceptionRepository _exceptionRepository;
         private readonly BenchmarkMethodCache _benchMarkMethodCache;
+        private readonly IRedisClient _redisClient;
         public TokenControllerLogic(
             IUserRepository userRepository,
             ICASExceptionRepository exceptionRepository,
-            BenchmarkMethodCache benchMarkMethodCache
+            BenchmarkMethodCache benchMarkMethodCache,
+            IRedisClient redisClient
             )
         {
             this._userRepository = userRepository;
             this._exceptionRepository = exceptionRepository;
             this._benchMarkMethodCache = benchMarkMethodCache;
+            this._redisClient = redisClient;
         }
 
         #region GetToken
@@ -52,6 +56,8 @@ namespace API.ControllerLogic
                 {
                     ECDSAWrapper ecdsa = new ECDSAWrapper("ES521");
                     string token = new JWT().GenerateECCToken(activeUser.Id, activeUser.IsAdmin, ecdsa, 1);
+                    string isUserActiveRedisKey = Constants.RedisKeys.IsActiveUser + activeUser.Id;
+                    this._redisClient.SetString(isUserActiveRedisKey, true.ToString(), new TimeSpan(1, 0, 0));
                     result = new OkObjectResult(new GetTokenResponse() { Token = token });
                 }
                 return result;
@@ -77,10 +83,11 @@ namespace API.ControllerLogic
             {
                 // get current token
                 string token = context.Request.Headers[Constants.HeaderNames.Authorization].FirstOrDefault()?.Split(" ").Last();
-                if (!string.IsNullOrEmpty(token))
+                JwtSecurityTokenHandler handler = new JwtSecurityTokenHandler();
+                if (!string.IsNullOrEmpty(token) && handler.CanReadToken(token))
                 {
-                    var handler = new JwtSecurityTokenHandler().ReadJwtToken(token);
-                    string publicKey = handler.Claims.First(x => x.Type == Constants.TokenClaims.PublicKey).Value;
+                    var parsedToken = handler.ReadJwtToken(token);
+                    string publicKey = parsedToken.Claims.First(x => x.Type == Constants.TokenClaims.PublicKey).Value;
                     ECDSAWrapper ecdsa = new ECDSAWrapper("ES521");
                     ecdsa.ImportFromPublicBase64String(publicKey);
                     JWT jwtWrapper = new JWT();
@@ -88,8 +95,10 @@ namespace API.ControllerLogic
                     {
                         ECDSAWrapper newEcdsa = new ECDSAWrapper("ES521");
                         string userId = jwtWrapper.GetUserIdFromToken(token);
-                        bool isAdmin = bool.Parse(handler.Claims.First(x => x.Type == Constants.TokenClaims.IsAdmin).Value);
+                        bool isAdmin = bool.Parse(parsedToken.Claims.First(x => x.Type == Constants.TokenClaims.IsAdmin).Value);
                         string newToken = new JWT().GenerateECCToken(userId, isAdmin, newEcdsa, 1);
+                        string isUserActiveRedisKey = Constants.RedisKeys.IsActiveUser + userId;
+                        this._redisClient.SetString(isUserActiveRedisKey, true.ToString(), new TimeSpan(1, 0, 0));
                         result = new OkObjectResult(new GetTokenResponse() { Token = newToken });
                     }
                     else

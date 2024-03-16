@@ -1,12 +1,14 @@
 ﻿using Common.UniqueIdentifiers;
 using DataLayer.Mongo.Entities;
 using Models.Payments;
+using Models.UserAdmin;
 using Models.UserAuthentication;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using MongoDB.Driver.Linq;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace DataLayer.Mongo.Repositories
@@ -51,7 +53,7 @@ namespace DataLayer.Mongo.Repositories
                     IsLockedOut = false,
                 },
                 ApiKey = generator.CreateApiKey(),
-                DevelopmentApiKey = generator.CreateApiKey(), 
+                DevelopmentApiKey = generator.CreateApiKey(),
                 EmailActivationToken = new EmailActivationToken()
                 {
                     WasVerified = false
@@ -101,6 +103,13 @@ namespace DataLayer.Mongo.Repositories
                                               .Set(x => x.EmailActivationToken.Token, null)
                                               .Set(x => x.EmailActivationToken.SignedToken, null)
                                               .Set(x => x.EmailActivationToken.PublicKey, null);
+            await this._userCollection.UpdateOneAsync(filter, update);
+        }
+
+        public async Task ChangeUserActivationStatusById(string userId, bool isActive)
+        {
+            var filter = Builders<User>.Filter.Eq(x => x.Id, userId);
+            var update = Builders<User>.Update.Set(x => x.IsActive, isActive);
             await this._userCollection.UpdateOneAsync(filter, update);
         }
         public async Task UpdatePassword(string userId, string password)
@@ -274,6 +283,25 @@ namespace DataLayer.Mongo.Repositories
             var filter = Builders<User>.Filter.Eq(x => x.Id, userId);
             var update = Builders<User>.Update.Set(x => x.LockedOut.Token, lockedOutToken)
                                               .Set(x => x.LockedOut.PublicKey, publicKey);
+            await this._userCollection.UpdateOneAsync(filter, update);
+        }
+
+        public IMongoQueryable<UserTableItem> GetUsersByPage()
+        {
+            return this._userCollection.AsQueryable<User>().Select(x => new UserTableItem
+            {
+                UserId = x.Id,
+                Email = x.Email,
+                Username = x.Username,
+                IsActive = x.IsActive,
+                IsAdmin = x.IsAdmin
+            });
+        }
+
+        public async Task ChangeUserAdminStatusById(string userId, bool isAdmin)
+        {
+            var filter = Builders<User>.Filter.Eq(x => x.Id, userId);
+            var update = Builders<User>.Update.Set(x => x.IsAdmin, isAdmin);
             await this._userCollection.UpdateOneAsync(filter, update);
         }
     }

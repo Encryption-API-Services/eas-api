@@ -43,7 +43,7 @@ namespace API.Controllers
 
         [HttpGet]
         [Route("GetSuccessfulLogins")]
-        [ValidateJWT]
+        [TypeFilter(typeof(ValidateJWTAttribute))]
         public async Task<IActionResult> GetSuccessfulLogins([FromQuery] int pageSkip, [FromQuery] int pageSize)
         {
             return await this._loginControllerLogic.GetSuccessfulLogins(HttpContext, pageSkip, pageSize);
@@ -51,7 +51,7 @@ namespace API.Controllers
 
         [HttpPost]
         [Route("WasLoginMe")]
-        [ValidateJWT]
+        [TypeFilter(typeof(ValidateJWTAttribute))]
         public async Task<IActionResult> WasLoginMe([FromBody] WasLoginMe body)
         {
             return await this._loginControllerLogic.WasLoginMe(body, HttpContext);
@@ -59,7 +59,7 @@ namespace API.Controllers
 
         [HttpGet]
         [Route("GetApiKey")]
-        [ValidateJWT]
+        [TypeFilter(typeof(ValidateJWTAttribute))]
         public async Task<IActionResult> GetApiKey()
         {
             return await this._loginControllerLogic.GetApiKey(HttpContext);

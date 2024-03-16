@@ -13,9 +13,9 @@ namespace DataLayer.Redis
             this._database = redis.GetDatabase();
         }
 
-        public void SetString(string key, string value)
+        public void SetString(string key, string value, TimeSpan? expiry = null)
         {
-            this._database.StringSet(key, value);
+            this._database.StringSet(key, value, expiry);
         }
 
         public string GetString(string key)
