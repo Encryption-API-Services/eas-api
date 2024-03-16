@@ -18,6 +18,7 @@ namespace Validation.Attributes
                 var readToken = handler.ReadJwtToken(token);
                 string publicKey = readToken.Claims.First(x => x.Type == Constants.TokenClaims.PublicKey).Value;
                 string userId = readToken.Claims.First(x => x.Type == Constants.TokenClaims.Id).Value;
+                // TODO: check that the user is active
                 context.HttpContext.Items[Constants.HttpItems.UserID] = userId;
                 ECDSAWrapper ecdsa = new ECDSAWrapper("ES521");
                 ecdsa.ImportFromPublicBase64String(publicKey);

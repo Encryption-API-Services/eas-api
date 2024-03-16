@@ -276,5 +276,10 @@ namespace DataLayer.Mongo.Repositories
                                               .Set(x => x.LockedOut.PublicKey, publicKey);
             await this._userCollection.UpdateOneAsync(filter, update);
         }
+
+        public IFindFluent<User, User> GetUsersByPage()
+        {
+            return this._userCollection.Find(x => true);
+        }
     }
 }
