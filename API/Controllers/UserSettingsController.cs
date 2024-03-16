@@ -23,7 +23,7 @@ namespace API.Controllers
 
         [HttpPut]
         [Route("Username")]
-        [ValidateJWT]
+        [TypeFilter(typeof(ValidateJWTAttribute))]
         public async Task<IActionResult> ChangeUsername([FromBody] ChangeUserName body)
         {
             return await this._userSettingsControllerLogic.ChangeUsername(this._httpContextAccessor.HttpContext, body);
@@ -31,7 +31,7 @@ namespace API.Controllers
 
         [HttpPut]
         [Route("Password")]
-        [ValidateJWT]
+        [TypeFilter(typeof(ValidateJWTAttribute))]
         public async Task<IActionResult> ChangePassword([FromBody] ChangePassword body)
         {
             return await this._userSettingsControllerLogic.ChangePassword(this._httpContextAccessor.HttpContext, body);

@@ -23,7 +23,7 @@ namespace API.Controllers
 
         [HttpPost]
         [Route("OperatingSystemCacheStore")]
-        [ValidateJWT]
+        [TypeFilter(typeof(ValidateJWTAttribute))]
         public async Task<IActionResult> StoreOperatingSystemInformationInCache([FromBody] OperatingSystemInformationCacheRequestBody body)
         {
             return await this._authenicationControllerLogic.StoreOperatingSystemInformationInCache(this.httpContextAccessor.HttpContext, body);
@@ -31,7 +31,7 @@ namespace API.Controllers
 
         [HttpPut]
         [Route("OperatingSystemCacheRemove")]
-        [ValidateJWT]
+        [TypeFilter(typeof(ValidateJWTAttribute))]
         public async Task<IActionResult> RemoveOperatingSystemInformationInCache()
         {
             return await this._authenicationControllerLogic.RemoveOperatingSystemInformationInCache(this.httpContextAccessor.HttpContext);
@@ -39,7 +39,7 @@ namespace API.Controllers
 
         [HttpPost]
         [Route("DiffieHellmanAesKey")]
-        [ValidateJWT]
+        [TypeFilter(typeof(ValidateJWTAttribute))]
         public async Task<IActionResult> DiffieHellmanAesKeyDerviationForSDK([FromBody] DiffieHellmanAesDerivationRequest body)
         {
             return await this._authenicationControllerLogic.DiffieHellmanAesKeyDerviationForSDK(this.httpContextAccessor.HttpContext, body);

@@ -20,7 +20,7 @@ namespace API.Controllers
         }
 
         [HttpPut("RegenerateApiKey")]
-        [ValidateJWT]
+        [TypeFilter(typeof(ValidateJWTAttribute))]
         public async Task<IActionResult> RegenerateApiKey()
         {
             return await this._controllerLogic.RegenerateApiKey(this._httpContextAccessor.HttpContext);

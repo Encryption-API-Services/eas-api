@@ -9,6 +9,7 @@ using DataLayer.Mongo.Entities;
 using DataLayer.Mongo.Repositories;
 using DataLayer.RabbitMQ;
 using DataLayer.RabbitMQ.QueueMessages;
+using DataLayer.Redis;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -31,6 +32,7 @@ namespace API.ControllersLogic
         private readonly BenchmarkMethodCache _benchMarkMethodCache;
         private readonly LockedOutUserQueuePublish _lockedOutUserQueue;
         private readonly Email2FAHotpCodeQueuePublish _email2FAHotpCodeQueuePublish;
+        private readonly IRedisClient _reditClient;
 
         public UserLoginControllerLogic(
             IUserRepository userRepository,
@@ -40,7 +42,8 @@ namespace API.ControllersLogic
             ICASExceptionRepository exceptionRepository,
             BenchmarkMethodCache benchmarkMethodCache,
             LockedOutUserQueuePublish lockedOutUserQueue,
-            Email2FAHotpCodeQueuePublish email2FAHotpCodeQueuePublish
+            Email2FAHotpCodeQueuePublish email2FAHotpCodeQueuePublish,
+            IRedisClient redisCLient
             )
         {
             this._userRepository = userRepository;
@@ -51,6 +54,7 @@ namespace API.ControllersLogic
             this._benchMarkMethodCache = benchmarkMethodCache;
             this._lockedOutUserQueue = lockedOutUserQueue;
             this._email2FAHotpCodeQueuePublish = email2FAHotpCodeQueuePublish;
+            this._reditClient = redisCLient;
         }
 
         #region GetApiKey
@@ -162,6 +166,8 @@ namespace API.ControllersLogic
                             await this._successfulLoginRepository.InsertSuccessfulLogin(login);
                             ECDSAWrapper ecdsa = new ECDSAWrapper("ES521");
                             string token = new JWT().GenerateECCToken(activeUser.Id, activeUser.IsAdmin, ecdsa, 1);
+                            string isUserActiveRedisKey = Constants.RedisKeys.IsActiveUser + activeUser.Id;
+                            this._reditClient.SetString(isUserActiveRedisKey, true.ToString(), new TimeSpan(1, 0, 0));
                             result = new OkObjectResult(new { message = "You have successfully signed in.", token = token, TwoFactorAuth = false });
                         }
                     }
@@ -267,6 +273,8 @@ namespace API.ControllersLogic
                         User activeUser = await this._userRepository.GetUserById(body.UserId);
                         ECDSAWrapper ecdsa = new ECDSAWrapper("ES521");
                         string token = new JWT().GenerateECCToken(activeUser.Id, activeUser.IsAdmin, ecdsa, 1);
+                        string isUserActiveRedisKey = Constants.RedisKeys.IsActiveUser + activeUser.Id;
+                        this._reditClient.SetString(isUserActiveRedisKey, true.ToString(), new TimeSpan(1, 0, 0));
                         result = new OkObjectResult(new { message = "You have successfully verified your authentication code.", token = token });
                     }
                     else

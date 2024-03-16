@@ -1,7 +1,8 @@
 ﻿using DataLayer.Mongo.Entities;
 using Models.Payments;
+using Models.UserAdmin;
 using Models.UserAuthentication;
-using MongoDB.Driver;
+using MongoDB.Driver.Linq;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -10,7 +11,9 @@ namespace DataLayer.Mongo.Repositories
 {
     public interface IUserRepository
     {
-        public IFindFluent<User, User> GetUsersByPage();
+        public Task ChangeUserActivationStatusById(string userId, bool isActive);
+        public Task ChangeUserAdminStatusById(string userId, bool isAdmin);
+        public IMongoQueryable<UserTableItem> GetUsersByPage();
         public Task<User> AddUser(RegisterUser model, string hashedPassword);
         public Task<User> GetUserByEmail(string email);
         public Task<User> GetUserByUsername(string username);
