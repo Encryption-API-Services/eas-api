@@ -41,7 +41,7 @@ namespace API.ControllerLogic
             try
             {
                 await this._userRepository.DeleteUserByUserId(request.UserId);
-                string isUserActiveRedisKey = Constants.RedisKeys.IsActiveUser + context.Items[Constants.HttpItems.UserID].ToString();
+                string isUserActiveRedisKey = Constants.RedisKeys.IsActiveUser + request.UserId;
                 this._redisClient.SetString(isUserActiveRedisKey, false.ToString(), new TimeSpan(1, 0, 0));
                 result = new OkResult();
             }
@@ -86,7 +86,7 @@ namespace API.ControllerLogic
                 await this._userRepository.ChangeUserActivationStatusById(request.UserId, request.IsActive);
                 if (!request.IsActive)
                 {
-                    string isUserActiveRedisKey = Constants.RedisKeys.IsActiveUser + httpContext.Items[Constants.HttpItems.UserID].ToString();
+                    string isUserActiveRedisKey = Constants.RedisKeys.IsActiveUser + request.UserId;
                     this._redisClient.SetString(isUserActiveRedisKey, false.ToString(), new TimeSpan(1, 0, 0));
                 }
                 result = new OkResult();

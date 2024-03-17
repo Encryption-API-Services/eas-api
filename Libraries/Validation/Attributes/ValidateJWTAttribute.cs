@@ -38,6 +38,7 @@ namespace Validation.Attributes
                 // validate signing key
                 if (!await new JWT().ValidateECCToken(token, ecdsa.ECDKey))
                 {
+                    context.HttpContext.Response.StatusCode = 401;
                     await context.HttpContext.Response.Body.WriteAsync(Encoding.UTF8.GetBytes("Your token has expired. Please autheticate with a refreshed or new token."));
                     context.Result = new UnauthorizedObjectResult(new { });
                 }
@@ -64,6 +65,7 @@ namespace Validation.Attributes
 
                     if (!bool.Parse(isActive))
                     {
+                        context.HttpContext.Response.StatusCode = 401;
                         await context.HttpContext.Response.Body.WriteAsync(Encoding.UTF8.GetBytes("User account is not active."));
                         context.Result = new UnauthorizedObjectResult(new { });
                     }
@@ -71,6 +73,7 @@ namespace Validation.Attributes
             }
             else
             {
+                context.HttpContext.Response.StatusCode = 401;
                 await context.HttpContext.Response.Body.WriteAsync(Encoding.UTF8.GetBytes("You did not supply a token or it is malformed."));
                 context.Result = new UnauthorizedObjectResult(new { });
             }
