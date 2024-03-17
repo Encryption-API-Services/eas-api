@@ -24,7 +24,7 @@ namespace Validation.Attributes
         public async void OnAuthorization(AuthorizationFilterContext context)
         {
             string userId = context.HttpContext.Items[Constants.HttpItems.UserID].ToString();
-            string redisKey = Constants.RedisKeys.IsUserAdmin + context.HttpContext.Items[Constants.HttpItems.UserID].ToString();
+            string redisKey = Constants.RedisKeys.IsUserAdmin + userId;
             string isAdmin = this._redisClient.GetString(redisKey);
             bool isAdminBool = true;
             if (string.IsNullOrEmpty(isAdmin) || !bool.TryParse(isAdmin, out isAdminBool))
