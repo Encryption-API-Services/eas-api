@@ -200,7 +200,7 @@ namespace DataLayer.Mongo.Repositories
 
         public async Task<User> GetUserByApiKey(string apiKey)
         {
-            return await this._userCollection.Find(x => x.ApiKey == apiKey && x.IsActive == true).FirstOrDefaultAsync();
+            return await this._userCollection.Find(x => (x.ApiKey == apiKey || x.DevelopmentApiKey == apiKey) && x.IsActive == true).FirstOrDefaultAsync();
         }
 
         public async Task DeleteUserByEmail(string email)

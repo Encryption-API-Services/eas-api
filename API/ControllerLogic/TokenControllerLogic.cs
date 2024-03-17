@@ -121,7 +121,7 @@ namespace API.ControllerLogic
 
         #endregion
 
-        #region
+        #region IsTokenValid
         /// <summary>
         /// This route is not included in the authentication middleware and we validate the token within this request.
         /// </summary>

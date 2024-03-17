@@ -6,6 +6,7 @@ using CASHelpers;
 using CASHelpers.Types.HttpResponses.UserAuthentication;
 using Common;
 using DataLayer.Cache;
+using DataLayer.Mongo.Entities;
 using DataLayer.Mongo.Repositories;
 using DataLayer.Redis;
 using Microsoft.AspNetCore.Mvc;
@@ -19,16 +20,19 @@ namespace API.ControllerLogic
     {
         private readonly IRedisClient _redisClient;
         private readonly ICASExceptionRepository _exceptionRepository;
+        private readonly IUserRepository _userRepository;
         private readonly BenchmarkMethodCache _benchMarkMethodCache;
         public AuthenticationControllerLogic(
             IRedisClient redisClient,
             ICASExceptionRepository exceptionRepository,
+            IUserRepository userRepository,
             BenchmarkMethodCache benchMarkMethodCache
             )
         {
             this._redisClient = redisClient;
             this._exceptionRepository = exceptionRepository;
             this._benchMarkMethodCache = benchMarkMethodCache;
+            this._userRepository = userRepository;
         }
 
         public async Task<IActionResult> DiffieHellmanAesKeyDerviationForSDK(HttpContext httpContext, DiffieHellmanAesDerivationRequest body)
@@ -73,7 +77,7 @@ namespace API.ControllerLogic
             catch (Exception ex)
             {
                 await this._exceptionRepository.InsertException(ex.ToString(), MethodBase.GetCurrentMethod().Name);
-                result = new BadRequestObjectResult(new { error = "Something went wrong on our end. Please try again." });
+                result = new BadRequestObjectResult(new { error = "Something went wrong on our end removing the operating system information. Please try again." });
             }
             logger.EndExecution();
             this._benchMarkMethodCache.AddLog(logger);
@@ -99,20 +103,24 @@ namespace API.ControllerLogic
                         PropertyNameCaseInsensitive = false,
                     };
                     OSInfoRedisEntry cacheInformation = JsonSerializer.Deserialize<OSInfoRedisEntry>(existingCacheInformation, options);
-
-                    // TODO: perform other checks besides IP address and Operating System
-                    // also perform check based upon the API key.
-                    if (cacheInformation.IP != httpContext.Request.HttpContext.Items[Constants.HttpItems.IP].ToString())
+                    User dbUser = await this._userRepository.GetUserByApiKey(cacheInformation.ApiKey);
+                    // production keys are only valid for one user.
+                    if (cacheInformation.ApiKey == dbUser.ApiKey)
                     {
-                        result = new BadRequestObjectResult(new { error = "There is already a UserID using this API Key is associated IP address" });
-                    }
-                    else if (cacheInformation.OperatingSystem != body.OperatingSystem)
-                    {
-                        result = new BadRequestObjectResult(new { error = "There is already a UserID using this API Key with this Operating System" });
-                    }
-                    else
-                    {
-                        result = new BadRequestObjectResult(new { error = "You have reached the maximum amount of User's for this API Key" });
+                        // TODO: perform other checks besides IP address and Operating System
+                        // also perform check based upon the API key.
+                        if (cacheInformation.IP != httpContext.Request.HttpContext.Items[Constants.HttpItems.IP].ToString())
+                        {
+                            result = new BadRequestObjectResult(new { error = "There is already a UserID using this API Key is associated IP address" });
+                        }
+                        else if (cacheInformation.OperatingSystem != body.OperatingSystem)
+                        {
+                            result = new BadRequestObjectResult(new { error = "There is already a UserID using this API Key with this Operating System" });
+                        }
+                        else
+                        {
+                            result = new BadRequestObjectResult(new { error = "You have reached the maximum amount of User's for this API Key" });
+                        }
                     }
                 }
                 else
