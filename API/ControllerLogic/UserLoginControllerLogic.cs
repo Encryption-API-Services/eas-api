@@ -147,16 +147,10 @@ namespace API.ControllersLogic
                         }
                         else
                         {
-                            IpInfoHelper ipInfoHelper = new IpInfoHelper();
-                            IpInfoResponse ipInfo = await ipInfoHelper.GetIpInfo(httpContext.Items[Constants.HttpItems.IP].ToString());
                             SuccessfulLogin login = new SuccessfulLogin()
                             {
                                 UserId = activeUser.Id,
-                                Ip = httpContext.Items[Constants.HttpItems.IP].ToString(),
                                 UserAgent = body.UserAgent,
-                                City = ipInfo.City,
-                                Country = ipInfo.Country,
-                                TimeZone = ipInfo.TimeZone,
                                 CreateTime = DateTime.UtcNow
                             };
                             await this._successfulLoginRepository.InsertSuccessfulLogin(login);
