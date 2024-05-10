@@ -46,8 +46,8 @@ namespace API.ControllerLogic
                     BenchmarkSDKChartMethod newBenchmark = new BenchmarkSDKChartMethod()
                     {
                         AmountOfTime = (dbEntities[i].MethodEnd - dbEntities[i].MethodStart).TotalSeconds,
-                        MethodDescription = dbEntities[i].MethodDescription,
-                        MethodName = dbEntities[i].MethodName,
+                        MethodDescription = dbEntities[i].MethodDescription.ToLower(),
+                        MethodName = dbEntities[i].MethodName.ToLower(),
                         MethodType = dbEntities[i].MethodType
                     };
                     benchmarks.Add(newBenchmark);
