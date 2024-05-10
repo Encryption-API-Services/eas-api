@@ -48,7 +48,7 @@ namespace API.Controllers
         [ApiExplorerSettings(IgnoreApi = true)]
         [Route("DeleteUser")]
         [HttpDelete]
-        [ValidateJWT]
+        [TypeFilter(typeof(ValidateJWTAttribute))]
         public async Task<IActionResult> DeleteUser()
         {
             return await this._userRegisterLogic.DeleteUser(this._httpContextAccessor.HttpContext);

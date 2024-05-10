@@ -23,7 +23,7 @@ namespace API.Controllers
 
         [HttpGet]
         [Route("GetUserBenchmarksByDays")]
-        [ValidateJWT]
+        [TypeFilter(typeof(ValidateJWTAttribute))]
         public async Task<IActionResult> GetUserBenchmarksByDays([FromQuery] int daysAgo)
         {
             return await this._benchmarkSDKMethodControllerLogic.GetUserBenchmarksByDays(daysAgo, this._contextAccessor.HttpContext);
@@ -31,7 +31,7 @@ namespace API.Controllers
 
         [HttpPost]
         [Route("MethodBenchmark")]
-        [ValidateJWT]
+        [TypeFilter(typeof(ValidateJWTAttribute))]
         public async Task<IActionResult> CreateMethodSDKBenchmark([FromBody] BenchmarkMacAddressSDKMethod benchmark)
         {
             return await this._benchmarkSDKMethodControllerLogic.CreateMethodSDKBenchmark(benchmark, this._contextAccessor.HttpContext);

@@ -18,7 +18,7 @@ namespace API.Controllers
 
         [HttpPost]
         [Route("ValidateCard")]
-        [ValidateJWT]
+        [TypeFilter(typeof(ValidateJWTAttribute))]
         public async Task<IActionResult> ValidateCreditCard([FromBody] CreditValidateRequest body)
         {
             return await this._creditControllerLogic.ValidateCreditCard(body, HttpContext);
@@ -26,7 +26,7 @@ namespace API.Controllers
 
         [HttpPost]
         [Route("AddCreditCard")]
-        [ValidateJWT]
+        [TypeFilter(typeof(ValidateJWTAttribute))]
         public async Task<IActionResult> AddCreditCard([FromBody] AddCreditCardRequest body)
         {
             return await this._creditControllerLogic.AddCreditCard(body, HttpContext);

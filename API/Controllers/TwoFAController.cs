@@ -17,7 +17,7 @@ namespace API.Controllers
 
         [HttpGet]
         [Route("Get2FAStatus")]
-        [ValidateJWT]
+        [TypeFilter(typeof(ValidateJWTAttribute))]
         public async Task<IActionResult> Get2FAStatus()
         {
             return await this._twoFAControllerLogic.Get2FAStatus(HttpContext);
@@ -25,7 +25,7 @@ namespace API.Controllers
 
         [HttpPut]
         [Route("TurnOn2FA")]
-        [ValidateJWT]
+        [TypeFilter(typeof(ValidateJWTAttribute))]
         public async Task<IActionResult> TurnOn2FA()
         {
             return await this._twoFAControllerLogic.TurnOn2FA(HttpContext);
@@ -33,7 +33,7 @@ namespace API.Controllers
 
         [HttpPut]
         [Route("TurnOff2FA")]
-        [ValidateJWT]
+        [TypeFilter(typeof(ValidateJWTAttribute))]
         public async Task<IActionResult> TurnOff2FA()
         {
             return await this._twoFAControllerLogic.TurnOff2FA(HttpContext);
@@ -41,7 +41,7 @@ namespace API.Controllers
 
         [HttpPut]
         [Route("UpdatePhoneNumber")]
-        [ValidateJWT]
+        [TypeFilter(typeof(ValidateJWTAttribute))]
         public async Task<IActionResult> UpdatePhoneNumber([FromBody] UpdatePhoneNumber body)
         {
             return await this._twoFAControllerLogic.PhoneNumberUpdate(body, HttpContext);
