@@ -123,7 +123,7 @@ namespace API.ControllersLogic
                 else if (activeUser != null && activeUser.LockedOut.IsLockedOut == false && activeUser.IsActive == true)
                 {
                     Argon2Wrapper argon2 = new Argon2Wrapper();
-                    if (argon2.VerifyPassword(activeUser.Password, body.Password))
+                    if (argon2.Verify(activeUser.Password, body.Password))
                     {
                         if (activeUser.Phone2FA != null && activeUser.Phone2FA.IsEnabled)
                         {

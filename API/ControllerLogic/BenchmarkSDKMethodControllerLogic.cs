@@ -76,7 +76,7 @@ namespace API.ControllerLogic
                 string redisContent = this._redisClient.GetString(redisKey);
                 Aes256KeyAndNonceX25519DiffieHellman aesKey = JsonSerializer.Deserialize<Aes256KeyAndNonceX25519DiffieHellman>(redisContent);
                 AESWrapper aes = new AESWrapper();
-                string decrypted = Encoding.UTF8.GetString(aes.Aes256DecryptBytes(aesKey.AesNonce, aesKey.AesKey, sdkMethod.EncryptedBenchMarkSend));
+                string decrypted = Encoding.UTF8.GetString(aes.Aes256Decrypt(aesKey.AesNonce, aesKey.AesKey, sdkMethod.EncryptedBenchMarkSend));
                 BenchmarkSDKMethod unencryptedSdkMethod = JsonSerializer.Deserialize<BenchmarkSDKMethod>(decrypted);
                 DataLayer.Mongo.Entities.BenchmarkSDKMethod newBenchmarkMethod = new DataLayer.Mongo.Entities.BenchmarkSDKMethod()
                 {

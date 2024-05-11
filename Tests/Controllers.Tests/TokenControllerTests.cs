@@ -4,6 +4,7 @@ using CASHelpers;
 using CASHelpers.Types.HttpResponses.UserAuthentication;
 using DataLayer.Mongo;
 using DataLayer.Mongo.Repositories;
+using DataLayer.Redis;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MongoDB.Driver;
@@ -43,7 +44,8 @@ namespace Controllers.Tests
             this._tokenController = new TokenController(mockHttpContextAccessor.Object, new TokenControllerLogic(
                 new UserRepository(databaseSettings, client),
                 new CASExceptionRepository(databaseSettings, client),
-                new DataLayer.Cache.BenchmarkMethodCache(databaseSettings, client)));
+                new DataLayer.Cache.BenchmarkMethodCache(databaseSettings, client),
+                new RedisClient()));
         }
 
         [Fact]

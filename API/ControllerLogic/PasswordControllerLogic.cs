@@ -89,7 +89,7 @@ namespace API.ControllersLogic
                     Argon2Wrapper wrapper = new Argon2Wrapper();
                     foreach (string password in lastFivePasswords)
                     {
-                        if (wrapper.VerifyPassword(password, body.Password))
+                        if (wrapper.Verify(password, body.Password))
                         {
                             result = new BadRequestObjectResult(new { error = "You need to enter a password that has not been used the last 5 times" });
                             return result;
