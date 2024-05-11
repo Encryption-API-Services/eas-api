@@ -19,15 +19,18 @@ namespace API.ControllerLogic
     {
         private readonly IRedisClient _redisClient;
         private readonly ICASExceptionRepository _exceptionRepository;
+        private readonly IUserRepository _userRepository;
         private readonly BenchmarkMethodCache _benchMarkMethodCache;
         public AuthenticationControllerLogic(
             IRedisClient redisClient,
             ICASExceptionRepository exceptionRepository,
+            IUserRepository userRepository,
             BenchmarkMethodCache benchMarkMethodCache
             )
         {
             this._redisClient = redisClient;
             this._exceptionRepository = exceptionRepository;
+            this._userRepository = userRepository;
             this._benchMarkMethodCache = benchMarkMethodCache;
         }
 
@@ -102,7 +105,11 @@ namespace API.ControllerLogic
 
                     // TODO: perform other checks besides IP address and Operating System
                     // also perform check based upon the API key.
-                    if (cacheInformation.IP != httpContext.Request.HttpContext.Items[Constants.HttpItems.IP].ToString())
+                    if (!cacheInformation.IsApiKeyProd)
+                    {
+                        result = new OkObjectResult(new { message = "Enjoy using your development key" });
+                    }
+                    else if (cacheInformation.IP != httpContext.Request.HttpContext.Items[Constants.HttpItems.IP].ToString())
                     {
                         result = new BadRequestObjectResult(new { error = "There is already a UserID using this API Key is associated IP address" });
                     }
@@ -117,14 +124,37 @@ namespace API.ControllerLogic
                 }
                 else
                 {
-                    OSInfoRedisEntry newEntry = new OSInfoRedisEntry()
+                    Tuple<string, string> apiKeys = await this._userRepository.GetApiKeysById(requestingUserId);
+                    if (apiKeys.Item1 == body.ApiKey)
                     {
-                        IP = httpContext.Request.HttpContext.Items[Constants.HttpItems.IP].ToString(),
-                        OperatingSystem = body.OperatingSystem,
-                        ApiKey = body.ApiKey
-                    };
-                    string newEntrySeralized = JsonSerializer.Serialize(newEntry);
-                    this._redisClient.SetString(cacheKey, newEntrySeralized);
+                        OSInfoRedisEntry newEntry = new OSInfoRedisEntry()
+                        {
+                            IP = httpContext.Request.HttpContext.Items[Constants.HttpItems.IP].ToString(),
+                            OperatingSystem = body.OperatingSystem,
+                            ApiKey = body.ApiKey,
+                            IsApiKeyProd = true,
+                        };
+                        string newEntrySeralized = JsonSerializer.Serialize(newEntry);
+                        this._redisClient.SetString(cacheKey, newEntrySeralized);
+                    }
+                    else if (apiKeys.Item2 == body.ApiKey)
+                    {
+                        
+                        OSInfoRedisEntry newEntry = new OSInfoRedisEntry()
+                        {
+                            IP = httpContext.Request.HttpContext.Items[Constants.HttpItems.IP].ToString(),
+                            OperatingSystem = body.OperatingSystem,
+                            ApiKey = body.ApiKey,
+                            IsApiKeyProd = false,
+                        };
+                        string newEntrySeralized = JsonSerializer.Serialize(newEntry);
+                        this._redisClient.SetString(cacheKey, newEntrySeralized);
+                    }
+                    else
+                    {
+                        result = new UnauthorizedObjectResult(new { message = "You supplied an invalid API key" });
+                    }
+
                     result = new OkObjectResult(new { message = "Sucessfully stored information in cache" });
                 }
 
