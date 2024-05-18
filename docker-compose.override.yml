@@ -2,25 +2,15 @@ version: '3.4'
 
 services:
   api:
+    env_file:
+    - path: ./.env
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_HTTP_PORTS=8080
       - ASPNETCORE_HTTPS_PORTS=8081
-      - Connection=mongodb://mongo:27017
-      - DatabaseName=UsersDatabase
-      - UserCollectionName=Users
-      - RedisIp=redis
-      - StripApiKey=sk_test_51Lzw2cIa3dIey21q6edyXY5j7Qvpxt3xNBfBJIa3w1aeu3uY8l7cCQJMAKsP5prOEyFFCfyuNpkhVeeZ50rMQX2b00xsVceisN
-      - RabbitMqUrl=amqp://guest:guest@rabbit-mq:5672
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
   email_service:
-    environment:
-      - Connection=mongodb://mongo:27017
-      - DatabaseName=UsersDatabase
-      - UserCollectionName=Users
-      - Domain=http://localhost:4200
-      - Email=mikemulchrone987@gmail.com
-      - EmailPass=djrn oyhy zicj nhcy
-      - RabbitMqUrl=amqp://guest:guest@rabbit-mq:5672
+    env_file:
+    - path: ./.env
