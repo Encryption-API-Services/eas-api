@@ -29,10 +29,6 @@ namespace Validation.Attributes
             {
                 var readToken = handler.ReadJwtToken(token);
                 string publicKey = readToken.Claims.First(x => x.Type == Constants.TokenClaims.PublicKey).Value;
-                string userId = readToken.Claims.First(x => x.Type == Constants.TokenClaims.Id).Value;
-                string isAdmin = readToken.Claims.First(x => x.Type == Constants.TokenClaims.IsAdmin).Value;
-                context.HttpContext.Items[Constants.HttpItems.UserID] = userId;
-                context.HttpContext.Items[Constants.TokenClaims.IsAdmin] = isAdmin;
                 ECDSAWrapper ecdsa = new ECDSAWrapper("ES521");
                 ecdsa.ImportFromPublicBase64String(publicKey);
                 // validate signing key
@@ -44,6 +40,13 @@ namespace Validation.Attributes
                 }
                 else
                 {
+                    string userId = readToken.Claims.First(x => x.Type == Constants.TokenClaims.Id).Value;
+                    string isAdmin = readToken.Claims.First(x => x.Type == Constants.TokenClaims.IsAdmin).Value;
+                    string subscriptionProductId = readToken.Claims.First(x => x.Type == Constants.TokenClaims.SubscriptionPublicKey).Value;
+                    context.HttpContext.Items[Constants.HttpItems.UserID] = userId;
+                    context.HttpContext.Items[Constants.TokenClaims.IsAdmin] = isAdmin;
+                    context.HttpContext.Items[Constants.TokenClaims.SubscriptionPublicKey] = subscriptionProductId;
+
                     // Check that the user is active.
                     string isUserActiveRedisKey = Constants.RedisKeys.IsActiveUser + userId;
                     string isActive = this._redisClient.GetString(isUserActiveRedisKey);

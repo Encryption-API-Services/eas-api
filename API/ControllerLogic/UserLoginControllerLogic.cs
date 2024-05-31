@@ -159,7 +159,7 @@ namespace API.ControllersLogic
                             };
                             await this._successfulLoginRepository.InsertSuccessfulLogin(login);
                             ECDSAWrapper ecdsa = new ECDSAWrapper("ES521");
-                            string token = new JWT().GenerateECCToken(activeUser.Id, activeUser.IsAdmin, ecdsa, 1);
+                            string token = new JWT().GenerateECCToken(activeUser.Id, activeUser.IsAdmin, ecdsa, 1, activeUser.StripProductId);
                             string isUserActiveRedisKey = Constants.RedisKeys.IsActiveUser + activeUser.Id;
                             this._reditClient.SetString(isUserActiveRedisKey, true.ToString(), new TimeSpan(1, 0, 0));
                             result = new OkObjectResult(new { message = "You have successfully signed in.", token = token, TwoFactorAuth = false });
@@ -266,7 +266,7 @@ namespace API.ControllersLogic
                         await this._hotpCodesRepository.UpdateHotpToVerified(databaseCode.Id);
                         User activeUser = await this._userRepository.GetUserById(body.UserId);
                         ECDSAWrapper ecdsa = new ECDSAWrapper("ES521");
-                        string token = new JWT().GenerateECCToken(activeUser.Id, activeUser.IsAdmin, ecdsa, 1);
+                        string token = new JWT().GenerateECCToken(activeUser.Id, activeUser.IsAdmin, ecdsa, 1, activeUser.StripProductId);
                         string isUserActiveRedisKey = Constants.RedisKeys.IsActiveUser + activeUser.Id;
                         this._reditClient.SetString(isUserActiveRedisKey, true.ToString(), new TimeSpan(1, 0, 0));
                         result = new OkObjectResult(new { message = "You have successfully verified your authentication code.", token = token });

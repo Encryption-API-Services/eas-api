@@ -73,6 +73,8 @@ namespace DataLayer.Mongo.Entities
         public bool HasTrialPeriodExpired { get; set; }
         public bool IsSubscribed { get; set; }
         public string StripSubscriptionId { get; set; }
+        public byte[] SubscriptionDigitalSignature { get; set; }
+        public byte[] SubscriptionPublicKey { get; set; }
     }
     public class InactiveUserEmail
     {

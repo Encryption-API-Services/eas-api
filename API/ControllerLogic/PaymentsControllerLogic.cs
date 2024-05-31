@@ -1,4 +1,5 @@
-﻿using CASHelpers;
+﻿using CasDotnetSdk.DigitalSignature;
+using CASHelpers;
 using Common;
 using DataLayer.Cache;
 using DataLayer.Mongo.CustomEntities;
@@ -8,6 +9,8 @@ using Microsoft.AspNetCore.Mvc;
 using Models.Payments;
 using Payments;
 using System.Reflection;
+using System.Text;
+using Twilio.TwiML.Messaging;
 
 namespace API.ControllerLogic
 {
@@ -261,6 +264,34 @@ namespace API.ControllerLogic
                 await Task.WhenAll(update, user);
                 StripCustomer stripCustomer = new StripCustomer();
                 await stripCustomer.UpdateStripeCustomerBillingInformation(user.Result.StripCustomerId, body);
+            }
+            catch (Exception ex)
+            {
+                await this._exceptionRepository.InsertException(ex.ToString(), MethodBase.GetCurrentMethod().Name);
+                result = new BadRequestObjectResult(new { error = "Something went wrong on our end." });
+            }
+            logger.EndExecution();
+            this._benchMarkMethodCache.AddLog(logger);
+            return result;
+        }
+        public async Task<IActionResult> ValidateProductSubscription(HttpContext context)
+        {
+            BenchmarkMethodLogger logger = new BenchmarkMethodLogger(context);
+            IActionResult result = null;
+            try
+            {
+                string userId = context.Items[Constants.HttpItems.UserID].ToString();
+                string userProductId = context.Items[Constants.TokenClaims.SubscriptionPublicKey].ToString();
+                SHA512DigitalSignatureWrapper dsWrapper = new SHA512DigitalSignatureWrapper();
+                User activeUser = await this._userRepository.GetUserById(userId);
+                if (dsWrapper.VerifyED25519(activeUser.UserSubscriptionSettings.SubscriptionPublicKey, Encoding.UTF8.GetBytes(userProductId), activeUser.UserSubscriptionSettings.SubscriptionDigitalSignature))
+                {
+                    result = new OkObjectResult(new { });
+                }
+                else
+                {
+                    result = new UnauthorizedObjectResult(new { });
+                }
             }
             catch (Exception ex)
             {

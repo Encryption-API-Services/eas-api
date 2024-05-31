@@ -13,5 +13,6 @@ namespace API.ControllerLogic
         public Task<IActionResult> DisableSubscription(HttpContext context);
         public Task<IActionResult> GetBillingInformation(HttpContext context);
         public Task<IActionResult> UpdateBillingInformation(HttpContext context, UpdateBillingInformationRequestBody body);
+        public Task<IActionResult> ValidateProductSubscription(HttpContext context);
     }
 }

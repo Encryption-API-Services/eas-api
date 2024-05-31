@@ -83,5 +83,13 @@ namespace API.Controllers
         {
             return await this._paymentsControllerLogic.UpdateBillingInformation(this._httpContextAccessor.HttpContext, body);
         }
+
+        [HttpGet]
+        [Route("ValidateProductSignature")]
+        [TypeFilter(typeof(ValidateJWTAttribute))]
+        public async Task<IActionResult> ValidateProductSignature()
+        {
+            return await this._paymentsControllerLogic.ValidateProductSubscription(this._httpContextAccessor.HttpContext);
+        }
     }
 }

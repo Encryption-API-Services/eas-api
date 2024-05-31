@@ -1,4 +1,6 @@
-﻿using Common.UniqueIdentifiers;
+﻿using CasDotnetSdk.DigitalSignature;
+using CasDotnetSdk.DigitalSignature.Types;
+using Common.UniqueIdentifiers;
 using DataLayer.Mongo.Entities;
 using Models.Payments;
 using Models.UserAdmin;
@@ -9,6 +11,7 @@ using MongoDB.Driver.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace DataLayer.Mongo.Repositories
@@ -236,9 +239,13 @@ namespace DataLayer.Mongo.Repositories
 
         public async Task UpdateStripeSubscriptionAndProductId(string userId, string subscriptionId, string productId)
         {
+            SHA512DigitalSignatureWrapper digitalSignatureWrap = new SHA512DigitalSignatureWrapper();
+            SHAED25519DalekDigitialSignatureResult result = digitalSignatureWrap.CreateED25519(Encoding.UTF8.GetBytes(productId));
             var filter = Builders<User>.Filter.Eq(x => x.Id, userId);
             var update = Builders<User>.Update.Set(x => x.UserSubscriptionSettings.StripSubscriptionId, subscriptionId)
                                               .Set(x => x.UserSubscriptionSettings.IsSubscribed, true)
+                                              .Set(x => x.UserSubscriptionSettings.SubscriptionDigitalSignature, result.Signature)
+                                              .Set(x => x.UserSubscriptionSettings.SubscriptionPublicKey, result.PublicKey)
                                               .Set(x => x.StripProductId, productId);
             await this._userCollection.UpdateOneAsync(filter, update);
         }
@@ -248,6 +255,8 @@ namespace DataLayer.Mongo.Repositories
             var filter = Builders<User>.Filter.Eq(x => x.Id, userId);
             var update = Builders<User>.Update.Set(x => x.UserSubscriptionSettings.StripSubscriptionId, null)
                                               .Set(x => x.UserSubscriptionSettings.IsSubscribed, false)
+                                              .Set(x => x.UserSubscriptionSettings.SubscriptionDigitalSignature, null)
+                                              .Set(x => x.UserSubscriptionSettings.SubscriptionPublicKey, null)
                                               .Set(x => x.StripProductId, null);
             await this._userCollection.UpdateOneAsync(filter, update);
         }
