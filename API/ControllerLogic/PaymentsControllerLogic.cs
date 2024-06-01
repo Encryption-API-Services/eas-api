@@ -281,12 +281,19 @@ namespace API.ControllerLogic
             try
             {
                 string userId = context.Items[Constants.HttpItems.UserID].ToString();
-                string userProductId = context.Items[Constants.TokenClaims.SubscriptionPublicKey].ToString();
-                SHA512DigitalSignatureWrapper dsWrapper = new SHA512DigitalSignatureWrapper();
-                User activeUser = await this._userRepository.GetUserById(userId);
-                if (dsWrapper.VerifyED25519(activeUser.UserSubscriptionSettings.SubscriptionPublicKey, Encoding.UTF8.GetBytes(userProductId), activeUser.UserSubscriptionSettings.SubscriptionDigitalSignature))
+                string userProductId = context.Items[Constants.TokenClaims.SubscriptionPublicKey]?.ToString();
+                if (!string.IsNullOrEmpty(userProductId))
                 {
-                    result = new OkObjectResult(new { });
+                    SHA512DigitalSignatureWrapper dsWrapper = new SHA512DigitalSignatureWrapper();
+                    User activeUser = await this._userRepository.GetUserById(userId);
+                    if (dsWrapper.VerifyED25519(activeUser.UserSubscriptionSettings.SubscriptionPublicKey, Encoding.UTF8.GetBytes(userProductId), activeUser.UserSubscriptionSettings.SubscriptionDigitalSignature))
+                    {
+                        result = new OkObjectResult(new { });
+                    }
+                    else
+                    {
+                        result = new UnauthorizedObjectResult(new { });
+                    }
                 }
                 else
                 {

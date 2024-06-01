@@ -42,7 +42,7 @@ namespace Validation.Attributes
                 {
                     string userId = readToken.Claims.First(x => x.Type == Constants.TokenClaims.Id).Value;
                     string isAdmin = readToken.Claims.First(x => x.Type == Constants.TokenClaims.IsAdmin).Value;
-                    string subscriptionProductId = readToken.Claims.First(x => x.Type == Constants.TokenClaims.SubscriptionPublicKey).Value;
+                    string subscriptionProductId = readToken.Claims.FirstOrDefault(x => x.Type == Constants.TokenClaims.SubscriptionPublicKey)?.Value;
                     context.HttpContext.Items[Constants.HttpItems.UserID] = userId;
                     context.HttpContext.Items[Constants.TokenClaims.IsAdmin] = isAdmin;
                     context.HttpContext.Items[Constants.TokenClaims.SubscriptionPublicKey] = subscriptionProductId;
