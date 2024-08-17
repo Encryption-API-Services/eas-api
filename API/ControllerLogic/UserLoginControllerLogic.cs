@@ -1,16 +1,13 @@
-﻿using CasDotnetSdk.Asymmetric;
-using CasDotnetSdk.PasswordHashers;
+﻿using CasDotnetSdk.PasswordHashers;
 using CasDotnetSdk.Signatures;
 using CASHelpers;
 using Common;
-using Common.ThirdPartyAPIs;
 using DataLayer.Cache;
 using DataLayer.Mongo.Entities;
 using DataLayer.Mongo.Repositories;
 using DataLayer.RabbitMQ;
 using DataLayer.RabbitMQ.QueueMessages;
 using DataLayer.Redis;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Models.UserAuthentication;

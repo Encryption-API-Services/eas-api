@@ -135,14 +135,15 @@ namespace API.ControllerLogic
             try
             {
                 var token = httpContext.Request.Headers[Constants.HeaderNames.Authorization].FirstOrDefault()?.Split(" ").Last();
-                if (string.IsNullOrEmpty(token))
+                JwtSecurityTokenHandler jwtHandler = new JwtSecurityTokenHandler();
+                if (string.IsNullOrEmpty(token) && jwtHandler.CanReadToken(token))
                 {
                     result = new OkObjectResult(new IsTokenValidResponse() { IsTokenValid = false });
                 }
                 else
                 {
-                    var handler = new JwtSecurityTokenHandler().ReadJwtToken(token);
-                    string publicKey = handler.Claims.First(x => x.Type == Constants.TokenClaims.PublicKey).Value;
+                    JwtSecurityToken parsedToken = jwtHandler.ReadJwtToken(token);
+                    string publicKey = parsedToken.Claims.First(x => x.Type == Constants.TokenClaims.PublicKey).Value;
                     ECDSAWrapper ecdsa = new ECDSAWrapper("ES521");
                     ecdsa.ImportFromPublicBase64String(publicKey);
                     // validate signing key
