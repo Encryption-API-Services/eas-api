@@ -86,7 +86,7 @@ namespace API.ControllerLogic
                 JwtSecurityTokenHandler handler = new JwtSecurityTokenHandler();
                 if (!string.IsNullOrEmpty(token) && handler.CanReadToken(token))
                 {
-                    var parsedToken = handler.ReadJwtToken(token);
+                    JwtSecurityToken parsedToken = handler.ReadJwtToken(token);
                     string publicKey = parsedToken.Claims.First(x => x.Type == Constants.TokenClaims.PublicKey).Value;
                     ECDSAWrapper ecdsa = new ECDSAWrapper("ES521");
                     ecdsa.ImportFromPublicBase64String(publicKey);
