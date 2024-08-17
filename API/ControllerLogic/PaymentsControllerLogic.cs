@@ -164,10 +164,17 @@ namespace API.ControllerLogic
                 User user = await this._userRepository.GetUserById(userId);
                 if (user != null)
                 {
-                    StripSubscription stripSubscription = new StripSubscription();
-                    await stripSubscription.CancelSubscription(user.UserSubscriptionSettings.StripSubscriptionId);
-                    await this._userRepository.UpdateStripeSubscriptionToNull(userId);
-                    result = new OkObjectResult(new { message = "Subscription disabled successfully." });
+                    if (string.IsNullOrEmpty(user.UserSubscriptionSettings.StripSubscriptionId))
+                    {
+                        result = new BadRequestObjectResult(new { error = "Cannot disable no subscription" });
+                    }
+                    else
+                    {
+                        StripSubscription stripSubscription = new StripSubscription();
+                        await stripSubscription.CancelSubscription(user.UserSubscriptionSettings.StripSubscriptionId);
+                        await this._userRepository.UpdateStripeSubscriptionToNull(userId);
+                        result = new OkObjectResult(new { message = "Subscription disabled successfully." });
+                    }
                 }
                 else
                 {
