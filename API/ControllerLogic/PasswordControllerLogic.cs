@@ -1,9 +1,7 @@
-﻿using CasDotnetSdk.Asymmetric;
-using CasDotnetSdk.PasswordHashers;
+﻿using CasDotnetSdk.PasswordHashers;
 using CasDotnetSdk.Signatures;
 using Common;
 using DataLayer.Cache;
-using DataLayer.Mongo.Entities;
 using DataLayer.Mongo.Repositories;
 using DataLayer.RabbitMQ;
 using DataLayer.RabbitMQ.QueueMessages;
@@ -13,7 +11,6 @@ using Models.UserAuthentication;
 using System.Reflection;
 using System.Text;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using Validation.UserRegistration;
 using User = DataLayer.Mongo.Entities.User;
 
