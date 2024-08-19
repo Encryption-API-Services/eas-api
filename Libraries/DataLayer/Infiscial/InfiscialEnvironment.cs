@@ -19,15 +19,15 @@ namespace DataLayer.Infiscial
                 }
             };
 
-            var infisicalClient = new InfisicalClient(settings);
+            InfisicalClient infisicalClient = new InfisicalClient(settings);
 
-            var getSecretOptions = new GetSecretOptions
+            GetSecretOptions getSecretOptions = new GetSecretOptions
             {
                 SecretName = secretName,
                 ProjectId = Environment.GetEnvironmentVariable("INFISICAL_PROJECT_ID"),
                 Environment = Environment.GetEnvironmentVariable("INFISICAL_ENVIRONMENT"),
             };
-            var secret = infisicalClient.GetSecret(getSecretOptions);
+            GetSecretResponseSecret secret = infisicalClient.GetSecret(getSecretOptions);
             return secret.SecretValue;
         }
     }
