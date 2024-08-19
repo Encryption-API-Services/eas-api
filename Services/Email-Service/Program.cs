@@ -12,6 +12,7 @@ namespace Email_Service
     {
         public static void Main(string[] args)
         {
+            EmailServiceInfiscalEnvironment.SetEnvironmentKeys();
             CreateHostBuilder(args).Build().Run();
         }
 

@@ -1,4 +1,5 @@
 ﻿using RabbitMQ.Client;
+using System;
 
 namespace DataLayer.RabbitMQ
 {
@@ -12,12 +13,8 @@ namespace DataLayer.RabbitMQ
         private void CreateConnection()
         {
             ConnectionFactory factory = new ConnectionFactory();
-            factory.UserName = "guest";
-            factory.Password = "guest";
-            factory.VirtualHost = ConnectionFactory.DefaultVHost;
-            factory.HostName = "rabbit-mq";
-            factory.Port = AmqpTcpEndpoint.UseDefaultPort;
             factory.MaxMessageSize = 512 * 1024 * 1024;
+            factory.Uri = new Uri(Environment.GetEnvironmentVariable("RabbitMqUrl"));
             this.Connection = factory.CreateConnection();
         }
     }

@@ -7,6 +7,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<PackageReference Include="Infisical.Sdk" Version="2.3.1" />
 		<PackageReference Include="Microsoft.Extensions.Options" Version="6.0.0" />
 		<PackageReference Include="MongoDB.Driver" Version="2.19.0" />
 		<PackageReference Include="NRedisStack" Version="0.11.0" />

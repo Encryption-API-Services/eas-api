@@ -1,6 +1,9 @@
+using API;
 using API.Config;
 using Microsoft.AspNetCore.HttpOverrides;
 using Validation.Middleware;
+
+APIInfiscialEnvironment.SetEnvironmentKeys();
 
 var builder = WebApplication.CreateBuilder(args);
 
