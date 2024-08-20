@@ -1,13 +1,16 @@
 ﻿using API.ControllersLogic;
 using CasDotnetSdk.Asymmetric;
+using CasDotnetSdk.Hybrid.Types;
 using CasDotnetSdk.PasswordHashers;
 using CasDotnetSdk.Signatures;
+using CasDotnetSdk.Symmetric;
 using CASHelpers;
 using Common;
 using DataLayer.Cache;
 using DataLayer.Mongo.Repositories;
 using DataLayer.RabbitMQ;
 using DataLayer.RabbitMQ.QueueMessages;
+using EmergencyKit;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using Models.UserAuthentication;
@@ -30,13 +33,15 @@ namespace API.Config
         private readonly ICASExceptionRepository _exceptionRepository;
         private readonly BenchmarkMethodCache _benchmarkMethodCache;
         private readonly ActivateUserQueuePublish _activateUserQueue;
+        private readonly EmergencyKitQueuePublish _emergencyKitQueue;
         public UserRegisterControllerLogic(
             IUserRepository userRepo,
             IForgotPasswordRepository forgotPasswordRepository,
             ILogRequestRepository logRequestRespository,
             ICASExceptionRepository exceptionRespitory,
             BenchmarkMethodCache benchmarkMethodCache,
-            ActivateUserQueuePublish activateUserQueue
+            ActivateUserQueuePublish activateUserQueue,
+            EmergencyKitQueuePublish emergencyKitQueue
             )
         {
             this._userRespository = userRepo;
@@ -45,6 +50,7 @@ namespace API.Config
             this._exceptionRepository = exceptionRespitory;
             this._benchmarkMethodCache = benchmarkMethodCache;
             this._activateUserQueue = activateUserQueue;
+            this._emergencyKitQueue = emergencyKitQueue;
         }
 
         #region RegisterUser
@@ -63,13 +69,25 @@ namespace API.Config
                 {
                     Argon2Wrapper argon2 = new Argon2Wrapper();
                     string hashedPassword = argon2.HashPassword(body.password);
-                    User newUser = await this._userRespository.AddUser(body, hashedPassword);
+
+                    EmergencyKitUtils emergencyKitUtils = new EmergencyKitUtils();
+                    CreateEmergencyKitResponse kit = emergencyKitUtils.CreateEmergencyKit();
+                    EmergencyKitQueueMessage eKitMessage = new EmergencyKitQueueMessage()
+                    {
+                        AesKey = Convert.ToBase64String(kit.EncryptResult.EncryptedAesKey),
+                        UserEmail = body.email
+                    };
+                    this._emergencyKitQueue.BasicPublish(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(eKitMessage)));
+
+                    User newUser = await this._userRespository.AddUser(body, hashedPassword, kit.Key, kit.EncryptResult, kit.Initalizer.RsaKeyPair.PrivateKey);
+
                     ActivateUserQueueMessage newMessage = new ActivateUserQueueMessage()
                     {
                         UserId = newUser.Id,
                         UserEmail = newUser.Email
                     };
                     this._activateUserQueue.BasicPublish(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(newMessage)));
+
                     await this._forgotPasswordRepository.InsertForgotPasswordAttempt(newUser.Id, hashedPassword);
                     result = new OkObjectResult(new { message = "Successfully registered user" });
                 }
@@ -106,6 +124,7 @@ namespace API.Config
                     StripCustomer stripCustomer = new StripCustomer();
                     string stripCustomerId = await stripCustomer.CreateStripCustomer(userToActivate);
                     await this._userRespository.ChangeUserActiveById(userToActivate, true, stripCustomerId);
+
                     result = new OkObjectResult(new { message = "User account was successfully activated." });
                 }
                 else

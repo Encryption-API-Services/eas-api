@@ -1,4 +1,5 @@
-﻿using MongoDB.Bson;
+﻿using CasDotnetSdk.Hybrid.Types;
+using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using System;
 
@@ -27,6 +28,7 @@ namespace DataLayer.Mongo.Entities
         public ForgotPassword ForgotPassword { get; set; }
         public UserSubscriptionSettings UserSubscriptionSettings { get; set; }
         public InactiveUserEmail InactiveEmail { get; set; }
+        public EmergencyKitAccountRecoverySettings EmergencyKitAccountRecoverySettings { get; set; }
         public DateTime CreationTime { get; set; }
         public DateTime LastModifiedTime { get; set; }
     }
@@ -81,5 +83,12 @@ namespace DataLayer.Mongo.Entities
         public bool Sent { get; set; }
         public string Token { get; set; }
         public string PublicKey { get; set; }
+    }
+
+    public class EmergencyKitAccountRecoverySettings
+    {
+        public Guid Key { get; set; }
+        public AESRSAHybridEncryptResult EncryptedResult { get; set; }
+        public string RsaPrivateKey { get; set; }
     }
 }

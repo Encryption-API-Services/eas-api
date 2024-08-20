@@ -15,6 +15,7 @@ COPY ["Libraries/DataLayer/DataLayer.csproj", "Libraries/DataLayer/"]
 COPY ["Libraries/Models/Models.csproj", "Libraries/Models/"]
 COPY ["Libraries/Payments/Payments.csproj", "Libraries/Payments/"]
 COPY ["Libraries/Validation/Validation.csproj", "Libraries/Validation/"]
+COPY ["Libraries/EmergencyKit/EmergencyKit.csproj", "Libraries/EmergencyKit/"]
 RUN dotnet restore "./API/API.csproj"
 COPY . .
 WORKDIR "/src/API"

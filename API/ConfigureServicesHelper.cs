@@ -94,6 +94,7 @@ namespace API.Config
             this._services.AddScoped<LockedOutUserQueuePublish>();
             this._services.AddScoped<CreditCardInformationChangedQueuePublish>();
             this._services.AddScoped<Email2FAHotpCodeQueuePublish>();
+            this._services.AddScoped<EmergencyKitQueuePublish>();
         }
 
         private void SetupKestralAndIISOptions()

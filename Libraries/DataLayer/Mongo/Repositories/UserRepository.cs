@@ -1,5 +1,6 @@
 ﻿using CasDotnetSdk.DigitalSignature;
 using CasDotnetSdk.DigitalSignature.Types;
+using CasDotnetSdk.Hybrid.Types;
 using Common.UniqueIdentifiers;
 using DataLayer.Mongo.Entities;
 using Models.Payments;
@@ -25,8 +26,10 @@ namespace DataLayer.Mongo.Repositories
             var database = client.GetDatabase(databaseSettings.DatabaseName);
             this._userCollection = database.GetCollection<User>("Users");
         }
-        public async Task<User> AddUser(RegisterUser model, string hashedPassword)
+        public async Task<User> AddUser(RegisterUser model, string hashedPassword, Guid emergencyKeyId, AESRSAHybridEncryptResult encryptResult, string emergencyKeyPrivateKey)
         {
+            // Encrypted AES Key gets sent to the user in a email, it needs to be nulled out.
+            encryptResult.EncryptedAesKey = null;
             Generator generator = new Generator();
             User newUser = new User
             {
@@ -69,6 +72,12 @@ namespace DataLayer.Mongo.Repositories
                 InactiveEmail = new InactiveUserEmail()
                 {
                     Sent = false
+                },
+                EmergencyKitAccountRecoverySettings = new EmergencyKitAccountRecoverySettings()
+                {
+                    Key = emergencyKeyId,
+                    EncryptedResult = encryptResult,
+                    RsaPrivateKey = emergencyKeyPrivateKey
                 }
             };
             await this._userCollection.InsertOneAsync(newUser);

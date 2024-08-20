@@ -23,6 +23,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Libraries\Common\Common.csproj" />
     <ProjectReference Include="..\Libraries\DataLayer\DataLayer.csproj" />
+    <ProjectReference Include="..\Libraries\EmergencyKit\EmergencyKit.csproj" />
     <ProjectReference Include="..\Libraries\Models\Models.csproj" />
     <ProjectReference Include="..\Libraries\Payments\Payments.csproj" />
     <ProjectReference Include="..\Libraries\Validation\Validation.csproj" />
