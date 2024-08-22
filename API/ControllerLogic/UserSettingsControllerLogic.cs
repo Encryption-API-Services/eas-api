@@ -4,6 +4,7 @@ using CasDotnetSdk.Hybrid.Types;
 using CasDotnetSdk.PasswordHashers;
 using CASHelpers;
 using Common;
+using Common.UniqueIdentifiers;
 using DataLayer.Cache;
 using DataLayer.Mongo.Entities;
 using DataLayer.Mongo.Repositories;
@@ -112,6 +113,7 @@ namespace API.ControllerLogic
             IActionResult result = null;
             try
             {
+                // TODO: rate limit like forgot password.
                 EmergencyKitValidationResult validationResult = this._userSettingsValidation.IsEmergencyKitValid(recoveryBody);
                 if (!validationResult.IsValid)
                 {
@@ -121,18 +123,23 @@ namespace API.ControllerLogic
                 {
                     byte[] decodedAesKey = Convert.FromBase64String(recoveryBody.SecretKey);
                     HybridEncryptionWrapper hybridWrapper = new HybridEncryptionWrapper();
-                    AESRSAHybridEncryptResult encryptonResult = validationResult.AccountRecoverySettings.EncryptedResult;
+                    AESRSAHybridEncryptResult encryptonResult = validationResult.User.EmergencyKitAccountRecoverySettings.EncryptedResult;
                     encryptonResult.EncryptedAesKey = decodedAesKey;
-                    byte[] decryptedCipherText = hybridWrapper.DecryptAESRSAHybrid(validationResult.AccountRecoverySettings.RsaPrivateKey, encryptonResult);
+                    // TODO: if the secret key that was sent by the user is wrong the Rust code crashses the entire process, need to gracefully handle that error at the Rust Level.
+                    byte[] decryptedCipherText = hybridWrapper.DecryptAESRSAHybrid(validationResult.User.EmergencyKitAccountRecoverySettings.RsaPrivateKey, encryptonResult);
                     SHAWrapper sha = new SHAWrapper();
-                    bool isValid = sha.Verify512(decryptedCipherText, Convert.FromBase64String(validationResult.AccountRecoverySettings.Key));
+                    bool isValid = sha.Verify512(decryptedCipherText, Convert.FromBase64String(validationResult.User.EmergencyKitAccountRecoverySettings.Key));
                     if (!isValid)
                     {
                         result = new UnauthorizedObjectResult(new { error = "Your secret key was unable to recover your account, are you sure you copied and pasted it correctly?" });
                     }
                     else
-                    {
-                         string newPassword = 
+                    { 
+                        string newPassword = new Generator().GeneratePassword(12, 2);
+                        Argon2Wrapper argon2Wrapper = new Argon2Wrapper();
+                        string hashedPassword = argon2Wrapper.HashPassword(newPassword);
+                        await this._userRepository.UpdatePassword(validationResult.User.Id, hashedPassword);
+                        result = new OkObjectResult(new { message = "Your account was successfully reset, please check your email for your new password." });
                     }
                 }
             }

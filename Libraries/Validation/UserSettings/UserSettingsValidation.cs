@@ -110,7 +110,7 @@ namespace Validation.UserSettings
             }
 
             result.IsValid = true;
-            result.AccountRecoverySettings = user.EmergencyKitAccountRecoverySettings;
+            result.User = user;
             return result;
         }
     }

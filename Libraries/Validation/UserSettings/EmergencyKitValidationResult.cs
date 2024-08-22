@@ -6,6 +6,6 @@ namespace Validation.UserSettings
     {
         public bool IsValid { get; set; }
         public string ErrorMessage { get; set; }
-        public EmergencyKitAccountRecoverySettings AccountRecoverySettings { get; set; }
+        public User User { get; set; }
     }
 }
