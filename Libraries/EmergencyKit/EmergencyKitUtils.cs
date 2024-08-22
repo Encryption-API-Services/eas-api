@@ -21,11 +21,5 @@ namespace EmergencyKit
                 Initalizer = initalizer
             };
         }
-
-        public void ValidateEmergencyKit(string rsaPrivateKey, AESRSAHybridEncryptResult encryptResult)
-        {
-            HybridEncryptionWrapper hybridWrapper = new HybridEncryptionWrapper();
-            byte[] decrypted = hybridWrapper.DecryptAESRSAHybrid(rsaPrivateKey, encryptResult);
-        }
     }
 }
