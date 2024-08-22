@@ -36,5 +36,12 @@ namespace API.Controllers
         {
             return await this._userSettingsControllerLogic.ChangePassword(this._httpContextAccessor.HttpContext, body);
         }
+
+        [HttpPut]
+        [Route("EmergencyKitRecovery")]
+        public async Task<IActionResult> EmergencyKitRecovery([FromBody] EmergencyKitRecoveryBody body)
+        {
+            return await this._userSettingsControllerLogic.EmergencyKitRecovery(this._httpContextAccessor.HttpContext, body);
+        }
     }
 }

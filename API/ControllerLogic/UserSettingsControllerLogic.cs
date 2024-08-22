@@ -1,12 +1,17 @@
-﻿using CasDotnetSdk.PasswordHashers;
+﻿using CasDotnetSdk.Hashers;
+using CasDotnetSdk.Hybrid;
+using CasDotnetSdk.Hybrid.Types;
+using CasDotnetSdk.PasswordHashers;
 using CASHelpers;
 using Common;
 using DataLayer.Cache;
 using DataLayer.Mongo.Entities;
 using DataLayer.Mongo.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using Models.Encryption.AESRSAHybrid;
 using Models.UserAuthentication;
 using Models.UserSettings;
+using Stripe;
 using System.Reflection;
 using Validation.UserSettings;
 
@@ -97,6 +102,49 @@ namespace API.ControllerLogic
             return result;
         }
 
+
+        #endregion
+
+        #region EmergencyKitRecovery
+        public async Task<IActionResult> EmergencyKitRecovery(HttpContext context, EmergencyKitRecoveryBody recoveryBody)
+        {
+            BenchmarkMethodLogger logger = new BenchmarkMethodLogger(context);
+            IActionResult result = null;
+            try
+            {
+                EmergencyKitValidationResult validationResult = this._userSettingsValidation.IsEmergencyKitValid(recoveryBody);
+                if (!validationResult.IsValid)
+                {
+                    result = new BadRequestObjectResult(new { error = validationResult.ErrorMessage });
+                }
+                else
+                {
+                    byte[] decodedAesKey = Convert.FromBase64String(recoveryBody.SecretKey);
+                    HybridEncryptionWrapper hybridWrapper = new HybridEncryptionWrapper();
+                    AESRSAHybridEncryptResult encryptonResult = validationResult.AccountRecoverySettings.EncryptedResult;
+                    encryptonResult.EncryptedAesKey = decodedAesKey;
+                    byte[] decryptedCipherText = hybridWrapper.DecryptAESRSAHybrid(validationResult.AccountRecoverySettings.RsaPrivateKey, encryptonResult);
+                    SHAWrapper sha = new SHAWrapper();
+                    bool isValid = sha.Verify512(decryptedCipherText, Convert.FromBase64String(validationResult.AccountRecoverySettings.Key));
+                    if (!isValid)
+                    {
+                        result = new UnauthorizedObjectResult(new { error = "Your secret key was unable to recover your account, are you sure you copied and pasted it correctly?" });
+                    }
+                    else
+                    {
+                         string newPassword = 
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                await this._exceptionRepository.InsertException(ex.ToString(), MethodBase.GetCurrentMethod().Name);
+                result = new BadRequestObjectResult(new { error = "There was an error on our end recovering your account with your secret key" });
+            }
+            logger.EndExecution();
+            this._benchMarkMethodCache.AddLog(logger);
+            return result;
+        }
         #endregion
     }
 }

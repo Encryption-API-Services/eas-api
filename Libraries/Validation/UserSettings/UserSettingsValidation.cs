@@ -2,8 +2,10 @@
 using DataLayer.Mongo.Entities;
 using DataLayer.Mongo.Repositories;
 using Models.UserAuthentication;
+using Models.UserSettings;
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices.Marshalling;
 using System.Threading.Tasks;
 
 namespace Validation.UserSettings
@@ -68,6 +70,48 @@ namespace Validation.UserSettings
                 }
             }
             return isValid;
+        }
+
+        public EmergencyKitValidationResult IsEmergencyKitValid(EmergencyKitRecoveryBody body)
+        {
+            EmergencyKitValidationResult result = new EmergencyKitValidationResult();
+            if (string.IsNullOrEmpty(body.SecretKey))
+            {
+                result.IsValid = false;
+                result.ErrorMessage = "No secret key supplied";
+                return result;
+            }
+            Span<byte> buffer = new Span<byte>(new byte[body.SecretKey.Length]);
+            bool isValidBase64 = Convert.TryFromBase64String(body.SecretKey, buffer, out int _);
+            if (!isValidBase64)
+            {
+                result.IsValid = false;
+                result.ErrorMessage = "Secret key not in correct format";
+                return result;
+            }
+            if (string.IsNullOrEmpty(body.Email))
+            {
+                result.IsValid = false;
+                result.ErrorMessage = "No email address with supplied";
+                return result;
+            }
+            if (!this._emailRegex.IsMatch(body.Email))
+            {
+                result.IsValid = false;
+                result.ErrorMessage = "Not a valid email";
+                return result;
+            }
+            User user = this._userRepository.GetUserByEmail(body.Email).GetAwaiter().GetResult();
+            if (user == null)
+            {
+                result.IsValid = false;
+                result.ErrorMessage = "No user exists with that email";
+                return result;
+            }
+
+            result.IsValid = true;
+            result.AccountRecoverySettings = user.EmergencyKitAccountRecoverySettings;
+            return result;
         }
     }
 }
