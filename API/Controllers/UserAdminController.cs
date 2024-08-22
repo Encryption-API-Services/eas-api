@@ -55,7 +55,7 @@ namespace API.Controllers
         [Route("UserDelete")]
         [TypeFilter(typeof(ValidateJWTAttribute))]
         [TypeFilter(typeof(IsAdminAttribute))]
-        public async Task<IActionResult> DeleteUser([FromBody] UserAdminDeleteUserRequest request) 
+        public async Task<IActionResult> DeleteUser([FromBody] UserAdminDeleteUserRequest request)
         {
             return await this._userAdminControllerLogic.DeleteUser(this._contextAccessor.HttpContext, request);
         }

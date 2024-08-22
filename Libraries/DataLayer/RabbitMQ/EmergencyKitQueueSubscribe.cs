@@ -1,12 +1,10 @@
 ﻿using Common.Email;
-using Common.UniqueIdentifiers;
 using DataLayer.Mongo.Repositories;
 using DataLayer.RabbitMQ.QueueMessages;
-using RabbitMQ.Client.Events;
 using RabbitMQ.Client;
+using RabbitMQ.Client.Events;
 using System;
 using System.Net.Mail;
-using static Common.UniqueIdentifiers.Generator;
 using System.Text.Json;
 
 namespace DataLayer.RabbitMQ

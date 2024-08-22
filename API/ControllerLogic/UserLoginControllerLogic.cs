@@ -160,7 +160,7 @@ namespace API.ControllersLogic
                             string isUserActiveRedisKey = Constants.RedisKeys.IsActiveUser + activeUser.Id;
                             this._reditClient.SetString(isUserActiveRedisKey, true.ToString(), new TimeSpan(1, 0, 0));
                             string isUserAdminRedisKey = Constants.RedisKeys.IsUserAdmin + activeUser.Id;
-                            this._reditClient.SetString(isUserAdminRedisKey, activeUser.IsAdmin.ToString(), new TimeSpan(1,0,0));
+                            this._reditClient.SetString(isUserAdminRedisKey, activeUser.IsAdmin.ToString(), new TimeSpan(1, 0, 0));
                             result = new OkObjectResult(new { message = "You have successfully signed in.", token = token, TwoFactorAuth = false });
                         }
                     }

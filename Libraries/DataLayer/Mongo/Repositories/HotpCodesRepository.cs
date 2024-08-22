@@ -1,7 +1,6 @@
 ﻿using DataLayer.Mongo.Entities;
 using MongoDB.Driver;
 using MongoDB.Driver.Linq;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace DataLayer.Mongo.Repositories

@@ -139,7 +139,7 @@ namespace API.ControllerLogic
                         result = new UnauthorizedObjectResult(new { error = "Your secret key was unable to recover your account, are you sure you copied and pasted it correctly?" });
                     }
                     else
-                    { 
+                    {
                         string newPassword = new Generator().GeneratePassword(12, 2);
                         Argon2Wrapper argon2Wrapper = new Argon2Wrapper();
                         string hashedPassword = argon2Wrapper.HashPassword(newPassword);
@@ -149,7 +149,7 @@ namespace API.ControllerLogic
                             NewPassword = newPassword,
                             Email = validationResult.User.Email
                         };
-                        this._emergencyKitRecoveredPublish.BasicPublish(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(newMessage)));    
+                        this._emergencyKitRecoveredPublish.BasicPublish(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(newMessage)));
                         result = new OkObjectResult(new { message = "Your account was successfully reset, please check your email for your new password." });
                     }
                 }

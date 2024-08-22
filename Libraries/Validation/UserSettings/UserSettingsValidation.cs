@@ -5,7 +5,6 @@ using Models.UserAuthentication;
 using Models.UserSettings;
 using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices.Marshalling;
 using System.Threading.Tasks;
 
 namespace Validation.UserSettings
