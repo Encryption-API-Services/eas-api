@@ -26,7 +26,7 @@ namespace DataLayer.Mongo.Repositories
             var database = client.GetDatabase(databaseSettings.DatabaseName);
             this._userCollection = database.GetCollection<User>("Users");
         }
-        public async Task<User> AddUser(RegisterUser model, string hashedPassword, Guid emergencyKeyId, AESRSAHybridEncryptResult encryptResult, string emergencyKeyPrivateKey)
+        public async Task<User> AddUser(RegisterUser model, string hashedPassword, string emergencyKeyId, AESRSAHybridEncryptResult encryptResult, string emergencyKeyPrivateKey)
         {
             // Encrypted AES Key gets sent to the user in a email, it needs to be nulled out.
             encryptResult.EncryptedAesKey = null;

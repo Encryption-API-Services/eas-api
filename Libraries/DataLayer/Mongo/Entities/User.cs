@@ -87,7 +87,7 @@ namespace DataLayer.Mongo.Entities
 
     public class EmergencyKitAccountRecoverySettings
     {
-        public Guid Key { get; set; }
+        public string Key { get; set; }
         public AESRSAHybridEncryptResult EncryptedResult { get; set; }
         public string RsaPrivateKey { get; set; }
     }

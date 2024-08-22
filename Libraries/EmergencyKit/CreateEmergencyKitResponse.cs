@@ -4,7 +4,7 @@ namespace EmergencyKit
 {
     public class CreateEmergencyKitResponse
     {
-        public Guid Key { get; set; }
+        public string Key { get; set; }
         public AESRSAHybridEncryptResult EncryptResult { get; set; } 
         public AESRSAHybridInitializer Initalizer { get; set; }
     }

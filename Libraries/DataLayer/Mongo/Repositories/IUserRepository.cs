@@ -15,7 +15,7 @@ namespace DataLayer.Mongo.Repositories
         public Task ChangeUserActivationStatusById(string userId, bool isActive);
         public Task ChangeUserAdminStatusById(string userId, bool isAdmin);
         public IMongoQueryable<UserTableItem> GetUsersByPage();
-        public Task<User> AddUser(RegisterUser model, string hashedPassword, Guid emergencyKitId, AESRSAHybridEncryptResult encryptResult, string emergencyKeyPrivateKey);
+        public Task<User> AddUser(RegisterUser model, string hashedPassword, string emergencyKitId, AESRSAHybridEncryptResult encryptResult, string emergencyKeyPrivateKey);
         public Task<User> GetUserByEmail(string email);
         public Task<User> GetUserByUsername(string username);
         public Task ChangeUsername(string userId, string newUsername);
