@@ -8,12 +8,14 @@ using Common.UniqueIdentifiers;
 using DataLayer.Cache;
 using DataLayer.Mongo.Entities;
 using DataLayer.Mongo.Repositories;
+using DataLayer.RabbitMQ;
+using DataLayer.RabbitMQ.QueueMessages;
 using Microsoft.AspNetCore.Mvc;
-using Models.Encryption.AESRSAHybrid;
 using Models.UserAuthentication;
 using Models.UserSettings;
-using Stripe;
 using System.Reflection;
+using System.Text;
+using System.Text.Json;
 using Validation.UserSettings;
 
 namespace API.ControllerLogic
@@ -25,12 +27,14 @@ namespace API.ControllerLogic
         private readonly IForgotPasswordRepository _forgotPasswordRepository;
         private readonly BenchmarkMethodCache _benchMarkMethodCache;
         private readonly UserSettingsValidation _userSettingsValidation;
+        private readonly EmergencyKitRecoveredPublish _emergencyKitRecoveredPublish;
         public UserSettingsControllerLogic(
             IUserRepository userRepository,
             ICASExceptionRepository exceptionRepository,
             IForgotPasswordRepository forgotPasswordRepository,
             BenchmarkMethodCache benchmarkMethodCache,
-            UserSettingsValidation userSettingsValidation
+            UserSettingsValidation userSettingsValidation,
+            EmergencyKitRecoveredPublish emergencyKitRecoveredPublish
             )
         {
             this._userRepository = userRepository;
@@ -38,6 +42,7 @@ namespace API.ControllerLogic
             this._forgotPasswordRepository = forgotPasswordRepository;
             this._benchMarkMethodCache = benchmarkMethodCache;
             this._userSettingsValidation = userSettingsValidation;
+            this._emergencyKitRecoveredPublish = emergencyKitRecoveredPublish;
         }
 
         #region ChangeUsername
@@ -139,6 +144,12 @@ namespace API.ControllerLogic
                         Argon2Wrapper argon2Wrapper = new Argon2Wrapper();
                         string hashedPassword = argon2Wrapper.HashPassword(newPassword);
                         await this._userRepository.UpdatePassword(validationResult.User.Id, hashedPassword);
+                        EmergencyKitRecoveredQueueMessage newMessage = new EmergencyKitRecoveredQueueMessage()
+                        {
+                            NewPassword = newPassword,
+                            Email = validationResult.User.Email
+                        };
+                        this._emergencyKitRecoveredPublish.BasicPublish(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(newMessage)));    
                         result = new OkObjectResult(new { message = "Your account was successfully reset, please check your email for your new password." });
                     }
                 }

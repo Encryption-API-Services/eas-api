@@ -10,6 +10,7 @@
             public const string CCInformationChanged = "CCInformationChanged";
             public const string Email2FAHotpCode = "Email2FAHotpCode";
             public const string EmergencyKit = "EmergencyKit";
+            public const string EmergencyKitRecovered = "EmergencyKitRecovered";
         }
     }
 }

@@ -11,7 +11,8 @@ namespace Email_Service
         LockedOutUserQueueSubscribe lockedOutUserSubscribe,
         CreditCardInformationChangedQueueSubscribe ccInfoChangedSubscribe,
         Email2FAHotpCodeQueueSubscribe email2faHotpCodeSubscribe,
-        EmergencyKitQueueSubscribe emergencyhKitSubscribe
+        EmergencyKitQueueSubscribe emergencyhKitSubscribe,
+        EmergencyKitRecoveredSubscribe emergencyKitRecoveredSubscribe
             ) : BackgroundService
     {
 

@@ -38,6 +38,7 @@ namespace Email_Service
                     services.AddScoped<CreditCardInformationChangedQueueSubscribe>();
                     services.AddScoped<Email2FAHotpCodeQueueSubscribe>();
                     services.AddScoped<EmergencyKitQueueSubscribe>();
+                    services.AddScoped<EmergencyKitRecoveredSubscribe>();
                     services.AddScoped<IUserRepository, UserRepository>();
                     services.AddHostedService<Worker>();
                 });
