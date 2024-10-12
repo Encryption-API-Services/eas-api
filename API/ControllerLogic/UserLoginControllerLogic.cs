@@ -268,6 +268,13 @@ namespace API.ControllersLogic
                         string token = new JWT().GenerateECCToken(activeUser.Id, activeUser.IsAdmin, ecdsa, 1, activeUser.StripProductId);
                         string isUserActiveRedisKey = Constants.RedisKeys.IsActiveUser + activeUser.Id;
                         this._reditClient.SetString(isUserActiveRedisKey, true.ToString(), new TimeSpan(1, 0, 0));
+                        SuccessfulLogin login = new SuccessfulLogin()
+                        {
+                            UserId = activeUser.Id,
+                            UserAgent = body.UserAgent,
+                            CreateTime = DateTime.UtcNow
+                        };
+                        await this._successfulLoginRepository.InsertSuccessfulLogin(login);
                         result = new OkObjectResult(new { message = "You have successfully verified your authentication code.", token = token });
                     }
                     else
