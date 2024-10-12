@@ -1,19 +1,13 @@
-﻿using RabbitMQ.Client.Events;
+﻿using Common.Email;
+using Common.UniqueIdentifiers;
+using DataLayer.Mongo.Repositories;
+using DataLayer.RabbitMQ.QueueMessages;
 using RabbitMQ.Client;
+using RabbitMQ.Client.Events;
 using System;
 using System.Net.Mail;
-using System.Net;
-using DataLayer.RabbitMQ.QueueMessages;
 using System.Text.Json;
-using CasDotnetSdk.Asymmetric.Types;
-using CasDotnetSdk.Asymmetric;
-using CasDotnetSdk.Hashers;
-using Microsoft.IdentityModel.Tokens;
-using System.Text;
-using DataLayer.Mongo.Repositories;
 using static Common.UniqueIdentifiers.Generator;
-using Common.UniqueIdentifiers;
-using Common.Email;
 
 namespace DataLayer.RabbitMQ
 {

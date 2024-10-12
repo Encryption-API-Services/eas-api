@@ -25,8 +25,8 @@ namespace Validation.Tokens
         }
     }
 
-    public class EmailToken 
-    { 
+    public class EmailToken
+    {
         public string Base64HashedToken { get; set; }
         public string Base64PublicKey { get; set; }
         public string Signature { get; set; }

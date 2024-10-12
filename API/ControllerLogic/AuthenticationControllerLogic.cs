@@ -139,7 +139,7 @@ namespace API.ControllerLogic
                     }
                     else if (apiKeys.Item2 == body.ApiKey)
                     {
-                        
+
                         OSInfoRedisEntry newEntry = new OSInfoRedisEntry()
                         {
                             IP = httpContext.Request.HttpContext.Items[Constants.HttpItems.IP].ToString(),

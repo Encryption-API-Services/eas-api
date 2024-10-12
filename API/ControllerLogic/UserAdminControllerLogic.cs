@@ -1,16 +1,12 @@
 ﻿using CASHelpers;
 using Common;
 using DataLayer.Cache;
-using DataLayer.Mongo.Entities;
 using DataLayer.Mongo.Repositories;
 using DataLayer.Redis;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Models.UserAdmin;
 using MongoDB.Driver;
 using MongoDB.Driver.Linq;
-using System.Drawing.Printing;
-using System.Net.Http;
 using System.Reflection;
 
 namespace API.ControllerLogic

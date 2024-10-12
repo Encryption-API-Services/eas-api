@@ -1,14 +1,10 @@
-﻿using RabbitMQ.Client.Events;
-using RabbitMQ.Client;
-using System;
-using static Common.UniqueIdentifiers.Generator;
-using System.Net.Mail;
-using System.Net;
-using Twilio.TwiML.Messaging;
+﻿using Common.Email;
 using DataLayer.RabbitMQ.QueueMessages;
+using RabbitMQ.Client;
+using RabbitMQ.Client.Events;
+using System;
+using System.Net.Mail;
 using System.Text.Json;
-using System.ComponentModel.DataAnnotations;
-using Common.Email;
 
 namespace DataLayer.RabbitMQ
 {

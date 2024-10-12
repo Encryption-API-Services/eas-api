@@ -1,9 +1,9 @@
 ﻿using CasDotnetSdk.Hashers;
-using CasDotnetSdk.Signatures.Types;
 using CasDotnetSdk.Signatures;
+using CasDotnetSdk.Signatures.Types;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Text;
-using Microsoft.IdentityModel.Tokens;
 
 namespace Common.UniqueIdentifiers
 {
