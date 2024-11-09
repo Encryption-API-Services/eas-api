@@ -330,5 +330,10 @@ namespace DataLayer.Mongo.Repositories
                                             .Set(x => x.EmergencyKit.PrivateKey, kit.PrivateKey);
             await this._userCollection.UpdateOneAsync(filter, update);
         }
+
+        public async Task<EmergencyKit> GetEmergencyKitByEmail(string email)
+        {
+            return await this._userCollection.AsQueryable().Where(x => x.Email == email).Select(x => x.EmergencyKit).FirstOrDefaultAsync();
+        }
     }
 }

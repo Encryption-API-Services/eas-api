@@ -45,5 +45,6 @@ namespace DataLayer.Mongo.Repositories
         public Task UpdateUsersRsaKeyPairsAndToken(string userId, string pubXml, string token, string signedToken);
         public Task UpdateLockedOutUsersToken(string userId, string lockedOutToken, string publicKey);
         public Task SetEmergencyKitForUser(string userId, EmergencyKitCreatedResult kit);
+        public Task<EmergencyKit> GetEmergencyKitByEmail(string email);
     }
 }
