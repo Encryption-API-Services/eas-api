@@ -84,6 +84,7 @@ namespace API.Config
             this._services.AddScoped<IApiKeyControllerLogic, ApiKeyControllerLogic>();
             this._services.AddScoped<IAuthenticationControllerLogic, AuthenticationControllerLogic>();
             this._services.AddScoped<IUserAdminControllerLogic, UserAdminControllerLogic>();
+            this._services.AddScoped<IEmergencyKitControllerLogic, EmergencyKitControllerLogic>();
 
             // Validaton
             this._services.AddScoped<UserSettingsValidation>();
@@ -94,6 +95,8 @@ namespace API.Config
             this._services.AddScoped<LockedOutUserQueuePublish>();
             this._services.AddScoped<CreditCardInformationChangedQueuePublish>();
             this._services.AddScoped<Email2FAHotpCodeQueuePublish>();
+            this._services.AddScoped<EmergencyKitQueuePublish>();
+            this._services.AddScoped<EmergencyKitRecoveryPublish>();
         }
 
         private void SetupKestralAndIISOptions()

@@ -1,5 +1,6 @@
 ﻿using CasDotnetSdk.DigitalSignature;
 using CasDotnetSdk.DigitalSignature.Types;
+using Common.EmergencyKit;
 using Common.UniqueIdentifiers;
 using DataLayer.Mongo.Entities;
 using Models.Payments;
@@ -69,6 +70,10 @@ namespace DataLayer.Mongo.Repositories
                 InactiveEmail = new InactiveUserEmail()
                 {
                     Sent = false
+                },
+                EmergencyKit = new EmergencyKit()
+                {
+
                 }
             };
             await this._userCollection.InsertOneAsync(newUser);
@@ -312,6 +317,23 @@ namespace DataLayer.Mongo.Repositories
             var filter = Builders<User>.Filter.Eq(x => x.Id, userId);
             var update = Builders<User>.Update.Set(x => x.IsAdmin, isAdmin);
             await this._userCollection.UpdateOneAsync(filter, update);
+        }
+
+        public async Task SetEmergencyKitForUser(string userId, EmergencyKitCreatedResult kit)
+        {
+            var filter = Builders<User>.Filter.Eq(x => x.Id, userId);
+            var update = Builders<User>.Update
+                                            .Set(x => x.EmergencyKit.InfoStr, kit.InfoStr)
+                                            .Set(x => x.EmergencyKit.CipherText, kit.CipherText)
+                                            .Set(x => x.EmergencyKit.Tag, kit.Tag)
+                                            .Set(x => x.EmergencyKit.EmergencyKitId, kit.EmergencyKitId)
+                                            .Set(x => x.EmergencyKit.PrivateKey, kit.PrivateKey);
+            await this._userCollection.UpdateOneAsync(filter, update);
+        }
+
+        public async Task<EmergencyKit> GetEmergencyKitByEmail(string email)
+        {
+            return await this._userCollection.AsQueryable().Where(x => x.Email == email).Select(x => x.EmergencyKit).FirstOrDefaultAsync();
         }
     }
 }

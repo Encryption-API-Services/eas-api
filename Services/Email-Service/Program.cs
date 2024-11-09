@@ -3,6 +3,7 @@ using DataLayer.Mongo.Repositories;
 using DataLayer.RabbitMQ;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Models.EmergencyKit;
 using MongoDB.Driver;
 using System;
 
@@ -37,6 +38,8 @@ namespace Email_Service
                     services.AddScoped<LockedOutUserQueueSubscribe>();
                     services.AddScoped<CreditCardInformationChangedQueueSubscribe>();
                     services.AddScoped<Email2FAHotpCodeQueueSubscribe>();
+                    services.AddScoped<EmergencyKitQueueSubscribe>();
+                    services.AddScoped<EmergencyKitRecoverySubscribe>();
                     services.AddScoped<IUserRepository, UserRepository>();
                     services.AddHostedService<Worker>();
                 });

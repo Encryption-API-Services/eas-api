@@ -10,7 +10,9 @@ namespace Email_Service
         ForgotPasswordQueueSubscribe forgotPasswordSubscribe,
         LockedOutUserQueueSubscribe lockedOutUserSubscribe,
         CreditCardInformationChangedQueueSubscribe ccInfoChangedSubscribe,
-        Email2FAHotpCodeQueueSubscribe email2faHotpCodeSubscribe
+        Email2FAHotpCodeQueueSubscribe email2faHotpCodeSubscribe,
+        EmergencyKitQueueSubscribe emergencyKeySubscribe,
+        EmergencyKitRecoverySubscribe emergencyKitRecoverySubscribe
             ) : BackgroundService
     {
 

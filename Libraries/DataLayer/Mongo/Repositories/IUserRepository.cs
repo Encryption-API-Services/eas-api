@@ -1,4 +1,5 @@
-﻿using DataLayer.Mongo.Entities;
+﻿using Common.EmergencyKit;
+using DataLayer.Mongo.Entities;
 using Models.Payments;
 using Models.UserAdmin;
 using Models.UserAuthentication;
@@ -43,5 +44,7 @@ namespace DataLayer.Mongo.Repositories
         public Task UpdateBillingInformation(string userId, UpdateBillingInformationRequestBody billingInformation);
         public Task UpdateUsersRsaKeyPairsAndToken(string userId, string pubXml, string token, string signedToken);
         public Task UpdateLockedOutUsersToken(string userId, string lockedOutToken, string publicKey);
+        public Task SetEmergencyKitForUser(string userId, EmergencyKitCreatedResult kit);
+        public Task<EmergencyKit> GetEmergencyKitByEmail(string email);
     }
 }
