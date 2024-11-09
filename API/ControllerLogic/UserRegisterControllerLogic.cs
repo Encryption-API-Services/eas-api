@@ -31,13 +31,15 @@ namespace API.Config
         private readonly ICASExceptionRepository _exceptionRepository;
         private readonly BenchmarkMethodCache _benchmarkMethodCache;
         private readonly ActivateUserQueuePublish _activateUserQueue;
+        private readonly EmergencyKitQueuePublish _emergencyKitQueuePublish;
         public UserRegisterControllerLogic(
             IUserRepository userRepo,
             IForgotPasswordRepository forgotPasswordRepository,
             ILogRequestRepository logRequestRespository,
             ICASExceptionRepository exceptionRespitory,
             BenchmarkMethodCache benchmarkMethodCache,
-            ActivateUserQueuePublish activateUserQueue
+            ActivateUserQueuePublish activateUserQueue,
+            EmergencyKitQueuePublish emergencyKitQueuePublish
             )
         {
             this._userRespository = userRepo;
@@ -46,6 +48,7 @@ namespace API.Config
             this._exceptionRepository = exceptionRespitory;
             this._benchmarkMethodCache = benchmarkMethodCache;
             this._activateUserQueue = activateUserQueue;
+            this._emergencyKitQueuePublish = emergencyKitQueuePublish;
         }
 
         #region RegisterUser
@@ -93,6 +96,13 @@ namespace API.Config
         private async Task HandleEmergencyKitCreation(User user)
         {
             EmergencyKitCreatedResult kit = EmergencyKitUtils.CreateEmergencyKit();
+            EmergencyKitSendQueueMessage message = new EmergencyKitSendQueueMessage()
+            {
+                EncappedKey = Convert.ToBase64String(kit.EncappedKey),
+                CipherText = Convert.ToBase64String(kit.CipherText),
+                UserEmail = user.Email,
+            };
+            this._emergencyKitQueuePublish.BasicPublish(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(message)));
             // TODO: construct rabbit mq connection layer and send the encapped key to the users email.
             // store the emergency kit in the database
             // nothing to return to the user.
