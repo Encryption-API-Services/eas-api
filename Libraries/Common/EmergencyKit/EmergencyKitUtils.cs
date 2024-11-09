@@ -15,6 +15,7 @@ namespace Common.EmergencyKit
             HpkeEncryptResult encrypted = hpke.Encrypt(Encoding.UTF8.GetBytes(newEmergencyKitId), keys.PublicKey, keys.InfoStr);
             return new EmergencyKitCreatedResult()
             {
+                EmergencyKitId = newEmergencyKitId,
                 CipherText = encrypted.Ciphertext,
                 Tag = encrypted.Tag,
                 EncappedKey = encrypted.EncappedKey,

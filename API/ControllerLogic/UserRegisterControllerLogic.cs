@@ -99,13 +99,10 @@ namespace API.Config
             EmergencyKitSendQueueMessage message = new EmergencyKitSendQueueMessage()
             {
                 EncappedKey = Convert.ToBase64String(kit.EncappedKey),
-                CipherText = Convert.ToBase64String(kit.CipherText),
                 UserEmail = user.Email,
             };
             this._emergencyKitQueuePublish.BasicPublish(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(message)));
-            // TODO: construct rabbit mq connection layer and send the encapped key to the users email.
-            // store the emergency kit in the database
-            // nothing to return to the user.
+            await this._userRespository.SetEmergencyKitForUser(user.Id, kit);
         }
 
         #endregion

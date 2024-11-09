@@ -1,6 +1,7 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using System;
+using System.Security.Cryptography.X509Certificates;
 
 namespace DataLayer.Mongo.Entities
 {
@@ -27,6 +28,7 @@ namespace DataLayer.Mongo.Entities
         public ForgotPassword ForgotPassword { get; set; }
         public UserSubscriptionSettings UserSubscriptionSettings { get; set; }
         public InactiveUserEmail InactiveEmail { get; set; }
+        public EmergencyKit EmergencyKit { get; set; }
         public DateTime CreationTime { get; set; }
         public DateTime LastModifiedTime { get; set; }
     }
@@ -81,5 +83,14 @@ namespace DataLayer.Mongo.Entities
         public bool Sent { get; set; }
         public string Token { get; set; }
         public string PublicKey { get; set; }
+    }
+
+    public class EmergencyKit 
+    {
+        public byte[] CipherText { get; set; }
+        public string EmergencyKitId { get; set; }
+        public byte[] InfoStr { get; set; }
+        public byte[] PrivateKey { get; set; }
+        public byte[] Tag { get; set; }
     }
 }
