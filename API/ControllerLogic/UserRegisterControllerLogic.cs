@@ -4,6 +4,7 @@ using CasDotnetSdk.PasswordHashers;
 using CasDotnetSdk.Signatures;
 using CASHelpers;
 using Common;
+using Common.EmergencyKit;
 using DataLayer.Cache;
 using DataLayer.Mongo.Repositories;
 using DataLayer.RabbitMQ;
@@ -64,13 +65,14 @@ namespace API.Config
                     Argon2Wrapper argon2 = new Argon2Wrapper();
                     string hashedPassword = argon2.HashPassword(body.password);
                     User newUser = await this._userRespository.AddUser(body, hashedPassword);
+                    await this._forgotPasswordRepository.InsertForgotPasswordAttempt(newUser.Id, hashedPassword);
                     ActivateUserQueueMessage newMessage = new ActivateUserQueueMessage()
                     {
                         UserId = newUser.Id,
                         UserEmail = newUser.Email
                     };
                     this._activateUserQueue.BasicPublish(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(newMessage)));
-                    await this._forgotPasswordRepository.InsertForgotPasswordAttempt(newUser.Id, hashedPassword);
+                    await this.HandleEmergencyKitCreation(newUser);
                     result = new OkObjectResult(new { message = "Successfully registered user" });
                 }
                 else
@@ -87,6 +89,15 @@ namespace API.Config
             this._benchmarkMethodCache.AddLog(logger);
             return result;
         }
+
+        private async Task HandleEmergencyKitCreation(User user)
+        {
+            EmergencyKitCreatedResult kit = EmergencyKitUtils.CreateEmergencyKit();
+            // TODO: construct rabbit mq connection layer and send the encapped key to the users email.
+            // store the emergency kit in the database
+            // nothing to return to the user.
+        }
+
         #endregion
 
         #region ActivateUser
