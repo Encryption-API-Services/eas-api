@@ -29,7 +29,7 @@ namespace API.ControllersLogic
         private readonly BenchmarkMethodCache _benchMarkMethodCache;
         private readonly LockedOutUserQueuePublish _lockedOutUserQueue;
         private readonly Email2FAHotpCodeQueuePublish _email2FAHotpCodeQueuePublish;
-        private readonly IRedisClient _reditClient;
+        private readonly IRedisClient _redisClient;
 
         public UserLoginControllerLogic(
             IUserRepository userRepository,
@@ -51,7 +51,7 @@ namespace API.ControllersLogic
             this._benchMarkMethodCache = benchmarkMethodCache;
             this._lockedOutUserQueue = lockedOutUserQueue;
             this._email2FAHotpCodeQueuePublish = email2FAHotpCodeQueuePublish;
-            this._reditClient = redisCLient;
+            this._redisClient = redisCLient;
         }
 
         #region GetApiKey
@@ -157,10 +157,13 @@ namespace API.ControllersLogic
                             await this._successfulLoginRepository.InsertSuccessfulLogin(login);
                             ECDSAWrapper ecdsa = new ECDSAWrapper("ES521");
                             string token = new JWT().GenerateECCToken(activeUser.Id, activeUser.IsAdmin, ecdsa, 1, activeUser.StripProductId);
+                            string publicKeyCacheKey = Constants.RedisKeys.UserTokenPublicKey + activeUser.Id;
+                            this._redisClient.SetString(publicKeyCacheKey, ecdsa.PublicKey, new TimeSpan(1, 0, 0));
+                            await this._userRepository.SetUserTokenPublicKey(activeUser.Id, ecdsa.PublicKey);
                             string isUserActiveRedisKey = Constants.RedisKeys.IsActiveUser + activeUser.Id;
-                            this._reditClient.SetString(isUserActiveRedisKey, true.ToString(), new TimeSpan(1, 0, 0));
+                            this._redisClient.SetString(isUserActiveRedisKey, true.ToString(), new TimeSpan(1, 0, 0));
                             string isUserAdminRedisKey = Constants.RedisKeys.IsUserAdmin + activeUser.Id;
-                            this._reditClient.SetString(isUserAdminRedisKey, activeUser.IsAdmin.ToString(), new TimeSpan(1, 0, 0));
+                            this._redisClient.SetString(isUserAdminRedisKey, activeUser.IsAdmin.ToString(), new TimeSpan(1, 0, 0));
                             result = new OkObjectResult(new { message = "You have successfully signed in.", token = token, TwoFactorAuth = false });
                         }
                     }
@@ -266,8 +269,11 @@ namespace API.ControllersLogic
                         User activeUser = await this._userRepository.GetUserById(body.UserId);
                         ECDSAWrapper ecdsa = new ECDSAWrapper("ES521");
                         string token = new JWT().GenerateECCToken(activeUser.Id, activeUser.IsAdmin, ecdsa, 1, activeUser.StripProductId);
+                        string publicKeyCacheKey = Constants.RedisKeys.UserTokenPublicKey + activeUser.Id;
+                        this._redisClient.SetString(publicKeyCacheKey, ecdsa.PublicKey, new TimeSpan(1, 0, 0));
+                        await this._userRepository.SetUserTokenPublicKey(activeUser.Id, ecdsa.PublicKey);
                         string isUserActiveRedisKey = Constants.RedisKeys.IsActiveUser + activeUser.Id;
-                        this._reditClient.SetString(isUserActiveRedisKey, true.ToString(), new TimeSpan(1, 0, 0));
+                        this._redisClient.SetString(isUserActiveRedisKey, true.ToString(), new TimeSpan(1, 0, 0));
                         SuccessfulLogin login = new SuccessfulLogin()
                         {
                             UserId = activeUser.Id,

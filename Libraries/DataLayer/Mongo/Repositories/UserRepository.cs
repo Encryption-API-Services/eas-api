@@ -335,5 +335,17 @@ namespace DataLayer.Mongo.Repositories
         {
             return await this._userCollection.AsQueryable().Where(x => x.Email == email).Select(x => x.EmergencyKit).FirstOrDefaultAsync();
         }
+
+        public async Task SetUserTokenPublicKey(string userId, string publicKey)
+        {
+            var filter = Builders<User>.Filter.Eq(x => x.Id, userId);
+            var update = Builders<User>.Update.Set(x => x.TokenPublicKey, publicKey);
+            await this._userCollection.UpdateOneAsync(filter, update);
+        }
+
+        public async Task<string> GetUserTokenPublicKey(string userId)
+        {
+            return await this._userCollection.AsQueryable().Where(x => x.Id == userId).Select(x => x.TokenPublicKey).FirstOrDefaultAsync();
+        }
     }
 }

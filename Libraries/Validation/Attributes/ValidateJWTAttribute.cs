@@ -28,7 +28,14 @@ namespace Validation.Attributes
             if (token != null && handler.CanReadToken(token))
             {
                 var readToken = handler.ReadJwtToken(token);
-                string publicKey = readToken.Claims.First(x => x.Type == Constants.TokenClaims.PublicKey).Value;
+                string userId = readToken.Claims.FirstOrDefault(x => x.Type == Constants.TokenClaims.Id).Value;
+                string publicKeyRedisCacheKey = Constants.RedisKeys.UserTokenPublicKey + userId;
+                string publicKey = this._redisClient.GetString(publicKeyRedisCacheKey);
+                if (string.IsNullOrEmpty(publicKey))
+                {
+                    publicKey = await this._userRepository.GetUserTokenPublicKey(userId);
+                    this._redisClient.SetString(publicKeyRedisCacheKey, publicKey, new TimeSpan(1, 0, 0));
+                }
                 ECDSAWrapper ecdsa = new ECDSAWrapper("ES521");
                 ecdsa.ImportFromPublicBase64String(publicKey);
                 // validate signing key
@@ -40,7 +47,6 @@ namespace Validation.Attributes
                 }
                 else
                 {
-                    string userId = readToken.Claims.FirstOrDefault(x => x.Type == Constants.TokenClaims.Id).Value;
                     string isAdmin = readToken.Claims.FirstOrDefault(x => x.Type == Constants.TokenClaims.IsAdmin).Value;
                     string subscriptionProductId = readToken.Claims.FirstOrDefault(x => x.Type == Constants.TokenClaims.SubscriptionPublicKey)?.Value;
                     context.HttpContext.Items[Constants.HttpItems.UserID] = userId;

@@ -21,6 +21,7 @@ namespace DataLayer.Mongo.Entities
         public string StripProductId { get; set; }
         public string ApiKey { get; set; }
         public string DevelopmentApiKey { get; set; }
+        public string TokenPublicKey { get; set; }
         public BillingInformation BillingInformation { get; set; }
         public Phone2FA Phone2FA { get; set; }
         public LockedOut LockedOut { get; set; }
