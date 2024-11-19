@@ -56,6 +56,9 @@ namespace API.ControllerLogic
                 {
                     ECDSAWrapper ecdsa = new ECDSAWrapper("ES521");
                     string token = new JWT().GenerateECCToken(activeUser.Id, activeUser.IsAdmin, ecdsa, 1, activeUser.StripProductId);
+                    string publicKeyCacheKey = Constants.RedisKeys.UserTokenPublicKey + activeUser.Id;
+                    this._redisClient.SetString(publicKeyCacheKey, ecdsa.PublicKey, new TimeSpan(1, 0, 0));
+                    await this._userRepository.SetUserTokenPublicKey(activeUser.Id, ecdsa.PublicKey);
                     string isUserActiveRedisKey = Constants.RedisKeys.IsActiveUser + activeUser.Id;
                     this._redisClient.SetString(isUserActiveRedisKey, true.ToString(), new TimeSpan(1, 0, 0));
                     result = new OkObjectResult(new GetTokenResponse() { Token = token });
@@ -98,6 +101,9 @@ namespace API.ControllerLogic
                         bool isAdmin = bool.Parse(parsedToken.Claims.First(x => x.Type == Constants.TokenClaims.IsAdmin).Value);
                         string stripProductId = parsedToken.Claims.First(x => x.Type == Constants.TokenClaims.SubscriptionPublicKey).Value;
                         string newToken = new JWT().GenerateECCToken(userId, isAdmin, newEcdsa, 1, stripProductId);
+                        string publicKeyCacheKey = Constants.RedisKeys.UserTokenPublicKey + userId;
+                        this._redisClient.SetString(publicKeyCacheKey, ecdsa.PublicKey, new TimeSpan(1, 0, 0));
+                        await this._userRepository.SetUserTokenPublicKey(userId, ecdsa.PublicKey);
                         string isUserActiveRedisKey = Constants.RedisKeys.IsActiveUser + userId;
                         this._redisClient.SetString(isUserActiveRedisKey, true.ToString(), new TimeSpan(1, 0, 0));
                         result = new OkObjectResult(new GetTokenResponse() { Token = newToken });
