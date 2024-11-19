@@ -9,21 +9,32 @@ services:
     ports:
     - "8080:8080"
     - "8081:8081"
+    depends_on:
+      - email_service
+      - mongo
+      - rabbit-mq
+
   email_service:
     image: ${DOCKER_REIGSTRY-}email_service
     build:
       context: .
       dockerfile: Services/Email-Service/Dockerfile
+    depends_on:
+      - mongo
+      - rabbit-mq
+
   mongo:
     image: mongodb/mongodb-community-server:latest
     ports:
     - "27017:27017"
     volumes:
     - "C:/data/db:/data/db"
+
   redis:
     image: redis/redis-stack-server:latest
     ports:
     - "6379:6379"
+
   rabbit-mq:
     image: rabbitmq:3.13-management
     ports:
