@@ -57,7 +57,7 @@ namespace API.ControllerLogic
             IActionResult result = null;
             try
             {
-                IMongoQueryable<UserTableItem> users = this._userRepository.GetUsersByPage();
+                IQueryable<UserTableItem> users = this._userRepository.GetUsersByPage();
                 Task<int> usersCount = users.CountAsync();
                 Task<List<UserTableItem>> usersList = users.Skip(pageSkip * pageSize).Take(pageSize).ToListAsync();
                 await Task.WhenAll(usersCount, usersList);

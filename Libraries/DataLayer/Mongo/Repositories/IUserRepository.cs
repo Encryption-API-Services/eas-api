@@ -3,9 +3,9 @@ using DataLayer.Mongo.Entities;
 using Models.Payments;
 using Models.UserAdmin;
 using Models.UserAuthentication;
-using MongoDB.Driver.Linq;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace DataLayer.Mongo.Repositories
@@ -14,7 +14,7 @@ namespace DataLayer.Mongo.Repositories
     {
         public Task ChangeUserActivationStatusById(string userId, bool isActive);
         public Task ChangeUserAdminStatusById(string userId, bool isAdmin);
-        public IMongoQueryable<UserTableItem> GetUsersByPage();
+        public IQueryable<UserTableItem> GetUsersByPage();
         public Task<User> AddUser(RegisterUser model, string hashedPassword);
         public Task<User> GetUserByEmail(string email);
         public Task<User> GetUserByUsername(string username);

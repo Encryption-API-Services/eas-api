@@ -300,7 +300,7 @@ namespace DataLayer.Mongo.Repositories
             await this._userCollection.UpdateOneAsync(filter, update);
         }
 
-        public IMongoQueryable<UserTableItem> GetUsersByPage()
+        public IQueryable<UserTableItem> GetUsersByPage()
         {
             return this._userCollection.AsQueryable<User>().Select(x => new UserTableItem
             {
