@@ -12,6 +12,7 @@ services:
     depends_on:
       - email_service
       - mongo
+      - garnet
       - rabbit-mq
 
   email_service:
@@ -30,8 +31,10 @@ services:
     volumes:
     - "C:/data/db:/data/db"
 
-  redis:
-    image: redis/redis-stack-server:latest
+  garnet:
+    build:
+      context: .
+      dockerfile: Garnet/Dockerfile
     ports:
     - "6379:6379"
 
