@@ -24,6 +24,15 @@ services:
       - mongo
       - rabbit-mq
 
+  log_service:
+    image: ${DOCKER_REIGSTRY-}log_service
+    build:
+      context: .
+      dockerfile: Services/Log-Service/Dockerfile
+    depends_on:
+      - mongo
+      - rabbit-mq
+
   mongo:
     image: mongodb/mongodb-community-server:latest
     ports:
