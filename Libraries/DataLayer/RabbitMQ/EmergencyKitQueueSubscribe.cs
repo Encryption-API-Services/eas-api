@@ -1,10 +1,10 @@
-﻿using RabbitMQ.Client.Events;
-using RabbitMQ.Client;
-using System;
+﻿using Common.Email;
 using DataLayer.RabbitMQ.QueueMessages;
-using System.Text.Json;
-using Common.Email;
+using RabbitMQ.Client;
+using RabbitMQ.Client.Events;
+using System;
 using System.Net.Mail;
+using System.Text.Json;
 
 namespace DataLayer.RabbitMQ
 {

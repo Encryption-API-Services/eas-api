@@ -15,7 +15,7 @@ namespace API.Controllers
             IHttpContextAccessor contextAccessor,
             IEmergencyKitControllerLogic controllerLogic)
         {
-            this._contextAccessor = contextAccessor;    
+            this._contextAccessor = contextAccessor;
             this._controllerLogic = controllerLogic;
         }
 

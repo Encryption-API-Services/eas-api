@@ -7,7 +7,7 @@ namespace Log_Service
 
 
         public Worker(LogRequestQueueSubscribe logRequestQueueSubscribe)
-        { 
+        {
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)

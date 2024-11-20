@@ -1,8 +1,8 @@
-﻿using DataLayer.Mongo.Repositories;
-using RabbitMQ.Client.Events;
+﻿using DataLayer.Mongo.Entities;
+using DataLayer.Mongo.Repositories;
 using RabbitMQ.Client;
+using RabbitMQ.Client.Events;
 using System;
-using DataLayer.Mongo.Entities;
 using System.Text.Json;
 
 namespace DataLayer.RabbitMQ
@@ -40,7 +40,7 @@ namespace DataLayer.RabbitMQ
             }
             catch (Exception ex)
             {
-                
+
             }
         }
     }

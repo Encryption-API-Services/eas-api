@@ -1,7 +1,6 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using System;
-using System.Security.Cryptography.X509Certificates;
 
 namespace DataLayer.Mongo.Entities
 {
@@ -86,7 +85,7 @@ namespace DataLayer.Mongo.Entities
         public string PublicKey { get; set; }
     }
 
-    public class EmergencyKit 
+    public class EmergencyKit
     {
         public byte[] CipherText { get; set; }
         public string EmergencyKitId { get; set; }

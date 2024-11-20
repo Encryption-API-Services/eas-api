@@ -3,10 +3,8 @@ using DataLayer.Mongo.Repositories;
 using DataLayer.RabbitMQ;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Models.EmergencyKit;
 using MongoDB.Driver;
 using System;
-using System.Linq;
 
 namespace Email_Service
 {
