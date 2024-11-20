@@ -38,7 +38,7 @@ namespace Validation.Middleware
                 string ip = IPAddressExtension.ConvertContextToLocalHostIp(clientIp);
                 context.Items[Constants.HttpItems.IP] = ip;
                 string token = context.Request.Headers[Constants.HeaderNames.Authorization].FirstOrDefault()?.Split(" ").Last();
-                LogRequest requestStart = new LogRequest()
+                this._requestQueuePublish.BasicPublish(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(new LogRequest()
                 {
                     IsStart = true,
                     RequestId = requestId,
@@ -46,10 +46,9 @@ namespace Validation.Middleware
                     Token = token,
                     Method = context.Request.Method,
                     CreateTime = DateTime.UtcNow
-                };
-                this._requestQueuePublish.BasicPublish(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(requestStart)));
+                })));
                 await _next(context);
-                LogRequest requestEnd = new LogRequest()
+                this._requestQueuePublish.BasicPublish(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(new LogRequest()
                 {
                     IsStart = false,
                     RequestId = requestId,
@@ -57,8 +56,7 @@ namespace Validation.Middleware
                     Token = token,
                     Method = context.Request.Method,
                     CreateTime = DateTime.UtcNow
-                };
-                this._requestQueuePublish.BasicPublish(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(requestStart)));
+                })));
             }
             catch (Exception ex)
             {
