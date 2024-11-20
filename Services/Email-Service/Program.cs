@@ -6,6 +6,7 @@ using Microsoft.Extensions.Hosting;
 using Models.EmergencyKit;
 using MongoDB.Driver;
 using System;
+using System.Linq;
 
 namespace Email_Service
 {
@@ -33,14 +34,14 @@ namespace Email_Service
                     });
                     services.AddSingleton<IDatabaseSettings, DatabaseSettings>();
                     services.AddSingleton<RabbitMQConnection>();
-                    services.AddScoped<ActivateUserQueueSubscribe>();
-                    services.AddScoped<ForgotPasswordQueueSubscribe>();
-                    services.AddScoped<LockedOutUserQueueSubscribe>();
-                    services.AddScoped<CreditCardInformationChangedQueueSubscribe>();
-                    services.AddScoped<Email2FAHotpCodeQueueSubscribe>();
-                    services.AddScoped<EmergencyKitQueueSubscribe>();
-                    services.AddScoped<EmergencyKitRecoverySubscribe>();
-                    services.AddScoped<IUserRepository, UserRepository>();
+                    services.AddSingleton<ActivateUserQueueSubscribe>();
+                    services.AddSingleton<ForgotPasswordQueueSubscribe>();
+                    services.AddSingleton<LockedOutUserQueueSubscribe>();
+                    services.AddSingleton<CreditCardInformationChangedQueueSubscribe>();
+                    services.AddSingleton<Email2FAHotpCodeQueueSubscribe>();
+                    services.AddSingleton<EmergencyKitQueueSubscribe>();
+                    services.AddSingleton<EmergencyKitRecoverySubscribe>();
+                    services.AddSingleton<IUserRepository, UserRepository>();
                     services.AddHostedService<Worker>();
                 });
     }

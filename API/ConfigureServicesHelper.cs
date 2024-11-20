@@ -49,9 +49,9 @@ namespace API.Config
             this._services.AddSingleton<IRedisClient, RedisClient>();
             this._services.AddSingleton<IDatabaseSettings, DatabaseSettings>();
             this._services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-            this._services.AddSingleton<LogRequestCache>();
             this._services.AddSingleton<BenchmarkMethodCache>();
             this._services.AddSingleton<RabbitMQConnection>();
+            this._services.AddSingleton<LogRequestQueuePublish>();
         }
         private void SetupScoped()
         {
