@@ -11,6 +11,9 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["Directory.Build.props", "."]
+COPY ["Libraries/DataLayer/DataLayer.csproj", "Libraries/DataLayer/"]
+COPY ["Libraries/Common/Common.csproj", "Libraries/Common/"]
+COPY ["Libraries/Models/Models.csproj", "Libraries/Models/"]
 COPY ["Services/Log-Service/Log-Service.csproj", "Services/Log-Service/"]
 RUN dotnet restore "./Services/Log-Service/Log-Service.csproj"
 COPY . .

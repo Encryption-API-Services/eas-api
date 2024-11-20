@@ -16,6 +16,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Libraries\Common\Common.csproj" />
     <ProjectReference Include="..\..\Libraries\DataLayer\DataLayer.csproj" />
+    <ProjectReference Include="..\..\Libraries\Models\Models.csproj" />
   </ItemGroup>
 </Project>
