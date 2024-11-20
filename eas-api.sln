@@ -37,6 +37,8 @@ Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-co
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Email-Service", "Services\Email-Service\Email-Service.csproj", "{EB78D763-4B62-4723-B932-A0C31E1F0C83}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Log-Service", "Services\Log-Service\Log-Service.csproj", "{9B570D1C-4461-4D02-80F3-90A12B2C3363}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -99,6 +101,10 @@ Global
 		{EB78D763-4B62-4723-B932-A0C31E1F0C83}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EB78D763-4B62-4723-B932-A0C31E1F0C83}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EB78D763-4B62-4723-B932-A0C31E1F0C83}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9B570D1C-4461-4D02-80F3-90A12B2C3363}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9B570D1C-4461-4D02-80F3-90A12B2C3363}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9B570D1C-4461-4D02-80F3-90A12B2C3363}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9B570D1C-4461-4D02-80F3-90A12B2C3363}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -116,6 +122,7 @@ Global
 		{CA248792-803F-4AD7-9237-F903A717EB6E} = {6EB8A9C6-D96D-4087-B7DE-775CBB23742D}
 		{46AECA66-72A5-4EC9-8AB7-6C06E74A3CD6} = {6EB8A9C6-D96D-4087-B7DE-775CBB23742D}
 		{EB78D763-4B62-4723-B932-A0C31E1F0C83} = {04CE2CE7-F073-4992-96E9-8EACBE543AA6}
+		{9B570D1C-4461-4D02-80F3-90A12B2C3363} = {04CE2CE7-F073-4992-96E9-8EACBE543AA6}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {CCC25F9F-06E3-434D-A130-C77381DAA1F0}

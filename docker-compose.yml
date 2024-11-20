@@ -11,6 +11,7 @@ services:
     - "8081:8081"
     depends_on:
       - email_service
+      - log_service
       - mongo
       - garnet
       - rabbit-mq
@@ -20,6 +21,15 @@ services:
     build:
       context: .
       dockerfile: Services/Email-Service/Dockerfile
+    depends_on:
+      - mongo
+      - rabbit-mq
+
+  log_service:
+    image: ${DOCKER_REIGSTRY-}log_service
+    build:
+      context: .
+      dockerfile: Services/Log-Service/Dockerfile
     depends_on:
       - mongo
       - rabbit-mq

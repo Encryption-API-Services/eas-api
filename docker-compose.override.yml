@@ -14,3 +14,7 @@ services:
   email_service:
     env_file:
     - path: ./.env
+  log_service:
+    env_file:
+    - path: ./.env
+    

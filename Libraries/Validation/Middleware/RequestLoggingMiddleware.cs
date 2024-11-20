@@ -1,11 +1,15 @@
 ﻿using CASHelpers;
 using DataLayer.Cache;
 using DataLayer.Mongo.Entities;
+using DataLayer.RabbitMQ;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 
 using System;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Validation.Networking;
 
@@ -14,12 +18,12 @@ namespace Validation.Middleware
     public class RequestLoggingMiddleware
     {
         private readonly RequestDelegate _next;
-        private readonly LogRequestCache _requestCache;
+        private readonly LogRequestQueuePublish _requestQueuePublish;
 
-        public RequestLoggingMiddleware(RequestDelegate next, LogRequestCache logRequestCache)
+        public RequestLoggingMiddleware(RequestDelegate next, LogRequestQueuePublish requestQueuePublish)
         {
             _next = next;
-            this._requestCache = logRequestCache;
+            this._requestQueuePublish = requestQueuePublish;
         }
         public async Task InvokeAsync(HttpContext context)
         {
@@ -34,7 +38,7 @@ namespace Validation.Middleware
                 string ip = IPAddressExtension.ConvertContextToLocalHostIp(clientIp);
                 context.Items[Constants.HttpItems.IP] = ip;
                 string token = context.Request.Headers[Constants.HeaderNames.Authorization].FirstOrDefault()?.Split(" ").Last();
-                LogRequest requestStart = new LogRequest()
+                this._requestQueuePublish.BasicPublish(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(new LogRequest()
                 {
                     IsStart = true,
                     RequestId = requestId,
@@ -42,10 +46,9 @@ namespace Validation.Middleware
                     Token = token,
                     Method = context.Request.Method,
                     CreateTime = DateTime.UtcNow
-                };
-                this._requestCache.AddRequest(requestStart);
+                })));
                 await _next(context);
-                LogRequest requestEnd = new LogRequest()
+                this._requestQueuePublish.BasicPublish(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(new LogRequest()
                 {
                     IsStart = false,
                     RequestId = requestId,
@@ -53,8 +56,7 @@ namespace Validation.Middleware
                     Token = token,
                     Method = context.Request.Method,
                     CreateTime = DateTime.UtcNow
-                };
-                this._requestCache.AddRequest(requestEnd);
+                })));
             }
             catch (Exception ex)
             {
