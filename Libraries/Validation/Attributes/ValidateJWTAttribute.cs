@@ -32,8 +32,8 @@ namespace Validation.Attributes
                 var readToken = handler.ReadJwtToken(token);
                 string userId = readToken.Claims.FirstOrDefault(x => x.Type == Constants.TokenClaims.Id).Value;
                 string publicKeyRedisCacheKey = Constants.RedisKeys.UserTokenPublicKey + userId;
-                string aesNonce = this._redisClient.GetString(Constants.RedisKeys.PublicKeyKey);
-                string aesKey = this._redisClient.GetString(Constants.RedisKeys.PublicKeyNonce);
+                string aesNonce = this._redisClient.GetString(Constants.RedisKeys.PublicKeyNonce);
+                string aesKey = this._redisClient.GetString(Constants.RedisKeys.PublicKeyKey);
                 AESWrapper aesWrapper = new AESWrapper();
                 string publicKey = this._redisClient.GetString(publicKeyRedisCacheKey);
                 if (string.IsNullOrEmpty(publicKey))

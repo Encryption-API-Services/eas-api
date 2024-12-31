@@ -160,8 +160,8 @@ namespace API.ControllersLogic
                             ECDSAWrapper ecdsa = new ECDSAWrapper("ES521");
                             string token = new JWT().GenerateECCToken(activeUser.Id, activeUser.IsAdmin, ecdsa, 1, activeUser.StripProductId);
                             string publicKeyCacheKey = Constants.RedisKeys.UserTokenPublicKey + activeUser.Id;
-                            string aesNonce = this._redisClient.GetString(Constants.RedisKeys.PublicKeyKey);
-                            string aesKey = this._redisClient.GetString(Constants.RedisKeys.PublicKeyNonce);
+                            string aesNonce = this._redisClient.GetString(Constants.RedisKeys.PublicKeyNonce);
+                            string aesKey = this._redisClient.GetString(Constants.RedisKeys.PublicKeyKey);
                             AESWrapper aesWrapper = new AESWrapper();
                             string publicKey = Convert.ToBase64String(aesWrapper.Aes256Encrypt(Convert.FromBase64String(aesNonce), Convert.FromBase64String(aesKey), Convert.FromBase64String(ecdsa.PublicKey)));
                             this._redisClient.SetString(publicKeyCacheKey, publicKey, new TimeSpan(1, 0, 0));
