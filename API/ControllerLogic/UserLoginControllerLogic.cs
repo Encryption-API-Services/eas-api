@@ -1,8 +1,10 @@
 ﻿using CasDotnetSdk.PasswordHashers;
 using CasDotnetSdk.Signatures;
+using CasDotnetSdk.Symmetric;
 using CASHelpers;
 using Common;
 using DataLayer.Cache;
+using DataLayer.Infiscial;
 using DataLayer.Mongo.Entities;
 using DataLayer.Mongo.Repositories;
 using DataLayer.RabbitMQ;
@@ -158,7 +160,11 @@ namespace API.ControllersLogic
                             ECDSAWrapper ecdsa = new ECDSAWrapper("ES521");
                             string token = new JWT().GenerateECCToken(activeUser.Id, activeUser.IsAdmin, ecdsa, 1, activeUser.StripProductId);
                             string publicKeyCacheKey = Constants.RedisKeys.UserTokenPublicKey + activeUser.Id;
-                            this._redisClient.SetString(publicKeyCacheKey, ecdsa.PublicKey, new TimeSpan(1, 0, 0));
+                            string aesNonce = this._redisClient.GetString(Constants.RedisKeys.PublicKeyKey);
+                            string aesKey = this._redisClient.GetString(Constants.RedisKeys.PublicKeyNonce);
+                            AESWrapper aesWrapper = new AESWrapper();
+                            string publicKey = Convert.ToBase64String(aesWrapper.Aes256Encrypt(Convert.FromBase64String(aesNonce), Convert.FromBase64String(aesKey), Convert.FromBase64String(ecdsa.PublicKey)));
+                            this._redisClient.SetString(publicKeyCacheKey, publicKey, new TimeSpan(1, 0, 0));
                             await this._userRepository.SetUserTokenPublicKey(activeUser.Id, ecdsa.PublicKey);
                             string isUserActiveRedisKey = Constants.RedisKeys.IsActiveUser + activeUser.Id;
                             this._redisClient.SetString(isUserActiveRedisKey, true.ToString(), new TimeSpan(1, 0, 0));

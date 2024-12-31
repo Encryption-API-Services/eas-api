@@ -3,7 +3,7 @@ using API.Config;
 using Microsoft.AspNetCore.HttpOverrides;
 using Validation.Middleware;
 
-APIInfiscialEnvironment.SetEnvironmentKeys();
+APIInfiscialEnvironment.Setup();
 
 var builder = WebApplication.CreateBuilder(args);
 

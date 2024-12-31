@@ -1,4 +1,6 @@
-﻿using CASHelpers;
+﻿using CasDotnetSdk.Symmetric;
+using CASHelpers;
+using DataLayer.Infiscial;
 using DataLayer.Mongo.Entities;
 using DataLayer.Mongo.Repositories;
 using DataLayer.Redis;
@@ -30,12 +32,16 @@ namespace Validation.Attributes
                 var readToken = handler.ReadJwtToken(token);
                 string userId = readToken.Claims.FirstOrDefault(x => x.Type == Constants.TokenClaims.Id).Value;
                 string publicKeyRedisCacheKey = Constants.RedisKeys.UserTokenPublicKey + userId;
+                string aesNonce = this._redisClient.GetString(Constants.RedisKeys.PublicKeyKey);
+                string aesKey = this._redisClient.GetString(Constants.RedisKeys.PublicKeyNonce);
+                AESWrapper aesWrapper = new AESWrapper();
                 string publicKey = this._redisClient.GetString(publicKeyRedisCacheKey);
                 if (string.IsNullOrEmpty(publicKey))
                 {
-                    publicKey = await this._userRepository.GetUserTokenPublicKey(userId);
+                    publicKey = Convert.ToBase64String(aesWrapper.Aes256Encrypt(Convert.FromBase64String(aesNonce), Convert.FromBase64String(aesKey), Convert.FromBase64String(await this._userRepository.GetUserTokenPublicKey(userId))));
                     this._redisClient.SetString(publicKeyRedisCacheKey, publicKey, new TimeSpan(1, 0, 0));
                 }
+                publicKey = Convert.ToBase64String(aesWrapper.Aes256Decrypt(Convert.FromBase64String(aesNonce), Convert.FromBase64String(aesKey), Convert.FromBase64String(publicKey)));
                 ECDSAWrapper ecdsa = new ECDSAWrapper("ES521");
                 ecdsa.ImportFromPublicBase64String(publicKey);
                 // validate signing key
