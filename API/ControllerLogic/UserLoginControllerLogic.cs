@@ -1,4 +1,6 @@
-﻿using CasDotnetSdk.PasswordHashers;
+﻿using CasDotnetSdk.DigitalSignature;
+using CasDotnetSdk.DigitalSignature.Types;
+using CasDotnetSdk.PasswordHashers;
 using CasDotnetSdk.Signatures;
 using CASHelpers;
 using Common;
@@ -158,12 +160,16 @@ namespace API.ControllersLogic
                             ECDSAWrapper ecdsa = new ECDSAWrapper("ES521");
                             string token = new JWT().GenerateECCToken(activeUser.Id, activeUser.IsAdmin, ecdsa, 1, activeUser.StripProductId);
                             string publicKeyCacheKey = Constants.RedisKeys.UserTokenPublicKey + activeUser.Id;
-                            this._redisClient.SetString(publicKeyCacheKey, ecdsa.PublicKey, new TimeSpan(1, 0, 0));
                             await this._userRepository.SetUserTokenPublicKey(activeUser.Id, ecdsa.PublicKey);
+                            this._redisClient.SetString(publicKeyCacheKey, ecdsa.PublicKey, new TimeSpan(1, 0, 0));
                             string isUserActiveRedisKey = Constants.RedisKeys.IsActiveUser + activeUser.Id;
                             this._redisClient.SetString(isUserActiveRedisKey, true.ToString(), new TimeSpan(1, 0, 0));
                             string isUserAdminRedisKey = Constants.RedisKeys.IsUserAdmin + activeUser.Id;
                             this._redisClient.SetString(isUserAdminRedisKey, activeUser.IsAdmin.ToString(), new TimeSpan(1, 0, 0));
+                            SHA512DigitalSignatureWrapper dsWrapper = new SHA512DigitalSignatureWrapper();
+                            SHAED25519DalekDigitialSignatureResult ds = dsWrapper.CreateED25519(Convert.FromBase64String(ecdsa.PublicKey));
+                            string dsCacheKey = Constants.RedisKeys.JWTPublicKeySignature + activeUser.Id;
+                            this._redisClient.SetString(dsCacheKey, JsonSerializer.Serialize(ds), new TimeSpan(1, 0, 0));
                             result = new OkObjectResult(new { message = "You have successfully signed in.", token = token, TwoFactorAuth = false });
                         }
                     }
