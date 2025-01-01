@@ -90,7 +90,8 @@ namespace API.ControllerLogic
                 if (!string.IsNullOrEmpty(token) && handler.CanReadToken(token))
                 {
                     JwtSecurityToken parsedToken = handler.ReadJwtToken(token);
-                    string publicKey = parsedToken.Claims.First(x => x.Type == Constants.TokenClaims.PublicKey).Value;
+                    string publicKeyCacheKey = Constants.RedisKeys.UserTokenPublicKey + parsedToken.Claims.First(x => x.Type == Constants.TokenClaims.Id).Value;
+                    string publicKey = this._redisClient.GetString(publicKeyCacheKey);
                     ECDSAWrapper ecdsa = new ECDSAWrapper("ES521");
                     ecdsa.ImportFromPublicBase64String(publicKey);
                     JWT jwtWrapper = new JWT();
@@ -101,7 +102,6 @@ namespace API.ControllerLogic
                         bool isAdmin = bool.Parse(parsedToken.Claims.First(x => x.Type == Constants.TokenClaims.IsAdmin).Value);
                         string stripProductId = parsedToken.Claims.First(x => x.Type == Constants.TokenClaims.SubscriptionPublicKey).Value;
                         string newToken = new JWT().GenerateECCToken(userId, isAdmin, newEcdsa, 1, stripProductId);
-                        string publicKeyCacheKey = Constants.RedisKeys.UserTokenPublicKey + userId;
                         this._redisClient.SetString(publicKeyCacheKey, ecdsa.PublicKey, new TimeSpan(1, 0, 0));
                         await this._userRepository.SetUserTokenPublicKey(userId, ecdsa.PublicKey);
                         string isUserActiveRedisKey = Constants.RedisKeys.IsActiveUser + userId;
