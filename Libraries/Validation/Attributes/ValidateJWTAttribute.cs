@@ -1,4 +1,6 @@
-﻿using CASHelpers;
+﻿using CasDotnetSdk.DigitalSignature;
+using CasDotnetSdk.DigitalSignature.Types;
+using CASHelpers;
 using DataLayer.Mongo.Entities;
 using DataLayer.Mongo.Repositories;
 using DataLayer.Redis;
@@ -8,6 +10,7 @@ using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Text;
+using System.Text.Json;
 
 namespace Validation.Attributes
 {
@@ -36,47 +39,60 @@ namespace Validation.Attributes
                     publicKey = await this._userRepository.GetUserTokenPublicKey(userId);
                     this._redisClient.SetString(publicKeyRedisCacheKey, publicKey, new TimeSpan(1, 0, 0));
                 }
-                ECDSAWrapper ecdsa = new ECDSAWrapper("ES521");
-                ecdsa.ImportFromPublicBase64String(publicKey);
-                // validate signing key
-                if (!await new JWT().ValidateECCToken(token, ecdsa.ECDKey))
+                string dsPublicKeyCacheKey = Constants.RedisKeys.JWTPublicKeySignature + userId;
+                string cacheDs = this._redisClient.GetString(dsPublicKeyCacheKey);
+                SHAED25519DalekDigitialSignatureResult ds = JsonSerializer.Deserialize<SHAED25519DalekDigitialSignatureResult>(cacheDs);
+                SHA512DigitalSignatureWrapper dsWrapper = new SHA512DigitalSignatureWrapper();
+                if (!dsWrapper.VerifyED25519(ds.PublicKey, Convert.FromBase64String(publicKey), ds.Signature))
                 {
                     context.HttpContext.Response.StatusCode = 401;
-                    await context.HttpContext.Response.Body.WriteAsync(Encoding.UTF8.GetBytes("Your token has expired. Please autheticate with a refreshed or new token."));
+                    await context.HttpContext.Response.Body.WriteAsync(Encoding.UTF8.GetBytes("You did not supply a token or it is malformed."));
                     context.Result = new UnauthorizedObjectResult(new { });
                 }
                 else
                 {
-                    string isAdmin = readToken.Claims.FirstOrDefault(x => x.Type == Constants.TokenClaims.IsAdmin).Value;
-                    string subscriptionProductId = readToken.Claims.FirstOrDefault(x => x.Type == Constants.TokenClaims.SubscriptionPublicKey)?.Value;
-                    context.HttpContext.Items[Constants.HttpItems.UserID] = userId;
-                    context.HttpContext.Items[Constants.TokenClaims.IsAdmin] = isAdmin;
-                    context.HttpContext.Items[Constants.TokenClaims.SubscriptionPublicKey] = subscriptionProductId;
-
-                    // Check that the user is active.
-                    string isUserActiveRedisKey = Constants.RedisKeys.IsActiveUser + userId;
-                    string isActive = this._redisClient.GetString(isUserActiveRedisKey);
-
-                    if (string.IsNullOrEmpty(isActive))
-                    {
-                        User dbUser = await this._userRepository.GetUserById(userId);
-                        if (dbUser == null || !dbUser.IsActive)
-                        {
-                            isActive = "False";
-                        }
-                        else
-                        {
-                            // if active user set in cache instead of hitting the DB next time.
-                            this._redisClient.SetString(isUserActiveRedisKey, true.ToString(), new TimeSpan(1, 0, 0));
-                            isActive = "True";
-                        }
-                    }
-
-                    if (!bool.Parse(isActive))
+                    ECDSAWrapper ecdsa = new ECDSAWrapper("ES521");
+                    ecdsa.ImportFromPublicBase64String(publicKey);
+                    // validate signing key
+                    if (!await new JWT().ValidateECCToken(token, ecdsa.ECDKey))
                     {
                         context.HttpContext.Response.StatusCode = 401;
-                        await context.HttpContext.Response.Body.WriteAsync(Encoding.UTF8.GetBytes("User account is not active."));
+                        await context.HttpContext.Response.Body.WriteAsync(Encoding.UTF8.GetBytes("Your token has expired. Please autheticate with a refreshed or new token."));
                         context.Result = new UnauthorizedObjectResult(new { });
+                    }
+                    else
+                    {
+                        string isAdmin = readToken.Claims.FirstOrDefault(x => x.Type == Constants.TokenClaims.IsAdmin).Value;
+                        string subscriptionProductId = readToken.Claims.FirstOrDefault(x => x.Type == Constants.TokenClaims.SubscriptionPublicKey)?.Value;
+                        context.HttpContext.Items[Constants.HttpItems.UserID] = userId;
+                        context.HttpContext.Items[Constants.TokenClaims.IsAdmin] = isAdmin;
+                        context.HttpContext.Items[Constants.TokenClaims.SubscriptionPublicKey] = subscriptionProductId;
+
+                        // Check that the user is active.
+                        string isUserActiveRedisKey = Constants.RedisKeys.IsActiveUser + userId;
+                        string isActive = this._redisClient.GetString(isUserActiveRedisKey);
+
+                        if (string.IsNullOrEmpty(isActive))
+                        {
+                            User dbUser = await this._userRepository.GetUserById(userId);
+                            if (dbUser == null || !dbUser.IsActive)
+                            {
+                                isActive = "False";
+                            }
+                            else
+                            {
+                                // if active user set in cache instead of hitting the DB next time.
+                                this._redisClient.SetString(isUserActiveRedisKey, true.ToString(), new TimeSpan(1, 0, 0));
+                                isActive = "True";
+                            }
+                        }
+
+                        if (!bool.Parse(isActive))
+                        {
+                            context.HttpContext.Response.StatusCode = 401;
+                            await context.HttpContext.Response.Body.WriteAsync(Encoding.UTF8.GetBytes("User account is not active."));
+                            context.Result = new UnauthorizedObjectResult(new { });
+                        }
                     }
                 }
             }
