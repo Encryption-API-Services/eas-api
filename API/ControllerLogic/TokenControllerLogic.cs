@@ -1,4 +1,6 @@
-﻿using CASHelpers;
+﻿using CasDotnetSdk.DigitalSignature.Types;
+using CasDotnetSdk.DigitalSignature;
+using CASHelpers;
 using CASHelpers.Types.HttpResponses.UserAuthentication;
 using Common;
 using DataLayer.Cache;
@@ -9,6 +11,9 @@ using Microsoft.AspNetCore.Mvc;
 using Models.UserAuthentication;
 using System.IdentityModel.Tokens.Jwt;
 using System.Reflection;
+using System.Text.Json;
+using System.Runtime.CompilerServices;
+using API.HelperServices;
 
 namespace API.ControllerLogic
 {
@@ -18,17 +23,20 @@ namespace API.ControllerLogic
         private readonly ICASExceptionRepository _exceptionRepository;
         private readonly BenchmarkMethodCache _benchMarkMethodCache;
         private readonly IRedisClient _redisClient;
+        private readonly IJWTPublicKeyTrustCertificate _jwtPublicKeyTrustCertificate;
         public TokenControllerLogic(
             IUserRepository userRepository,
             ICASExceptionRepository exceptionRepository,
             BenchmarkMethodCache benchMarkMethodCache,
-            IRedisClient redisClient
+            IRedisClient redisClient,
+            IJWTPublicKeyTrustCertificate jwtPublicKeyTrustCertificate
             )
         {
             this._userRepository = userRepository;
             this._exceptionRepository = exceptionRepository;
             this._benchMarkMethodCache = benchMarkMethodCache;
             this._redisClient = redisClient;
+            this._jwtPublicKeyTrustCertificate = jwtPublicKeyTrustCertificate;
         }
 
         #region GetToken
@@ -61,6 +69,7 @@ namespace API.ControllerLogic
                     await this._userRepository.SetUserTokenPublicKey(activeUser.Id, ecdsa.PublicKey);
                     string isUserActiveRedisKey = Constants.RedisKeys.IsActiveUser + activeUser.Id;
                     this._redisClient.SetString(isUserActiveRedisKey, true.ToString(), new TimeSpan(1, 0, 0));
+                    this._jwtPublicKeyTrustCertificate.CreatePublicKeyTrustCertificate(ecdsa.PublicKey, activeUser.Id);
                     result = new OkObjectResult(new GetTokenResponse() { Token = token });
                 }
                 return result;
@@ -106,6 +115,7 @@ namespace API.ControllerLogic
                         await this._userRepository.SetUserTokenPublicKey(userId, ecdsa.PublicKey);
                         string isUserActiveRedisKey = Constants.RedisKeys.IsActiveUser + userId;
                         this._redisClient.SetString(isUserActiveRedisKey, true.ToString(), new TimeSpan(1, 0, 0));
+                        this._jwtPublicKeyTrustCertificate.CreatePublicKeyTrustCertificate(ecdsa.PublicKey, userId);
                         result = new OkObjectResult(new GetTokenResponse() { Token = newToken });
                     }
                     else

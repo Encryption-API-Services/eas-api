@@ -1,5 +1,4 @@
-﻿using CasDotnetSdk.DigitalSignature;
-using CasDotnetSdk.DigitalSignature.Types;
+﻿using API.HelperServices;
 using CasDotnetSdk.PasswordHashers;
 using CasDotnetSdk.Signatures;
 using CASHelpers;
@@ -32,6 +31,7 @@ namespace API.ControllersLogic
         private readonly LockedOutUserQueuePublish _lockedOutUserQueue;
         private readonly Email2FAHotpCodeQueuePublish _email2FAHotpCodeQueuePublish;
         private readonly IRedisClient _redisClient;
+        private readonly IJWTPublicKeyTrustCertificate _jwtPublicKeyTrustCertificate;
 
         public UserLoginControllerLogic(
             IUserRepository userRepository,
@@ -42,7 +42,8 @@ namespace API.ControllersLogic
             BenchmarkMethodCache benchmarkMethodCache,
             LockedOutUserQueuePublish lockedOutUserQueue,
             Email2FAHotpCodeQueuePublish email2FAHotpCodeQueuePublish,
-            IRedisClient redisCLient
+            IRedisClient redisCLient,
+            IJWTPublicKeyTrustCertificate jwtPublicKeyTrustCertificate
             )
         {
             this._userRepository = userRepository;
@@ -54,6 +55,7 @@ namespace API.ControllersLogic
             this._lockedOutUserQueue = lockedOutUserQueue;
             this._email2FAHotpCodeQueuePublish = email2FAHotpCodeQueuePublish;
             this._redisClient = redisCLient;
+            this._jwtPublicKeyTrustCertificate = jwtPublicKeyTrustCertificate;
         }
 
         #region GetApiKey
@@ -166,10 +168,7 @@ namespace API.ControllersLogic
                             this._redisClient.SetString(isUserActiveRedisKey, true.ToString(), new TimeSpan(1, 0, 0));
                             string isUserAdminRedisKey = Constants.RedisKeys.IsUserAdmin + activeUser.Id;
                             this._redisClient.SetString(isUserAdminRedisKey, activeUser.IsAdmin.ToString(), new TimeSpan(1, 0, 0));
-                            SHA512DigitalSignatureWrapper dsWrapper = new SHA512DigitalSignatureWrapper();
-                            SHAED25519DalekDigitialSignatureResult ds = dsWrapper.CreateED25519(Convert.FromBase64String(ecdsa.PublicKey));
-                            string dsCacheKey = Constants.RedisKeys.JWTPublicKeySignature + activeUser.Id;
-                            this._redisClient.SetString(dsCacheKey, JsonSerializer.Serialize(ds), new TimeSpan(1, 0, 0));
+                            this._jwtPublicKeyTrustCertificate.CreatePublicKeyTrustCertificate(ecdsa.PublicKey, activeUser.Id);
                             result = new OkObjectResult(new { message = "You have successfully signed in.", token = token, TwoFactorAuth = false });
                         }
                     }
