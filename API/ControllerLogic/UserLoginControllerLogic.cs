@@ -1,4 +1,5 @@
-﻿using CasDotnetSdk.PasswordHashers;
+﻿using API.HelperServices;
+using CasDotnetSdk.PasswordHashers;
 using CasDotnetSdk.Signatures;
 using CASHelpers;
 using Common;
@@ -30,6 +31,7 @@ namespace API.ControllersLogic
         private readonly LockedOutUserQueuePublish _lockedOutUserQueue;
         private readonly Email2FAHotpCodeQueuePublish _email2FAHotpCodeQueuePublish;
         private readonly IRedisClient _redisClient;
+        private readonly IJWTPublicKeyTrustCertificate _jwtPublicKeyTrustCertificate;
 
         public UserLoginControllerLogic(
             IUserRepository userRepository,
@@ -40,7 +42,8 @@ namespace API.ControllersLogic
             BenchmarkMethodCache benchmarkMethodCache,
             LockedOutUserQueuePublish lockedOutUserQueue,
             Email2FAHotpCodeQueuePublish email2FAHotpCodeQueuePublish,
-            IRedisClient redisCLient
+            IRedisClient redisCLient,
+            IJWTPublicKeyTrustCertificate jwtPublicKeyTrustCertificate
             )
         {
             this._userRepository = userRepository;
@@ -52,6 +55,7 @@ namespace API.ControllersLogic
             this._lockedOutUserQueue = lockedOutUserQueue;
             this._email2FAHotpCodeQueuePublish = email2FAHotpCodeQueuePublish;
             this._redisClient = redisCLient;
+            this._jwtPublicKeyTrustCertificate = jwtPublicKeyTrustCertificate;
         }
 
         #region GetApiKey
@@ -158,12 +162,13 @@ namespace API.ControllersLogic
                             ECDSAWrapper ecdsa = new ECDSAWrapper("ES521");
                             string token = new JWT().GenerateECCToken(activeUser.Id, activeUser.IsAdmin, ecdsa, 1, activeUser.StripProductId);
                             string publicKeyCacheKey = Constants.RedisKeys.UserTokenPublicKey + activeUser.Id;
-                            this._redisClient.SetString(publicKeyCacheKey, ecdsa.PublicKey, new TimeSpan(1, 0, 0));
                             await this._userRepository.SetUserTokenPublicKey(activeUser.Id, ecdsa.PublicKey);
+                            this._redisClient.SetString(publicKeyCacheKey, ecdsa.PublicKey, new TimeSpan(1, 0, 0));
                             string isUserActiveRedisKey = Constants.RedisKeys.IsActiveUser + activeUser.Id;
                             this._redisClient.SetString(isUserActiveRedisKey, true.ToString(), new TimeSpan(1, 0, 0));
                             string isUserAdminRedisKey = Constants.RedisKeys.IsUserAdmin + activeUser.Id;
                             this._redisClient.SetString(isUserAdminRedisKey, activeUser.IsAdmin.ToString(), new TimeSpan(1, 0, 0));
+                            this._jwtPublicKeyTrustCertificate.CreatePublicKeyTrustCertificate(ecdsa.PublicKey, activeUser.Id);
                             result = new OkObjectResult(new { message = "You have successfully signed in.", token = token, TwoFactorAuth = false });
                         }
                     }

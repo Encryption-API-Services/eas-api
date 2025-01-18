@@ -1,5 +1,6 @@
 ﻿using API.ControllerLogic;
 using API.ControllersLogic;
+using API.HelperServices;
 using DataLayer.Cache;
 using DataLayer.Mongo;
 using DataLayer.Mongo.Repositories;
@@ -85,6 +86,9 @@ namespace API.Config
             this._services.AddScoped<IAuthenticationControllerLogic, AuthenticationControllerLogic>();
             this._services.AddScoped<IUserAdminControllerLogic, UserAdminControllerLogic>();
             this._services.AddScoped<IEmergencyKitControllerLogic, EmergencyKitControllerLogic>();
+
+            // Helper Services
+            this._services.AddScoped<IJWTPublicKeyTrustCertificate, JWTPublicKeyTrustCertificate>();
 
             // Validaton
             this._services.AddScoped<UserSettingsValidation>();

@@ -13,8 +13,7 @@ CASConfiguration.IsDevelopment = true;
 CASConfiguration.ApiKey = "FV0mg+D/1JXh9oX07nQGJld+1jLQ6vkve4ZTpzhg2cRGuSt4JgTXfcLznHcdqAN+jp8YBz/0xgR1xJ3mQhtuBQ==";
 ```
 
-We use [Infisical](https://infisical.com/) for secret management mostly for our environment variables. There are gathered from infisical at runtime and injected into the C# Environment [here](https://github.com/Cryptographic-API-Services/cas-api/blob/main/API/APIInfiscialEnvironment.cs). The project isn't going to work correctly without these secrets. If you are interested in contributing get ahold of me and we can figure something out.
-
+We use [Infisical](https://infisical.com/) for secret management, project isn't going to work correctly without them. Get ahold of me to figure something out regarding this.
 ## SDKs Currently In Development
 [C#](https://github.com/Cryptographic-API-Services/cas-dotnet-sdk)
 [JavaScript](https://github.com/Cryptographic-API-Services/cas-typescript-sdk)
