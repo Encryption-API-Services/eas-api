@@ -32,8 +32,6 @@ app.UseForwardedHeaders(new ForwardedHeadersOptions
 
 app.UseMiddleware<RequestLoggingMiddleware>();
 
-app.UseHttpsRedirection();
-
 app.UseAuthorization();
 
 app.MapControllers();
